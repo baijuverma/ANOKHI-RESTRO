@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anokhi Restaurant | Restaurant Inventory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <div class="glass-panel" style="padding: 40px; text-align: center; max-width: 400px; width: 90%;">
+            <div style="margin-bottom: 24px;">
+                <img src="logo.jpg" alt="Anokhi Restaurant Logo" style="max-width: 250px; height: auto; border-radius: 50%; border: 4px solid var(--accent-color); padding: 4px; background: white;">
+            </div>
+            <input type="password" id="login-password" placeholder="Enter Password" autofocus style="width: 100%; padding: 12px; margin-bottom: 16px; border-radius: 8px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.3); color: white; font-size: 16px; text-align: center;" onkeyup="if(event.key === 'Enter') checkLogin()">
+            <button onclick="checkLogin()" class="btn-primary full-width" style="padding: 12px; font-size: 16px;">Access System</button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar glass-panel">
+            <div class="logo" style="padding: 10px; display: flex; justify-content: center; align-items: center;">
+                <img src="logo.jpg" alt="Anokhi Restaurant" style="max-width: 100%; height: auto; border-radius: 8px; background: white; padding: 4px;">
+            </div>
+            <nav>
+                <a href="#" class="nav-item active" data-target="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-target="pos">
+                    <i class="fa-solid fa-cash-register"></i> New Sale
+                </a>
+                <a href="#" class="nav-item" data-target="inventory">
+                    <i class="fa-solid fa-boxes-stacked"></i> Inventory
+                </a>
+                <a href="#" class="nav-item" data-target="history">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Sales History
+                </a>
+                <a href="#" class="nav-item" data-target="settings">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <section id="dashboard" class="view-section active">
+                <header>
+                    <h1>Dashboard Overview</h1>
+                    <p>Welcome back! Here's your restaurant summary.</p>
+                </header>
+                <div class="stats-grid">
+                    <div class="stat-card glass-panel" style="cursor: pointer;" onclick="showTodaySalesList()">
+                        <div class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                        <div class="stat-details" style="width: 100%;">
+                            <h3>Total Sale (Today)</h3>
+                            <p id="total-revenue">₹0</p>
+                            <div style="font-size: 12px; margin-top: 5px; color: var(--text-secondary); display: flex; gap: 15px; background: rgba(0,0,0,0.2); padding: 5px 8px; border-radius: 6px;">
+                                <span><i class="fa-solid fa-money-bill-wave" style="color:var(--success-color);"></i> Cash: <span id="today-cash">₹0</span></span>
+                                <span><i class="fa-brands fa-google-pay" style="color:#818cf8;"></i> UPI: <span id="today-upi">₹0</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-panel" style="cursor: pointer;" onclick="showStockList('total')">
+                        <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
+                        <div class="stat-details">
+                            <h3>Total Items Available</h3>
+                            <p id="total-items">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-panel warning" style="cursor: pointer;" onclick="showStockList('low')">
+                        <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="stat-details">
+                            <h3>Low Stock Items</h3>
+                            <p id="low-stock">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-panel danger" style="cursor: pointer;" onclick="showStockList('out')">
+                        <div class="stat-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+                        <div class="stat-details">
+                            <h3>Out of Stock</h3>
+                            <p id="out-of-stock">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-activity glass-panel mt-4">
+                    <h2>Recent Sales</h2>
+                    <div class="table-container">
+                        <table id="recent-sales-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Time</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Inventory View -->
+            <section id="inventory" class="view-section hidden">
+                <header class="flex-between">
+                    <div>
+                        <h1>Inventory Management</h1>
+                        <p>Manage your ingredients and products</p>
+                    </div>
+                    <button class="btn-primary" onclick="openAddItemModal()">
+                        <i class="fa-solid fa-plus"></i> Add New Item
+                    </button>
+                </header>
+                <div class="glass-panel mt-4">
+                    <div class="table-container">
+                        <table id="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price (₹)</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- POS View -->
+            <section id="pos" class="view-section hidden">
+                <div class="pos-layout">
+                    <!-- Left Pane: Tables + Items -->
+                    <div class="pos-left-pane">
+                        <div class="tables-section glass-panel" id="pos-tables-container">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h2 style="font-size: 18px;"><i class="fa-solid fa-chair"></i> Tables</h2>
+                                <div style="display: flex; gap: 10px; font-size: 11px; color: var(--text-secondary);">
+                                    <span><i class="fa-solid fa-circle" style="color: rgba(255,255,255,0.1); font-size: 8px;"></i> Available</span>
+                                    <span><i class="fa-solid fa-circle" style="color: var(--success-color); font-size: 8px;"></i> Occupied</span>
+                                </div>
+                            </div>
+                            <div class="table-grid" id="table-grid-container" style="margin-top: 10px;">
+                                <!-- Dynamic tables -->
+                            </div>
+                        </div>
+
+                        <div class="pos-items glass-panel">
+                            <div class="search-bar">
+                                <i class="fa-solid fa-search"></i>
+                                <input type="text" id="pos-search" placeholder="Type anywhere to search items...">
+                            </div>
+                            <div class="item-grid" id="pos-item-grid">
+                                <!-- Dynamic items -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Pane: Order Type + Cart -->
+                    <div class="pos-right-pane">
+                        <div class="glass-panel" style="padding: 20px;">
+                            <div class="order-type-selector" style="margin-bottom: 0;">
+                                <button class="order-type-btn active" onclick="setOrderType('DINE_IN', this)">
+                                    <i class="fa-solid fa-utensils"></i>
+                                    <span>Dine-In</span>
+                                </button>
+                                <button class="order-type-btn" onclick="setOrderType('TAKEAWAY', this)">
+                                    <i class="fa-solid fa-bag-shopping"></i>
+                                    <span>Takeaway</span>
+                                </button>
+                                <button class="order-type-btn" onclick="setOrderType('COUNTER', this)">
+                                    <i class="fa-solid fa-bolt"></i>
+                                    <span>Quick</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="pos-cart glass-panel">
+                            <div id="dine-in-table-info" style="display: none; margin-bottom: 15px; background: rgba(99, 102, 241, 0.1); padding: 12px; border-radius: 12px; border: 1px solid var(--accent-color); display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <span style="font-size: 11px; color: var(--text-secondary); display: block;">Active Table</span>
+                                    <span id="current-table-name" style="font-size: 16px; font-weight: 700; color: var(--accent-color);">No Table Selected</span>
+                                </div>
+                            </div>
+
+
+                            <div class="cart-items" id="cart-items">
+                                <!-- Dynamic content -->
+                            </div>
+
+                            <div class="cart-summary">
+                                <div class="summary-row">
+                                    <span>Subtotal</span>
+                                    <span id="cart-subtotal">₹0</span>
+                                </div>
+                                <div class="summary-row" style="margin-bottom: 10px;">
+                                    <span style="display: flex; align-items: center; gap: 8px;">
+                                        Discount
+                                        <div class="discount-toggle" style="display: flex; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 2px;">
+                                            <label style="margin: 0; cursor: pointer; padding: 2px 8px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 3px;">
+                                                <input type="radio" name="discount-type" value="amount" checked onchange="calculateTotal()" style="width: auto; margin: 0;"> ₹
+                                            </label>
+                                            <label style="margin: 0; cursor: pointer; padding: 2px 8px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 3px;">
+                                                <input type="radio" name="discount-type" value="percent" onchange="calculateTotal()" style="width: auto; margin: 0;"> %
+                                            </label>
+                                        </div>
+                                    </span>
+                                    <input type="number" id="cart-discount" min="0" placeholder="0" value="0" oninput="if(this.value < 0) this.value = 0; calculateTotal();" style="width: 80px; text-align: right; padding: 4px; border-radius: 4px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.3); color: white;">
+                                </div>
+                                <div class="summary-row" style="margin-bottom: 10px; font-size: 13px; color: var(--text-secondary);">
+                                    <span>Round Off</span>
+                                    <span id="cart-roundoff">₹0.00</span>
+                                </div>
+                                
+                                <div id="advance-paid-info" style="display: none; margin-bottom: 10px; padding: 8px; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border: 1px dashed var(--warning-color); text-align: center;">
+                                    <span style="color: var(--warning-color); font-size: 13px; font-weight: 600;">Advance Paid: <span id="advance-amount-display">₹0</span></span>
+                                </div>
+
+                                <div class="summary-row total">
+                                    <span id="cart-total-label">Total</span>
+                                    <span id="cart-total">₹0</span>
+                                </div>
+
+                                <div id="refund-info" style="display: none; margin-top: 10px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid var(--success-color); text-align: center;">
+                                    <span style="color: var(--success-color); font-size: 14px; font-weight: 700;">Refund: <span id="refund-amount-display">₹0</span></span>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+                                    <div style="display: flex; gap: 10px; width: 100%;">
+                                        <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; margin: 0; padding: 8px; border-radius: 6px; background: rgba(255,255,255,0.05); font-size: 13px;">
+                                            <input type="radio" name="payment-mode" value="CASH" checked style="width: auto; margin: 0;" onchange="toggleSplitPayment()"> Cash
+                                        </label>
+                                        <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; margin: 0; padding: 8px; border-radius: 6px; background: rgba(255,255,255,0.05); font-size: 13px;">
+                                            <input type="radio" name="payment-mode" value="UPI" style="width: auto; margin: 0;" onchange="toggleSplitPayment()"> UPI
+                                        </label>
+                                        <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; margin: 0; padding: 8px; border-radius: 6px; background: rgba(255,255,255,0.05); font-size: 13px;">
+                                            <input type="radio" name="payment-mode" value="BOTH" style="width: auto; margin: 0;" onchange="toggleSplitPayment()"> Split
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div id="split-payment-fields" style="display: none; margin-bottom: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+                                    <div style="display: flex; gap: 10px;">
+                                        <div style="flex: 1;">
+                                            <label style="font-size: 11px; color: var(--text-secondary);">Cash</label>
+                                            <input type="number" id="split-cash-amount" min="0" oninput="if(this.value < 0) this.value = 0;" placeholder="0" style="padding: 6px; width: 100%; border-radius: 4px;">
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <label style="font-size: 11px; color: var(--text-secondary);">UPI</label>
+                                            <input type="number" id="split-upi-amount" min="0" oninput="if(this.value < 0) this.value = 0;" placeholder="0" style="padding: 6px; width: 100%; border-radius: 4px;">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="dine-in-controls" style="display: none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                    <button class="btn-primary" style="background: var(--warning-color); border: none; padding: 10px; font-size: 13px;" onclick="openAdvanceModal()">
+                                        <i class="fa-solid fa-hand-holding-dollar"></i> Advance
+                                    </button>
+                                    <button class="btn-primary" style="background: var(--accent-color); border: none; padding: 10px; font-size: 13px;" onclick="holdOrder()">
+                                        <i class="fa-solid fa-clock"></i> Hold/KOT
+                                    </button>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px;">
+                                    <button class="btn-success" style="padding: 14px;" onclick="processSale()">
+                                        <i class="fa-solid fa-check"></i> <span>Complete Sale</span>
+                                    </button>
+                                    <button class="btn-danger" style="padding: 14px;" onclick="newBill()">
+                                        <i class="fa-solid fa-rectangle-xmark"></i> <span>Cancel</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings View -->
+            <section id="settings" class="view-section hidden">
+                <header>
+                    <h1>System Settings</h1>
+                    <p>Configure your restaurant layout and preferences</p>
+                </header>
+                <div class="glass-panel mt-4" style="max-width: 600px; padding: 30px;">
+                    <h2 style="margin-bottom: 20px; font-size: 20px; color: var(--accent-color);">Table Configuration</h2>
+                    <div class="form-group">
+                        <label>Total Number of Tables</label>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <button class="qty-btn" style="width: 40px; height: 40px; font-size: 18px;" onclick="adjustTableCount(-1)"><i class="fa-solid fa-minus"></i></button>
+                            <input type="number" id="setting-table-count" readonly style="width: 100px; text-align: center; font-size: 24px; font-weight: 700; background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border);" value="12">
+                            <button class="qty-btn" style="width: 40px; height: 40px; font-size: 18px;" onclick="adjustTableCount(1)"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 13px; color: var(--text-secondary);">Increasing or decreasing tables will update the Dine-In grid immediately.</p>
+                    </div>
+                    <button class="btn-primary mt-4" onclick="saveSettings()">Save Settings</button>
+                </div>
+            </section>
+
+            <!-- History View -->
+            <section id="history" class="view-section hidden">
+                <header>
+                    <h1>Sales History</h1>
+                    <p>Complete record of all transactions</p>
+                </header>
+                <!-- Sales Chart (Calendar) -->
+                <div class="glass-panel mt-4">
+                    <h2 style="padding: 20px; font-size: 18px; border-bottom: 1px solid var(--panel-border);">Sales
+                        Chart</h2>
+                    <div id="calendar-wrapper" style="padding: 20px;">
+                        <!-- Calendar will go here -->
+                    </div>
+                </div>
+
+                <!-- All Transactions -->
+                <div class="glass-panel mt-4">
+                    <h2 style="padding: 20px; font-size: 18px; border-bottom: 1px solid var(--panel-border);">All
+                        Transactions</h2>
+                    <div class="table-container">
+                        <table id="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date & Time</th>
+                                    <th>Items Details</th>
+                                    <th>Payment</th>
+                                    <th>Total Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="addItemModal" class="modal">
+        <div class="modal-content glass-panel">
+            <span class="close-btn" onclick="closeModal('addItemModal')">&times;</span>
+            <h2 id="modal-title">Add New Item</h2>
+            <form id="item-form" class="mt-4">
+                <input type="hidden" id="item-id">
+                <div class="form-group">
+                    <label>Item Name</label>
+                    <input type="text" id="item-name" required placeholder="e.g. Paneer Butter Masala">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="item-category" required>
+                        <option value="Main Course">Main Course</option>
+                        <option value="Starter">Starter</option>
+                        <option value="Beverage">Beverage</option>
+                        <option value="Dessert">Dessert</option>
+                        <option value="Raw Material">Raw Material</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price (₹)</label>
+                        <input type="number" id="item-price" required min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity in Stock</label>
+                        <input type="number" id="item-quantity" required min="0">
+                    </div>
+                </div>
+                <div class="form-group mt-2">
+                    <label>Low Stock Alert At (Min Quantity)</label>
+                    <input type="number" id="item-low-stock" required min="1" value="5">
+                </div>
+                <button type="submit" class="btn-primary full-width mt-2">Save Item</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Restock Modal -->
+    <div id="restockModal" class="modal">
+        <div class="modal-content glass-panel">
+            <span class="close-btn" onclick="closeModal('restockModal')">&times;</span>
+            <h2>Add Stock</h2>
+            <form id="restock-form" class="mt-4">
+                <input type="hidden" id="restock-item-id">
+                <p id="restock-item-name" style="margin-bottom: 16px; font-weight: 600; color: var(--accent-color);">
+                </p>
+                <div class="form-group">
+                    <label>Quantity to Add</label>
+                    <input type="number" id="restock-quantity" required min="1" placeholder="e.g. 10">
+                </div>
+                <button type="submit" class="btn-primary full-width mt-2">Add to Inventory</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div id="receiptModal" class="modal">
+        <div class="modal-content glass-panel receipt-content">
+            <span class="close-btn" onclick="closeModal('receiptModal')">&times;</span>
+            <h2 style="text-align: center;"><i class="fa-solid fa-circle-check"
+                    style="color: var(--success-color);"></i> Sale Successful</h2>
+            <div id="receipt-details" class="mt-4">
+                <!-- Receipt logic -->
+            </div>
+            <button class="btn-primary full-width mt-4" onclick="closeModal('receiptModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- Stock List Modal -->
+    <div id="stockListModal" class="modal">
+        <div class="modal-content glass-panel">
+            <span class="close-btn" onclick="closeModal('stockListModal')">&times;</span>
+            <h2 id="stock-list-title">Items List</h2>
+            <div class="table-container mt-4" style="max-height: 400px; overflow-y: auto; padding: 0;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stock-list-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Sales Modal -->
+    <div id="todaySalesModal" class="modal">
+        <div class="modal-content glass-panel">
+            <span class="close-btn" onclick="closeModal('todaySalesModal')">&times;</span>
+            <h2>Today's Sale Items</h2>
+            <div class="table-container mt-4" style="max-height: 400px; overflow-y: auto; padding: 0;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Qty Sold</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="today-sales-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Grid Modal -->
+    <div id="tableGridModal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 800px;">
+            <span class="close-btn" onclick="closeModal('tableGridModal')">&times;</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Select Table (Dine-In)</h2>
+                <div style="display: flex; gap: 15px; font-size: 12px;">
+                    <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,255,255,0.1); border: 1px solid var(--panel-border);"></div> Available</span>
+                    <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(16, 185, 129, 0.2); border: 1px solid var(--success-color);"></div> Occupied / Held</span>
+                </div>
+            </div>
+            <div class="table-grid" id="table-grid-container">
+                <!-- Dynamic tables -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Advance Payment Modal -->
+    <div id="advanceModal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 400px;">
+            <span class="close-btn" onclick="closeModal('advanceModal')">&times;</span>
+            <h2>Record Advance Payment</h2>
+            <p id="advance-table-name" style="margin: 10px 0; color: var(--accent-color); font-weight: 600;"></p>
+            <div class="form-group mt-4">
+                <label>Advance Amount (₹)</label>
+                <input type="number" id="advance-amount-input" placeholder="Enter amount..." style="font-size: 20px; text-align: center; font-weight: 700;">
+            </div>
+            <div class="form-group">
+                <label>Payment Mode</label>
+                <select id="advance-payment-mode">
+                    <option value="CASH">Cash</option>
+                    <option value="UPI">UPI</option>
+                </select>
+            </div>
+            <button class="btn-success full-width" onclick="saveAdvancePayment()">Confirm Advance</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
