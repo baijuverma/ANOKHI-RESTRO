@@ -1589,30 +1589,37 @@ window.deleteSale = async function(saleId) {
 
 // --- Expenses Logic ---
 window.updateExpenseSubCats = function() {
-    const mainCat = document.getElementById('expense-main-cat').value;
+    const mainCatRaw = document.getElementById('expense-main-cat').value;
+    const mainCat = mainCatRaw.trim().toLowerCase();
     const subCatInput = document.getElementById('expense-sub-cat');
     const subCatList = document.getElementById('sub-cat-list');
     
-    // Clear sub category whenever main category changes
-    subCatInput.value = '';
+    // Clear and hide sub category initially
     subCatList.innerHTML = '';
 
     const subCats = {
-        'Staff & Operation': ['Salary', 'Advance', 'Rent', 'Electricity Bill', 'Water Bill', 'Maintenance'],
-        'Material': ['Groceries', 'Vegetables', 'Gas Cylinder', 'Packaging', 'Meat/Chicken', 'Dairy Products']
+        'staff': ['Salary', 'Advance', 'Rent', 'Electricity Bill', 'Water Bill', 'Maintenance'],
+        'material': ['Groceries', 'Vegetables', 'Gas Cylinder', 'Packaging', 'Meat/Chicken', 'Dairy Products']
     };
 
-    if (mainCat && subCats[mainCat]) {
+    // Flexible matching
+    let matchedKey = null;
+    if (mainCat.includes('staff')) matchedKey = 'staff';
+    else if (mainCat.includes('material')) matchedKey = 'material';
+
+    if (matchedKey) {
         subCatInput.disabled = false;
-        subCats[mainCat].forEach(sub => {
+        subCats[matchedKey].forEach(sub => {
             const opt = document.createElement('option');
             opt.value = sub;
             subCatList.appendChild(opt);
         });
     } else {
         subCatInput.disabled = true;
+        subCatInput.value = ''; // Only clear if invalid
     }
 }
+
 
 
 
