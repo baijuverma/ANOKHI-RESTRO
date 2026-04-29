@@ -33,13 +33,13 @@ async function syncFromSupabase() {
     if (!db) { console.warn('Supabase unavailable, skipping sync.'); return; }
     try {
         const { data: invData } = await db.from('inventory').select('*');
-        if (invData) {
+        if (invData && invData.length > 0) {
             inventory = invData;
             localStorage.setItem('anokhi_inventory', JSON.stringify(inventory));
         }
 
         const { data: salesData } = await db.from('sales_history').select('*').order('date', { ascending: false });
-        if (salesData) {
+        if (salesData && salesData.length > 0) {
             salesHistory = salesData;
             localStorage.setItem('anokhi_sales', JSON.stringify(salesHistory));
         }
@@ -52,10 +52,11 @@ async function syncFromSupabase() {
                 return dbTable ? { ...t, ...dbTable } : t;
             });
             localStorage.setItem('anokhi_tables', JSON.stringify(tables));
+    localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
         }
 
         const { data: expData } = await db.from('expenses').select('*').order('date', { ascending: false });
-        if (expData) {
+        if (expData && expData.length > 0) {
             expensesHistory = expData;
             localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
         }
@@ -267,6 +268,7 @@ async function saveData() {
     localStorage.setItem('anokhi_inventory', JSON.stringify(inventory));
     localStorage.setItem('anokhi_sales', JSON.stringify(salesHistory));
     localStorage.setItem('anokhi_tables', JSON.stringify(tables));
+    localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
 
     // Async push to Supabase
     if (!db) return;
@@ -288,6 +290,8 @@ async function saveData() {
         }
 
         // For sales history, we usually only add new ones, but upsert is safer if we allow edits
+        if (expensesHistory.length > 0) { await db.from('expenses').upsert(expensesHistory); }
+
         if (salesHistory.length > 0) {
             await db.from('sales_history').upsert(salesHistory.map(s => ({
                 id: s.id,
@@ -1492,15 +1496,7 @@ window.handleExpenseSubmit = async function(e) {
     };
 
     expensesHistory.unshift(newExpense);
-    localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
-
-    if (db) {
-        try {
-            await db.from('expenses').insert(newExpense);
-        } catch(err) {
-            console.error('Supabase Expense Error:', err);
-        }
-    }
+    saveData();
 
     e.target.reset();
     renderExpenses();
@@ -1535,7 +1531,7 @@ function renderExpenses() {
 window.deleteExpense = async function(id) {
     if(confirm('Are you sure you want to delete this expense?')) {
         expensesHistory = expensesHistory.filter(e => e.id !== id);
-        localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
+        saveData();
         
         if(db) {
             try {
