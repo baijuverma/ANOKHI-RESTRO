@@ -1,7 +1,12 @@
 // Supabase Configuration
 const SUPABASE_URL = 'https://fhshckrdkasopfneujmw.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_qFlDlQChYsm7WobmTOmc6w_Wkb3XSBl';
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let db = null;
+try {
+    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch(e) {
+    console.warn('Supabase not loaded, running in offline mode:', e);
+}
 
 // Data Structures (Initialized with local cache, will be updated from Supabase)
 let inventory = JSON.parse(localStorage.getItem('anokhi_inventory')) || [];
@@ -19,6 +24,7 @@ let tables = JSON.parse(localStorage.getItem('anokhi_tables')) || Array.from({le
 
 // Initial Data Sync from Supabase
 async function syncFromSupabase() {
+    if (!db) { console.warn('Supabase unavailable, skipping sync.'); return; }
     try {
         const { data: invData } = await db.from('inventory').select('*');
         if (invData) {
@@ -202,6 +208,7 @@ async function saveData() {
     localStorage.setItem('anokhi_tables', JSON.stringify(tables));
 
     // Async push to Supabase
+    if (!db) return;
     try {
         // Upsert inventory
         if (inventory.length > 0) {
