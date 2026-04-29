@@ -501,7 +501,7 @@ input:focus, select:focus {
 .order-type-selector {
     display: flex;
     gap: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
 }
 
 .order-type-btn {
