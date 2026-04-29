@@ -140,6 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (cart.length > 0) {
                 processSale();
             }
+        } else if (e.key === 'F4') {
+            e.preventDefault();
+            if (selectedOrderType === 'DINE_IN') openAdvanceModal();
+        } else if (e.key === 'F8') {
+            e.preventDefault();
+            if (selectedOrderType === 'DINE_IN') holdOrder();
         }
     });
 });
