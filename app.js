@@ -686,7 +686,9 @@ function renderPOSItems(search = '') {
     }
 
     filtered.forEach(item => {
-        const cartItem = cart.find(c => c.id === item.id);
+        // Try to find in cart by ID first, then by Name (fallback for edited sales)
+        const cartItem = cart.find(c => c.id === item.id) || 
+                         cart.find(c => c.name.trim().toLowerCase() === item.name.trim().toLowerCase());
         const inCart = !!cartItem;
         
         const div = document.createElement('div');
@@ -1873,11 +1875,11 @@ window.editSale = function(id) {
         if (!confirm('Current cart items will be cleared. Do you want to edit this sale?')) return;
     }
     
-    // Load sale data into cart and try to match with current inventory IDs by name
+    // Load sale data into cart and try to match with current inventory items by name
     cart = sale.items.map(saleItem => {
-        const invItem = inventory.find(i => i.name.toLowerCase() === saleItem.name.toLowerCase());
+        const invItem = inventory.find(i => i.name.trim().toLowerCase() === saleItem.name.trim().toLowerCase());
         if (invItem) {
-            // Use the current inventory ID so it links correctly to UI cards
+            // Priority 1: Link to current inventory ID for full UI functionality
             return { ...saleItem, id: invItem.id };
         }
         return { ...saleItem };
