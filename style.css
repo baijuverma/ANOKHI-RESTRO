@@ -429,52 +429,49 @@ button, button * {
     align-items: flex-end;
 }
 
-/* Custom Radio Group */
-.radio-group {
+/* Segmented Control (Modern Radio) */
+.segmented-control {
     display: flex;
-    gap: 8px;
     background: rgba(0, 0, 0, 0.2);
     padding: 4px;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 1px solid var(--panel-border);
-    height: 45px;
-    align-items: center;
+    gap: 4px;
+    width: 100%;
 }
 
-.radio-item {
-    flex: 1;
-    position: relative;
-    height: 100%;
-}
-
-.radio-item input {
+.segmented-control input[type="radio"] {
     position: absolute;
     opacity: 0;
-    cursor: pointer;
-    height: 0; width: 0;
+    width: 0;
+    height: 0;
 }
 
-.radio-item label {
-    display: flex;
+.segmented-control label {
+    flex: 1;
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    height: 100%;
-    border-radius: 6px;
+    padding: 10px 4px;
     cursor: pointer;
-    font-size: 12px;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-secondary);
-    transition: all 0.2s ease;
-    margin: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
 }
 
-.radio-item input:checked + label {
-    background: var(--accent-color);
-    color: white;
+.segmented-control input[type="radio"]:checked + label {
+    background: var(--accent-color) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-.radio-item:hover label:not(.radio-item input:checked + label) {
-    background: rgba(255, 255, 255, 0.05);
+.segmented-control label:hover:not(.segmented-control input[type="radio"]:checked + label) {
+    background: rgba(255, 255, 255, 0.05) !important;
 }
 
 label {
