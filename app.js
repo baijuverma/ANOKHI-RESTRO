@@ -46,8 +46,9 @@ async function syncFromSupabase() {
             localStorage.setItem('anokhi_inventory', JSON.stringify(inventory));
         }
 
-        const { data: salesData } = await db.from('sales_history').select('*').order('date', { ascending: false });
-        if (salesData && salesData.length > 0) {
+        // Fetch only the latest 20 sales initially for better performance
+        const { data: salesData } = await db.from('sales_history').select('*').order('date', { ascending: false }).range(0, 19);
+        if (salesData) {
             salesHistory = salesData;
             localStorage.setItem('anokhi_sales', JSON.stringify(salesHistory));
         }
@@ -1448,7 +1449,7 @@ function renderHistory() {
         if (mProfitCard) mProfitCard.style.borderLeft = `4px solid ${mNetProfit >= 0 ? "#22c55e" : "#ef4444"}`;
     }
 
-    const sortedHistory = [...salesHistory].reverse();
+    const sortedHistory = salesHistory; // salesHistory is already ordered from DB
 
     sortedHistory.forEach(sale => {
         const itemsStr = sale.items.map(i => `${i.name} (x${i.cartQty})`).join(', ');
@@ -1486,6 +1487,65 @@ function renderHistory() {
         `;
         tbody.appendChild(tr);
     });
+
+    // Add Load More button if there are potentially more records
+    if (salesHistory.length >= 20) {
+        const loadMoreRow = document.createElement('tr');
+        loadMoreRow.id = 'load-more-row';
+        loadMoreRow.innerHTML = `
+            <td colspan="6" style="text-align: center; padding: 20px;">
+                <button id="load-more-btn" class="btn-primary" style="background: rgba(255,255,255,0.05); border: 1px solid var(--panel-border); width: 200px;" onclick="loadMoreSales()">
+                    <i class="fa-solid fa-arrow-down"></i> Load More Transactions
+                </button>
+            </td>
+        `;
+        tbody.appendChild(loadMoreRow);
+    }
+}
+
+let isLoadingMore = false;
+window.loadMoreSales = async function() {
+    if (isLoadingMore || !db) return;
+    isLoadingMore = true;
+    
+    const btn = document.getElementById('load-more-btn');
+    if (btn) {
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+        btn.disabled = true;
+    }
+
+    try {
+        const start = salesHistory.length;
+        const end = start + 19;
+        
+        const { data, error } = await db.from('sales_history')
+            .select('*')
+            .order('date', { ascending: false })
+            .range(start, end);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+            salesHistory = [...salesHistory, ...data];
+            // No need to re-render everything, just append to table
+            renderHistory(); 
+        } else {
+            // No more data
+            if (btn) btn.innerHTML = 'No more transactions';
+            setTimeout(() => {
+                const row = document.getElementById('load-more-row');
+                if (row) row.remove();
+            }, 2000);
+        }
+    } catch (err) {
+        console.error('Load More Error:', err);
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error Loading';
+            btn.disabled = false;
+        }
+    } finally {
+        isLoadingMore = false;
+    }
 }
 
 // Attach globally for inline onclick
