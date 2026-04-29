@@ -1385,8 +1385,8 @@ window.updateExpenseSubCats = function() {
     subCatSelect.innerHTML = '<option value="">Select Sub-Category</option>';
 
     const subCats = {
-        'Staff & Operation': ['Salary', 'Advance', 'Rent', 'Bill'],
-        'Material': ['Groceries', 'Vegetable', 'Gas', 'Packaging']
+        'Staff & Operation': ['Salary', 'Advance', 'Rent', 'Bill', 'Other'],
+        'Material': ['Groceries', 'Vegetable', 'Gas', 'Packaging', 'Other']
     };
 
     if (mainCat && subCats[mainCat]) {
@@ -1397,15 +1397,35 @@ window.updateExpenseSubCats = function() {
             subCatSelect.appendChild(opt);
         });
     }
+    toggleCustomSubCat(); // Reset custom field on main cat change
+}
+
+window.toggleCustomSubCat = function() {
+    const subCat = document.getElementById('expense-sub-cat').value;
+    const customGroup = document.getElementById('custom-sub-cat-group');
+    const customInput = document.getElementById('expense-custom-sub-cat');
+    
+    if (subCat === 'Other') {
+        customGroup.style.display = 'block';
+        customInput.required = true;
+    } else {
+        customGroup.style.display = 'none';
+        customInput.required = false;
+        customInput.value = '';
+    }
 }
 
 window.handleExpenseSubmit = async function(e) {
     e.preventDefault();
     const mainCat = document.getElementById('expense-main-cat').value;
-    const subCat = document.getElementById('expense-sub-cat').value;
+    let subCat = document.getElementById('expense-sub-cat').value;
     const amount = parseFloat(document.getElementById('expense-amount').value);
     const mode = document.getElementById('expense-payment-mode').value;
     const desc = document.getElementById('expense-desc').value;
+
+    if (subCat === 'Other') {
+        subCat = document.getElementById('expense-custom-sub-cat').value || 'Other';
+    }
 
     const newExpense = {
         id: Date.now().toString(),

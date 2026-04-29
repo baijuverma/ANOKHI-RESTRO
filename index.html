@@ -185,9 +185,13 @@
                             </div>
                             <div class="form-group">
                                 <label>Sub Category</label>
-                                <select id="expense-sub-cat" required>
+                                <select id="expense-sub-cat" onchange="toggleCustomSubCat()" required>
                                     <option value="">Select Sub-Category</option>
                                 </select>
+                            </div>
+                            <div class="form-group" id="custom-sub-cat-group" style="display: none;">
+                                <label>Custom Sub-Category Name</label>
+                                <input type="text" id="expense-custom-sub-cat" placeholder="Enter name...">
                             </div>
                             <div class="form-group">
                                 <label>Amount (₹)</label>
