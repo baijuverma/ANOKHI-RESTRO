@@ -203,24 +203,23 @@
                         <h1>Expenses Tracker</h1>
                         <p>Track your staff, operations, and material costs</p>
                     </div>
+                    <div style="display: flex; gap: 12px;">
+                        <div class="stat-card glass-panel" style="padding: 10px 20px; min-width: 180px;">
+                            <div class="stat-icon" style="width: 35px; height: 35px; font-size: 16px;"><i class="fa-solid fa-users-gear"></i></div>
+                            <div class="stat-details">
+                                <h3 style="font-size: 11px;">Staff & Operations</h3>
+                                <p id="total-staff-expenses" style="font-size: 18px;">₹0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-panel" style="padding: 10px 20px; min-width: 180px;">
+                            <div class="stat-icon" style="width: 35px; height: 35px; font-size: 16px;"><i class="fa-solid fa-cart-flatbed"></i></div>
+                            <div class="stat-details">
+                                <h3 style="font-size: 11px;">Material Costs</h3>
+                                <p id="total-material-expenses" style="font-size: 18px;">₹0</p>
+                            </div>
+                        </div>
+                    </div>
                 </header>
-
-                <div class="stats-grid mt-4">
-                    <div class="stat-card glass-panel">
-                        <div class="stat-icon"><i class="fa-solid fa-users-gear"></i></div>
-                        <div class="stat-details">
-                            <h3>Staff & Operations</h3>
-                            <p id="total-staff-expenses">₹0</p>
-                        </div>
-                    </div>
-                    <div class="stat-card glass-panel">
-                        <div class="stat-icon"><i class="fa-solid fa-cart-flatbed"></i></div>
-                        <div class="stat-details">
-                            <h3>Material Costs</h3>
-                            <p id="total-material-expenses">₹0</p>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="glass-panel mt-4" style="padding: 24px;">
                     <form id="expense-form" class="expense-entry-form" onsubmit="handleExpenseSubmit(event)">

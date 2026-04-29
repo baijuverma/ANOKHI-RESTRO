@@ -1590,12 +1590,16 @@ window.deleteSale = async function(saleId) {
 // --- Expenses Logic ---
 window.updateExpenseSubCats = function() {
     const mainCat = document.getElementById('expense-main-cat').value;
+    const subCatInput = document.getElementById('expense-sub-cat');
     const subCatList = document.getElementById('sub-cat-list');
+    
+    // Clear sub category whenever main category changes
+    subCatInput.value = '';
     subCatList.innerHTML = '';
 
     const subCats = {
-        'Staff & Operation': ['Salary', 'Advance', 'Rent', 'Bill'],
-        'Material': ['Groceries', 'Vegetable', 'Gas', 'Packaging']
+        'Staff & Operation': ['Salary', 'Advance', 'Rent', 'Electricity Bill', 'Water Bill', 'Maintenance'],
+        'Material': ['Groceries', 'Vegetables', 'Gas Cylinder', 'Packaging', 'Meat/Chicken', 'Dairy Products']
     };
 
     if (mainCat && subCats[mainCat]) {
@@ -1606,6 +1610,7 @@ window.updateExpenseSubCats = function() {
         });
     }
 }
+
 
 window.handleExpenseSubmit = async function(e) {
     e.preventDefault();
