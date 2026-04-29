@@ -1382,22 +1382,40 @@ window.deleteSale = async function(saleId) {
 window.updateExpenseSubCats = function() {
     const mainCat = document.getElementById('expense-main-cat').value;
     const subCatSelect = document.getElementById('expense-sub-cat');
+    const customMainGroup = document.getElementById('custom-main-cat-group');
+    const customMainInput = document.getElementById('expense-custom-main-cat');
+
     subCatSelect.innerHTML = '<option value="">Select Sub-Category</option>';
 
-    const subCats = {
-        'Staff & Operation': ['Salary', 'Advance', 'Rent', 'Bill', 'Other'],
-        'Material': ['Groceries', 'Vegetable', 'Gas', 'Packaging', 'Other']
-    };
+    if (mainCat === 'Other') {
+        customMainGroup.style.display = 'block';
+        customMainInput.required = true;
+        // For 'Other' main category, we default to 'Other' sub-category too
+        const opt = document.createElement('option');
+        opt.value = 'Other';
+        opt.textContent = 'Other';
+        subCatSelect.appendChild(opt);
+        subCatSelect.value = 'Other';
+    } else {
+        customMainGroup.style.display = 'none';
+        customMainInput.required = false;
+        customMainInput.value = '';
 
-    if (mainCat && subCats[mainCat]) {
-        subCats[mainCat].forEach(sub => {
-            const opt = document.createElement('option');
-            opt.value = sub;
-            opt.textContent = sub;
-            subCatSelect.appendChild(opt);
-        });
+        const subCats = {
+            'Staff & Operation': ['Salary', 'Advance', 'Rent', 'Bill', 'Other'],
+            'Material': ['Groceries', 'Vegetable', 'Gas', 'Packaging', 'Other']
+        };
+
+        if (mainCat && subCats[mainCat]) {
+            subCats[mainCat].forEach(sub => {
+                const opt = document.createElement('option');
+                opt.value = sub;
+                opt.textContent = sub;
+                subCatSelect.appendChild(opt);
+            });
+        }
     }
-    toggleCustomSubCat(); // Reset custom field on main cat change
+    toggleCustomSubCat();
 }
 
 window.toggleCustomSubCat = function() {
@@ -1417,11 +1435,15 @@ window.toggleCustomSubCat = function() {
 
 window.handleExpenseSubmit = async function(e) {
     e.preventDefault();
-    const mainCat = document.getElementById('expense-main-cat').value;
+    let mainCat = document.getElementById('expense-main-cat').value;
     let subCat = document.getElementById('expense-sub-cat').value;
     const amount = parseFloat(document.getElementById('expense-amount').value);
     const mode = document.getElementById('expense-payment-mode').value;
     const desc = document.getElementById('expense-desc').value;
+
+    if (mainCat === 'Other') {
+        mainCat = document.getElementById('expense-custom-main-cat').value || 'Other';
+    }
 
     if (subCat === 'Other') {
         subCat = document.getElementById('expense-custom-sub-cat').value || 'Other';
