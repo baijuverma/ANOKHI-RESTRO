@@ -328,19 +328,24 @@
                         </div>
 
                         <div class="pos-items glass-panel">
-                            <!-- Tables Toggle Arrow (Moved here) -->
-                            <div class="tables-curtain-toggle top-toggle" onclick="toggleTablesCurtain()" title="Expand/Collapse Tables">
-                                <i id="tables-curtain-icon" class="fa-solid fa-chevron-up"></i>
-                            </div>
-                            <div style="display:flex; align-items:center; gap:10px; padding-bottom:6px; flex-wrap:wrap;">
-                                <div class="search-bar" style="flex:1; min-width:140px; max-width:320px; margin:0;">
+                            <!-- Integrated Header Row: Search + Toggle + Filters -->
+                            <div class="items-header-row" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px;">
+                                <!-- Search Bar (Left) -->
+                                <div class="search-bar" style="flex: 1; max-width: 220px; margin: 0;">
                                     <i class="fa-solid fa-search"></i>
-                                    <input type="text" id="pos-search" placeholder="Search items...">
+                                    <input type="text" id="pos-search" placeholder="Search...">
                                 </div>
-                                <div style="display:flex; gap:6px;">
-                                    <button id="pos-filter-all" onclick="setPOSFilter('all')" style="padding:5px 11px; border-radius:20px; border:2px solid var(--accent-color); background:var(--accent-color); color:white; cursor:pointer; font-size:11px; font-weight:700;">All</button>
-                                    <button id="pos-filter-veg" onclick="setPOSFilter('veg')" style="padding:5px 11px; border-radius:20px; border:2px solid #22c55e; background:transparent; color:#22c55e; cursor:pointer; font-size:11px; font-weight:700;">&#9632; Veg</button>
-                                    <button id="pos-filter-nonveg" onclick="setPOSFilter('nonveg')" style="padding:5px 11px; border-radius:20px; border:2px solid #ef4444; background:transparent; color:#ef4444; cursor:pointer; font-size:11px; font-weight:700;">&#9632; Non-Veg</button>
+
+                                <!-- Tables Toggle Arrow (Center) -->
+                                <div class="tables-curtain-toggle top-toggle" style="margin: 0; padding: 0; border: none; flex: 0 0 auto;" onclick="toggleTablesCurtain()" title="Expand/Collapse Tables">
+                                    <i id="tables-curtain-icon" class="fa-solid fa-chevron-up"></i>
+                                </div>
+
+                                <!-- Filters (Right) -->
+                                <div style="display: flex; gap: 4px; flex: 1; justify-content: flex-end;">
+                                    <button id="pos-filter-all" onclick="setPOSFilter('all')" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--accent-color); background: var(--accent-color); color: white; cursor: pointer; font-size: 11px; font-weight: 700;">All</button>
+                                    <button id="pos-filter-veg" onclick="setPOSFilter('veg')" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #22c55e; background: transparent; color: #22c55e; cursor: pointer; font-size: 11px; font-weight: 700;">Veg</button>
+                                    <button id="pos-filter-nonveg" onclick="setPOSFilter('nonveg')" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #ef4444; background: transparent; color: #ef4444; cursor: pointer; font-size: 11px; font-weight: 700;">Non-Veg</button>
                                 </div>
                             </div>
                             <div class="item-grid" id="pos-item-grid">
