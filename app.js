@@ -78,7 +78,8 @@ const navItems = document.querySelectorAll('.nav-item');
 // Initialize App
 window.checkLogin = function() {
     const pwd = document.getElementById('login-password').value;
-    if (pwd === '8540') {
+    const adminPassword = localStorage.getItem('anokhi_admin_pwd') || '8540';
+    if (pwd === adminPassword) {
         document.getElementById('login-screen').style.display = 'none';
         // Password correct, proceed
     } else {
@@ -1504,4 +1505,35 @@ window.clearInput = function(id) {
         // Trigger change event if needed (like for main cat updating sub cats)
         input.dispatchEvent(new Event('change'));
     }
+}
+
+window.openResetModal = function() {
+    openModal('reset-password-modal');
+}
+
+window.handlePasswordReset = function() {
+    const dob = document.getElementById('reset-dob').value;
+    const newPwd = document.getElementById('new-password').value;
+    const confirmPwd = document.getElementById('confirm-new-password').value;
+    const adminDoB = localStorage.getItem('anokhi_admin_dob') || '1995-01-01';
+
+    if (!dob || !newPwd || !confirmPwd) {
+        alert('Please fill all fields.');
+        return;
+    }
+
+    if (dob !== adminDoB) {
+        alert('Security Check Failed: Incorrect Admin Date of Birth.');
+        return;
+    }
+
+    if (newPwd !== confirmPwd) {
+        alert('Passwords do not match!');
+        return;
+    }
+
+    localStorage.setItem('anokhi_admin_pwd', newPwd);
+    alert('Password updated successfully! You can now login with your new password.');
+    closeModal('reset-password-modal');
+    document.getElementById('login-password').focus();
 }
