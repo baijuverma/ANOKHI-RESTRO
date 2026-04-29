@@ -746,8 +746,8 @@ input:focus, select:focus {
     overflow-y: auto;
     background: #fef9c3; /* Light Standard Yellow */
     padding: 10px;
-    border-radius: 12px;
-    margin-bottom: 15px;
+    border-radius: 12px 12px 0 0; /* Flat bottom corners */
+    margin-bottom: 0; /* Removed margin */
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -800,9 +800,12 @@ input:focus, select:focus {
 }
 
 .cart-summary {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid var(--panel-border);
+    margin-top: 0; /* Removed margin */
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.02); /* Slight contrast */
+    border: 1px solid var(--panel-border);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
 }
 
 .summary-row {
