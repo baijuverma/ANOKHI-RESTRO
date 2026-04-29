@@ -751,9 +751,13 @@ window.setOrderType = function(type, btn, skipReset = false) {
         }
     }
 
-    // Always show Adv and Hold buttons for all modes
-    if (advanceBtn) advanceBtn.style.display = 'flex';
-    if (holdBtn) holdBtn.style.display = 'flex';
+    // Visibility logic for Adv and Hold buttons
+    if (advanceBtn) {
+        advanceBtn.style.display = (type === 'DINE_IN') ? 'flex' : 'none';
+    }
+    if (holdBtn) {
+        holdBtn.style.display = 'flex'; // Hold is allowed in all modes
+    }
 }
 
 window.initSettingsView = function() {
