@@ -1481,8 +1481,11 @@ function renderHistory() {
             <td>${pModeBadge}</td>
             <td style="color:var(--success-color); font-weight:bold;">${formatCurrency(sale.total)}</td>
             <td>
-                <button class="btn-primary" style="padding: 6px 12px; font-size:12px; margin-right: 5px;" onclick="viewReceipt('${sale.id}')">View</button>
-                <button class="btn-danger" style="padding: 6px 12px; font-size:12px;" onclick="deleteSale('${sale.id}')"><i class="fa-solid fa-trash"></i></button>
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn-primary" style="padding: 6px 12px; font-size:12px;" onclick="viewReceipt('${sale.id}')">View</button>
+                    <button class="btn-primary" style="padding: 6px 12px; font-size:12px; background: var(--warning-color); border: none;" onclick="editSale('${sale.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="btn-danger" style="padding: 6px 12px; font-size:12px;" onclick="deleteSale('${sale.id}')"><i class="fa-solid fa-trash"></i></button>
+                </div>
             </td>
         `;
         tbody.appendChild(tr);
@@ -1830,4 +1833,31 @@ window.toggleSidebar = function() {
     const sidebar = document.querySelector('.sidebar');
     sidebar.classList.toggle('collapsed');
 }
+
+window.editSale = function(id) {
+    const sale = salesHistory.find(s => s.id == id);
+    if (!sale) return;
+    
+    if (cart.length > 0) {
+        if (!confirm('Current cart items will be cleared. Do you want to edit this sale?')) return;
+    }
+    
+    // Load sale data into cart
+    cart = JSON.parse(JSON.stringify(sale.items)); // Deep copy
+    currentOrderType = sale.orderType || 'COUNTER';
+    activeTableId = sale.tableId || null;
+    
+    // Update UI
+    showView('pos');
+    renderCart();
+    
+    // Select correct order type button in UI
+    document.querySelectorAll('.order-type-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.innerText.toUpperCase().includes(currentOrderType)) {
+            btn.classList.add('active');
+        }
+    });
+}
+
 
