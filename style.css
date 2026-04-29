@@ -1026,3 +1026,5 @@ input[type=number] {
     opacity: 1;
     color: var(--danger-color);
 }
+
+/* Utility: force hide element */.hidden { display: none !important; }

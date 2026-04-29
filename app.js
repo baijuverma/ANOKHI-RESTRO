@@ -1509,7 +1509,7 @@ window.clearInput = function(id) {
 
 window.openResetModal = function() {
     // Reset modal to Step 1
-    document.getElementById('password-reset-fields').style.display = 'none';
+    document.getElementById('password-reset-fields').classList.add('hidden');
     document.getElementById('reset-action-btn').innerText = 'Verify Date of Birth';
     document.getElementById('reset-dob').value = '';
     document.getElementById('new-password').value = '';
@@ -1534,10 +1534,9 @@ window.handlePasswordReset = function() {
     }
 
     // If step 1 is done, show step 2
-    if (passwordFields.style.display === 'none') {
-        passwordFields.style.display = 'block';
+    if (passwordFields.classList.contains('hidden')) {
+        passwordFields.classList.remove('hidden');
         actionBtn.innerText = 'Update Password';
-        alert('Verification Successful! Please enter your new password below.');
         return;
     }
 
