@@ -98,8 +98,9 @@ nav {
 /* Main Content */
 .main-content {
     flex: 1;
-    overflow-y: auto;
-    padding-right: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevent double scrollbars */
 }
 
 .main-content::-webkit-scrollbar {
@@ -116,7 +117,10 @@ nav {
 }
 
 .view-section.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto; /* Allow scrolling for Dashboard/Inventory */
 }
 
 @keyframes fadeIn {
@@ -446,7 +450,9 @@ input:focus, select:focus {
     display: grid;
     grid-template-columns: 1fr 400px;
     gap: 20px;
-    height: calc(100vh - 120px);
+    flex: 1;
+    min-height: 0;
+    overflow: hidden; /* POS has its own scrollable panes */
 }
 
 .pos-left-pane {
@@ -469,6 +475,7 @@ input:focus, select:focus {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-height: 0;
 }
 
 .tables-section {
@@ -631,6 +638,7 @@ input:focus, select:focus {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-height: 0;
 }
 
 .pos-cart h2 {
