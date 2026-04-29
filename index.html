@@ -425,21 +425,18 @@
                                     </div>
                                 </div>
 
-                                <div id="dine-in-controls" style="display: none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                                    <button class="btn-primary" style="background: var(--warning-color); border: none; padding: 10px; font-size: 13px;" onclick="openAdvanceModal()" title="Shortcut: F4">
-                                        <i class="fa-solid fa-hand-holding-dollar"></i> Advance [F4]
+                                <div class="pos-action-buttons" style="display: flex; gap: 8px; margin-top: 10px;">
+                                    <button id="dine-in-advance-btn" class="btn-primary" style="background: var(--warning-color); border: none; padding: 10px 5px; font-size: 11px; flex: 1; display: none;" onclick="openAdvanceModal()" title="Shortcut: F4">
+                                        <i class="fa-solid fa-hand-holding-dollar"></i> Adv [F4]
                                     </button>
-                                    <button class="btn-primary" style="background: var(--accent-color); border: none; padding: 10px; font-size: 13px;" onclick="holdOrder()" title="Shortcut: F8">
+                                    <button id="dine-in-hold-btn" class="btn-primary" style="background: var(--accent-color); border: none; padding: 10px 5px; font-size: 11px; flex: 1; display: none;" onclick="holdOrder()" title="Shortcut: F8">
                                         <i class="fa-solid fa-clock"></i> Hold [F8]
                                     </button>
-                                </div>
-
-                                <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px;">
-                                    <button class="btn-success" style="padding: 14px;" onclick="processSale()" title="Shortcut: Enter">
-                                        <i class="fa-solid fa-check"></i> <span>Complete Sale [Enter]</span>
+                                    <button class="btn-success" style="padding: 10px 5px; font-size: 11px; flex: 1.5;" onclick="processSale()" title="Shortcut: Enter">
+                                        <i class="fa-solid fa-check"></i> Sale [Ent]
                                     </button>
-                                    <button class="btn-danger" style="padding: 14px;" onclick="newBill()" title="Shortcut: Esc">
-                                        <i class="fa-solid fa-rectangle-xmark"></i> <span>Cancel [Esc]</span>
+                                    <button class="btn-danger" style="padding: 10px 5px; font-size: 11px; flex: 1;" onclick="newBill()" title="Shortcut: Esc">
+                                        <i class="fa-solid fa-xmark"></i> Can [Esc]
                                     </button>
                                 </div>
                             </div>

@@ -713,13 +713,15 @@ window.setOrderType = function(type, btn) {
     btn.classList.add('active');
 
     const tableInfo = document.getElementById('dine-in-table-info');
-    const dineInControls = document.getElementById('dine-in-controls');
+    const advanceBtn = document.getElementById('dine-in-advance-btn');
+    const holdBtn = document.getElementById('dine-in-hold-btn');
     const advanceInfo = document.getElementById('advance-paid-info');
     const tablesContainer = document.getElementById('pos-tables-container');
 
     if (type === 'DINE_IN') {
         tableInfo.style.display = currentSelectedTable ? 'flex' : 'none';
-        dineInControls.style.display = 'grid';
+        if (advanceBtn) advanceBtn.style.display = 'flex';
+        if (holdBtn) holdBtn.style.display = 'flex';
         tablesContainer.style.display = 'block';
         if (currentSelectedTable) {
             const table = tables.find(t => t.id === currentSelectedTable);
@@ -727,7 +729,8 @@ window.setOrderType = function(type, btn) {
         }
     } else {
         tableInfo.style.display = 'none';
-        dineInControls.style.display = 'none';
+        if (advanceBtn) advanceBtn.style.display = 'none';
+        if (holdBtn) holdBtn.style.display = 'none';
         tablesContainer.style.display = 'none';
         advanceInfo.style.display = 'none';
         currentSelectedTable = null;

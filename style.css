@@ -727,7 +727,7 @@ input:focus, select:focus {
 
 .pos-cart {
     flex: 1;
-    padding: 20px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -773,15 +773,15 @@ input:focus, select:focus {
 .qty-btn:hover { background: var(--accent-color); }
 
 .cart-summary {
-    margin-top: 20px;
-    padding-top: 20px;
+    margin-top: 10px;
+    padding-top: 10px;
     border-top: 1px solid var(--panel-border);
 }
 
 .summary-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     color: var(--text-secondary);
 }
 
@@ -789,7 +789,7 @@ input:focus, select:focus {
     font-size: 20px;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 24px;
+    margin-bottom: 12px;
 }
 
 /* Table Grid & Table Cards */
