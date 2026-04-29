@@ -1,4 +1,4 @@
-// Supabase Configuration
+﻿// Supabase Configuration
 const SUPABASE_URL = 'https://fhshckrdkasopfneujmw.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_qFlDlQChYsm7WobmTOmc6w_Wkb3XSBl';
 let db = null;
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dineInBtn = document.querySelector('.order-type-btn[onclick*="DINE_IN"]');
     if (dineInBtn) setOrderType('DINE_IN', dineInBtn);
 
-    // Global Keyboard Search Listener — routes ALL keystrokes to the search bar
+    // Global Keyboard Search Listener â€” routes ALL keystrokes to the search bar
     document.addEventListener('keydown', (e) => {
         const searchInput = document.getElementById('pos-search');
         const posView = document.getElementById('pos');
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             // If already focused in searchInput, browser handles it naturally
         } else if (e.key === 'Backspace' && active !== searchInput) {
-            // Backspace when search bar not focused — focus it and let user delete
+            // Backspace when search bar not focused â€” focus it and let user delete
             e.preventDefault();
             searchInput.focus();
             if (searchInput.value.length > 0) {
@@ -290,7 +290,7 @@ async function saveData() {
 
 // Format Currency
 function formatCurrency(amount) {
-    return '₹' + parseFloat(amount).toFixed(2);
+    return 'â‚¹' + parseFloat(amount).toFixed(2);
 }
 
 // Format Date to DD/MM/YYYY
@@ -810,8 +810,8 @@ function renderTableGrid() {
         div.innerHTML = `
             <i class="fa-solid fa-chair"></i>
             <h3>${table.name}</h3>
-            ${isOccupied ? `<div class="table-total">₹${total}</div>` : '<div class="table-total" style="color:var(--text-secondary)">Available</div>'}
-            ${table.advance > 0 ? `<div class="table-advance">Adv: ₹${table.advance}</div>` : ''}
+            ${isOccupied ? `<div class="table-total">â‚¹${total}</div>` : '<div class="table-total" style="color:var(--text-secondary)">Available</div>'}
+            ${table.advance > 0 ? `<div class="table-advance">Adv: â‚¹${table.advance}</div>` : ''}
         `;
         container.appendChild(div);
     });
@@ -884,7 +884,7 @@ window.saveAdvancePayment = function() {
         document.getElementById('advance-amount-display').innerText = formatCurrency(tables[tableIndex].advance);
         document.getElementById('advance-paid-info').style.display = 'block';
         
-        alert(`Advance of ₹${amount} recorded for ${tables[tableIndex].name}`);
+        alert(`Advance of â‚¹${amount} recorded for ${tables[tableIndex].name}`);
         closeModal('advanceModal');
         renderTableGrid();
     }
@@ -1036,7 +1036,7 @@ window.calculateTotal = function() {
     
     const roundOffEl = document.getElementById('cart-roundoff');
     if(roundOffEl) {
-        roundOffEl.innerText = (roundOff >= 0 ? '+' : '') + formatCurrency(roundOff).replace('₹-', '-₹');
+        roundOffEl.innerText = (roundOff >= 0 ? '+' : '') + formatCurrency(roundOff).replace('â‚¹-', '-â‚¹');
     }
 
     document.getElementById('cart-total').innerText = formatCurrency(finalTotal);
@@ -1086,7 +1086,7 @@ window.processSale = function() {
         const splitUpi = parseFloat(document.getElementById('split-upi-amount').value) || 0;
         
         if (splitCash + splitUpi !== total) {
-            return alert(`Validation Error: Cash (₹${splitCash}) + UPI (₹${splitUpi}) must exactly equal the Total Bill (₹${total}).`);
+            return alert(`Validation Error: Cash (â‚¹${splitCash}) + UPI (â‚¹${splitUpi}) must exactly equal the Total Bill (â‚¹${total}).`);
         }
         splitAmounts = { cash: splitCash, upi: splitUpi };
     }
@@ -1171,7 +1171,7 @@ function showReceipt(sale) {
             </div>` : ''}
             ${sale.roundOff && sale.roundOff !== 0 ? `<div style="display:flex; justify-content:space-between; margin-top: 4px; font-size: 14px; color: var(--text-secondary);">
                 <span>Round Off</span>
-                <span>${(sale.roundOff >= 0 ? '+' : '') + formatCurrency(sale.roundOff).replace('₹-', '-₹')}</span>
+                <span>${(sale.roundOff >= 0 ? '+' : '') + formatCurrency(sale.roundOff).replace('â‚¹-', '-â‚¹')}</span>
             </div>` : ''}
             <div style="display:flex; justify-content:space-between; margin-top: 16px; font-weight:bold; font-size: 18px;">
                 <span>Total Payable (${sale.paymentMode === 'BOTH' ? 'SPLIT' : sale.paymentMode || 'CASH'})</span>
@@ -1522,7 +1522,7 @@ window.clearInput = function(id) {
 
 window.openResetModal = function() {
     // Reset modal to Step 1
-    document.getElementById('password-reset-fields').classList.add('hidden');
+    document.getElementById('password-reset-fields').classList.add('force-hidden');
     document.getElementById('reset-action-btn').innerText = 'Verify Date of Birth';
     document.getElementById('reset-dob').value = '';
     document.getElementById('new-password').value = '';
@@ -1547,8 +1547,8 @@ window.handlePasswordReset = function() {
     }
 
     // If step 1 is done, show step 2
-    if (passwordFields.classList.contains('hidden')) {
-        passwordFields.classList.remove('hidden');
+    if (passwordFields.classList.contains('force-hidden')) {
+        passwordFields.classList.remove('force-hidden');
         actionBtn.innerText = 'Update Password';
         return;
     }
@@ -1567,3 +1567,4 @@ window.handlePasswordReset = function() {
     closeModal('reset-password-modal');
     document.getElementById('login-password').focus();
 }
+

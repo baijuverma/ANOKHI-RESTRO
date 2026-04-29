@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --bg-dark: #0f172a;
     --panel-bg: rgba(30, 41, 59, 0.7);
     --panel-border: rgba(255, 255, 255, 0.1);
@@ -1027,7 +1027,7 @@ input[type=number] {
     color: var(--danger-color);
 }
 
-/* Utility: force hide element */.hidden { display: none !important; }
+/* Utility: force hide element */.force-hidden { display: none !important; }
 
 /* Modal Base Styles */
 .modal {
@@ -1071,3 +1071,4 @@ input[type=number] {
     padding: 0;
 }
 .modal .close-btn:hover { color: var(--danger-color); }
+
