@@ -306,9 +306,16 @@
                         </div>
 
                         <div class="pos-items glass-panel">
-                            <div class="search-bar">
-                                <i class="fa-solid fa-search"></i>
-                                <input type="text" id="pos-search" placeholder="Type anywhere to search items...">
+                            <div style="display:flex; align-items:center; gap:10px; padding-bottom:6px; flex-wrap:wrap;">
+                                <div class="search-bar" style="flex:1; min-width:140px; max-width:320px; margin:0;">
+                                    <i class="fa-solid fa-search"></i>
+                                    <input type="text" id="pos-search" placeholder="Search items...">
+                                </div>
+                                <div style="display:flex; gap:6px;">
+                                    <button id="pos-filter-all" onclick="setPOSFilter('all')" style="padding:5px 11px; border-radius:20px; border:2px solid var(--accent-color); background:var(--accent-color); color:white; cursor:pointer; font-size:11px; font-weight:700;">All</button>
+                                    <button id="pos-filter-veg" onclick="setPOSFilter('veg')" style="padding:5px 11px; border-radius:20px; border:2px solid #22c55e; background:transparent; color:#22c55e; cursor:pointer; font-size:11px; font-weight:700;">&#9632; Veg</button>
+                                    <button id="pos-filter-nonveg" onclick="setPOSFilter('nonveg')" style="padding:5px 11px; border-radius:20px; border:2px solid #ef4444; background:transparent; color:#ef4444; cursor:pointer; font-size:11px; font-weight:700;">&#9632; Non-Veg</button>
+                                </div>
                             </div>
                             <div class="item-grid" id="pos-item-grid">
                                 <!-- Dynamic items -->

@@ -19,6 +19,7 @@ let cart = [];
 let selectedOrderType = 'DINE_IN';
 let currentSelectedTable = null;
 let inventoryTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
+let posTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
 let tables = JSON.parse(localStorage.getItem('anokhi_tables')) || Array.from({length: 12}, (_, i) => ({
     id: `T${i+1}`,
     name: `Table ${i+1}`,
@@ -611,7 +612,16 @@ function renderPOSItems(search = '') {
     const grid = document.getElementById('pos-item-grid');
     grid.innerHTML = '';
 
-    const filtered = inventory.filter(i => i.name.toLowerCase().includes(search.toLowerCase()) && i.quantity > 0);
+    let filtered = inventory.filter(i => i.name.toLowerCase().includes(search.toLowerCase()) && i.quantity > 0);
+    // Apply Veg/NonVeg filter
+    if (posTypeFilter === 'veg') filtered = filtered.filter(i => i.itemType !== 'Non-Veg');
+    else if (posTypeFilter === 'nonveg') filtered = filtered.filter(i => i.itemType === 'Non-Veg');
+    // Sort: in-cart items first
+    filtered.sort((a, b) => {
+        const aInCart = cart.some(c => c.id === a.id) ? 0 : 1;
+        const bInCart = cart.some(c => c.id === b.id) ? 0 : 1;
+        return aInCart - bInCart;
+    });
 
     if(filtered.length === 0) {
         grid.innerHTML = '<p style="color:var(--text-secondary); grid-column:1/-1; text-align:center;">No available items found.</p>';
@@ -626,7 +636,9 @@ function renderPOSItems(search = '') {
         div.className = `pos-item-card ${inCart ? 'in-cart' : ''}`;
         if (!inCart) div.onclick = () => addToCart(item);
         
+        const bulletColor = item.itemType === 'Non-Veg' ? '#ef4444' : '#22c55e';
         div.innerHTML = `
+            <span style="position:absolute; top:8px; right:8px; width:10px; height:10px; border-radius:50%; background:${bulletColor}; box-shadow:0 0 4px ${bulletColor}; z-index:3;"></span>
             ${inCart ? `
                 <div class="pos-item-overlay">
                     <button class="overlay-btn" onclick="event.stopPropagation(); updateCartQty('${item.id}', -1)"><i class="fa-solid fa-minus"></i></button>
@@ -1607,4 +1619,13 @@ window.filterInventoryByType = function(type) {
     if (btns.veg) { btns.veg.style.background = type==='veg' ? '#22c55e' : 'transparent'; btns.veg.style.color = type==='veg' ? 'white' : '#22c55e'; }
     if (btns.nonveg) { btns.nonveg.style.background = type==='nonveg' ? '#ef4444' : 'transparent'; btns.nonveg.style.color = type==='nonveg' ? 'white' : '#ef4444'; }
     renderInventory();
+}
+
+window.setPOSFilter = function(type) {
+    posTypeFilter = type;
+    const btns = { all: document.getElementById('pos-filter-all'), veg: document.getElementById('pos-filter-veg'), nonveg: document.getElementById('pos-filter-nonveg') };
+    if (btns.all) { btns.all.style.background = type==='all' ? 'var(--accent-color)' : 'transparent'; btns.all.style.color = type==='all' ? 'white' : 'var(--accent-color)'; }
+    if (btns.veg) { btns.veg.style.background = type==='veg' ? '#22c55e' : 'transparent'; btns.veg.style.color = type==='veg' ? 'white' : '#22c55e'; }
+    if (btns.nonveg) { btns.nonveg.style.background = type==='nonveg' ? '#ef4444' : 'transparent'; btns.nonveg.style.color = type==='nonveg' ? 'white' : '#ef4444'; }
+    renderPOSItems(document.getElementById('pos-search')?.value || '');
 }
