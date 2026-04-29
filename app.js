@@ -342,7 +342,18 @@ window.openAddItemModal = function() {
     document.getElementById('item-id').value = '';
     document.getElementById('item-low-stock').value = '5';
     document.getElementById('modal-title').innerText = 'Add New Item';
+    // Reset veg/nonveg to Veg
+    const vegRadio = document.getElementById('type-veg');
+    if (vegRadio) vegRadio.checked = true;
+    // Populate item name datalist from existing inventory
+    populateItemNameDatalist();
     openModal('addItemModal');
+}
+
+function populateItemNameDatalist() {
+    const dl = document.getElementById('item-name-list');
+    if (!dl) return;
+    dl.innerHTML = inventory.map(i => `<option value=""></option>`).join('');
 }
 
 function openModal(id) {

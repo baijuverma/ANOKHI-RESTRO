@@ -521,7 +521,11 @@
                 <input type="hidden" id="item-id">
                 <div class="form-group">
                     <label>Item Name</label>
-                    <input type="text" id="item-name" required placeholder="e.g. Paneer Butter Masala">
+                    <div class="input-wrapper">
+                        <input type="text" id="item-name" list="item-name-list" required placeholder="e.g. Paneer Butter Masala">
+                        <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('item-name')"></i>
+                    </div>
+                    <datalist id="item-name-list"><!-- populated dynamically --></datalist>
                 </div>
                 <div class="form-group">
                     <label style="margin-bottom: 8px; display: block;">Item Type</label>
@@ -562,12 +566,18 @@
                     </div>
                     <div class="form-group">
                         <label>Quantity in Stock</label>
-                        <input type="number" id="item-quantity" required min="0">
+                        <div class="input-wrapper">
+                            <input type="number" id="item-quantity" required min="0">
+                            <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('item-quantity')"></i>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group mt-2">
                     <label>Low Stock Alert At (Min Quantity)</label>
-                    <input type="number" id="item-low-stock" required min="1" value="5">
+                    <div class="input-wrapper">
+                        <input type="number" id="item-low-stock" required min="1" value="5">
+                        <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('item-low-stock')"></i>
+                    </div>
                 </div>
                 <button type="submit" class="btn-primary full-width mt-2">Save Item</button>
             </form>
