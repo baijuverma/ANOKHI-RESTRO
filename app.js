@@ -1718,3 +1718,32 @@ window.setPOSFilter = function(type) {
     if (btns.nonveg) { btns.nonveg.style.background = type==='nonveg' ? '#ef4444' : 'transparent'; btns.nonveg.style.color = type==='nonveg' ? 'white' : '#ef4444'; }
     renderPOSItems(document.getElementById('pos-search')?.value || '');
 }
+
+window.showView = function(target) {
+    // Show target view
+    views.forEach(v => {
+        v.classList.remove('active');
+        if(v.id === target) {
+            v.classList.add('active');
+        }
+    });
+
+    // Update active nav in sidebar
+    navItems.forEach(item => {
+        item.classList.remove('active');
+        if(item.getAttribute('data-target') === target) {
+            item.classList.add('active');
+        }
+    });
+
+    // Refresh view specific data
+    if(target === 'dashboard') updateDashboard();
+    if(target === 'inventory') renderInventory();
+    if(target === 'pos') renderPOSItems();
+    if(target === 'history') renderHistory();
+    if(target === 'expenses') {
+        renderExpenses();
+        updateExpenseStats();
+    }
+    if(target === 'settings') initSettingsView();
+}
