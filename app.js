@@ -740,7 +740,8 @@ window.setOrderType = function(type, btn) {
 }
 
 window.initSettingsView = function() {
-    document.getElementById('setting-table-count').value = tables.length;
+    const el = document.getElementById('setting-table-count');
+    if (el) el.value = tables.length;
 }
 
 window.adjustTableCount = function(delta) {
@@ -1440,9 +1441,13 @@ function renderHistory() {
     const mNetProfit = mTotal - mExpTotal;
 
     // Update UI Cards
-    document.getElementById("monthly-sale-total").innerText = formatCurrency(mTotal);
-    document.getElementById("monthly-cash").innerText = formatCurrency(mCash);
-    document.getElementById("monthly-upi").innerText = formatCurrency(mUpi);
+    const mSaleEl = document.getElementById("monthly-sale-total");
+    const mCashEl = document.getElementById("monthly-cash");
+    const mUpiEl = document.getElementById("monthly-upi");
+    
+    if (mSaleEl) mSaleEl.innerText = formatCurrency(mTotal);
+    if (mCashEl) mCashEl.innerText = formatCurrency(mCash);
+    if (mUpiEl) mUpiEl.innerText = formatCurrency(mUpi);
     
     const mProfitEl = document.getElementById("monthly-profit-total");
     if (mProfitEl) {

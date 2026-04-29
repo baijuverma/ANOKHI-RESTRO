@@ -553,6 +553,53 @@
                     </div>
                 </div>
             </section>
+            <section id="settings" class="view-section hidden">
+                <header>
+                    <h1>Settings</h1>
+                    <p>Manage restaurant configurations and menu data</p>
+                </header>
+                
+                <div class="glass-panel mt-4">
+                    <h2 style="padding: 20px; font-size: 18px; border-bottom: 1px solid var(--panel-border);">General Settings</h2>
+                    <div style="padding: 20px;">
+                        <div class="form-group">
+                            <label>Number of Tables (Dine-In)</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <button class="btn-primary" style="padding: 10px 15px;" onclick="adjustTableCount(-1)">-</button>
+                                <input type="number" id="setting-table-count" style="width: 80px; text-align: center; font-size: 18px;" readonly>
+                                <button class="btn-primary" style="padding: 10px 15px;" onclick="adjustTableCount(1)">+</button>
+                            </div>
+                        </div>
+                        <button class="btn-success mt-4" onclick="saveSettings()">Save Configuration</button>
+                    </div>
+                </div>
+
+                <div class="glass-panel mt-4">
+                    <h2 style="padding: 20px; font-size: 18px; border-bottom: 1px solid var(--panel-border);">Menu Data Management</h2>
+                    <div style="padding: 20px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <h3 style="font-size: 14px; margin-bottom: 12px; color: var(--text-secondary);">Bulk Import</h3>
+                                <button class="btn-primary full-width" onclick="importBiharMenu()">
+                                    <i class="fa-solid fa-cloud-download"></i> Import Bihar Menu (Pre-defined)
+                                </button>
+                                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+                                    This will add common Bihari dishes to your inventory. Existing items with same names will be updated.
+                                </p>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 14px; margin-bottom: 12px; color: var(--text-secondary);">Data Reset</h3>
+                                <button class="btn-danger full-width" onclick="resetInventory()">
+                                    <i class="fa-solid fa-trash-can"></i> Reset All Inventory
+                                </button>
+                                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+                                    Warning: This will permanently delete all items from your inventory.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
