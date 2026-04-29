@@ -1508,17 +1508,23 @@ window.clearInput = function(id) {
 }
 
 window.openResetModal = function() {
+    // Reset modal to Step 1
+    document.getElementById('password-reset-fields').style.display = 'none';
+    document.getElementById('reset-action-btn').innerText = 'Verify Date of Birth';
+    document.getElementById('reset-dob').value = '';
+    document.getElementById('new-password').value = '';
+    document.getElementById('confirm-new-password').value = '';
     openModal('reset-password-modal');
 }
 
 window.handlePasswordReset = function() {
     const dob = document.getElementById('reset-dob').value;
-    const newPwd = document.getElementById('new-password').value;
-    const confirmPwd = document.getElementById('confirm-new-password').value;
+    const passwordFields = document.getElementById('password-reset-fields');
+    const actionBtn = document.getElementById('reset-action-btn');
     const adminDoB = localStorage.getItem('anokhi_admin_dob') || '1989-12-15';
 
-    if (!dob || !newPwd || !confirmPwd) {
-        alert('Please fill all fields.');
+    if (!dob) {
+        alert('Please enter Admin Date of Birth.');
         return;
     }
 
@@ -1527,8 +1533,20 @@ window.handlePasswordReset = function() {
         return;
     }
 
-    if (newPwd !== confirmPwd) {
-        alert('Passwords do not match!');
+    // If step 1 is done, show step 2
+    if (passwordFields.style.display === 'none') {
+        passwordFields.style.display = 'block';
+        actionBtn.innerText = 'Update Password';
+        alert('Verification Successful! Please enter your new password below.');
+        return;
+    }
+
+    // Step 2: Handle actual reset
+    const newPwd = document.getElementById('new-password').value;
+    const confirmPwd = document.getElementById('confirm-new-password').value;
+
+    if (!newPwd || !confirmPwd) {
+        alert('Please enter and confirm your new password.');
         return;
     }
 
