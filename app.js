@@ -11,22 +11,33 @@ try {
     console.warn('Supabase not loaded, running in offline mode:', e);
 }
 
+// Safe Storage Helper
+function getLocalData(key, defaultVal) {
+    try {
+        const val = localStorage.getItem(key);
+        return val ? JSON.parse(val) : defaultVal;
+    } catch (e) {
+        console.warn(`Error parsing localStorage key "${key}":`, e);
+        return defaultVal;
+    }
+}
+
 // Data Structures (Initialized with local cache, will be updated from Supabase)
-let inventory = JSON.parse(localStorage.getItem('anokhi_inventory')) || [];
-let salesHistory = JSON.parse(localStorage.getItem('anokhi_sales')) || [];
-let expensesHistory = JSON.parse(localStorage.getItem('anokhi_expenses')) || [];
+let inventory = getLocalData('anokhi_inventory', []);
+let salesHistory = getLocalData('anokhi_sales', []);
+let expensesHistory = getLocalData('anokhi_expenses', []);
 let cart = [];
 let selectedOrderType = 'DINE_IN';
 let currentSelectedTable = null;
 let inventoryTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
 let posTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
-let tables = JSON.parse(localStorage.getItem('anokhi_tables')) || Array.from({length: 12}, (_, i) => ({
+let tables = getLocalData('anokhi_tables', Array.from({length: 12}, (_, i) => ({
     id: `T${i+1}`,
     name: `Table ${i+1}`,
     cart: [],
     advance: 0,
     advanceMode: 'CASH'
-}));
+})));
 
 // Initial Data Sync from Supabase
 async function syncFromSupabase() {
@@ -176,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dineInBtn = document.querySelector('.order-type-btn[onclick*="DINE_IN"]');
     if (dineInBtn) setOrderType('DINE_IN', dineInBtn);
 
-    // Global Keyboard Search Listener ├óΓé¼ΓÇ¥ routes ALL keystrokes to the search bar
+    // Global Keyboard Search Listener â”œÃ³Î“Ã©Â¼Î“Ã‡Â¥ routes ALL keystrokes to the search bar
     document.addEventListener('keydown', (e) => {
         const searchInput = document.getElementById('pos-search');
         const posView = document.getElementById('pos');
@@ -204,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             // If already focused in searchInput, browser handles it naturally
         } else if (e.key === 'Backspace' && active !== searchInput) {
-            // Backspace when search bar not focused ├óΓé¼ΓÇ¥ focus it and let user delete
+            // Backspace when search bar not focused â”œÃ³Î“Ã©Â¼Î“Ã‡Â¥ focus it and let user delete
             e.preventDefault();
             searchInput.focus();
             if (searchInput.value.length > 0) {
@@ -898,8 +909,8 @@ function renderTableGrid() {
         div.innerHTML = `
             <i class="fa-solid fa-chair"></i>
             <h3>${table.name}</h3>
-            ${isOccupied ? `<div class="table-total">├óΓÇÜ┬╣${total}</div>` : '<div class="table-total" style="color:var(--text-secondary)">Available</div>'}
-            ${table.advance > 0 ? `<div class="table-advance">Adv: ├óΓÇÜ┬╣${table.advance}</div>` : ''}
+            ${isOccupied ? `<div class="table-total">â”œÃ³Î“Ã‡Ãœâ”¬â•£${total}</div>` : '<div class="table-total" style="color:var(--text-secondary)">Available</div>'}
+            ${table.advance > 0 ? `<div class="table-advance">Adv: â”œÃ³Î“Ã‡Ãœâ”¬â•£${table.advance}</div>` : ''}
         `;
         container.appendChild(div);
     });
@@ -984,7 +995,7 @@ window.saveAdvancePayment = function() {
         document.getElementById('advance-amount-display').innerText = formatCurrency(tables[tableIndex].advance);
         document.getElementById('advance-paid-info').style.display = 'block';
         
-        alert(`Advance of ├óΓÇÜ┬╣${amount} recorded for ${tables[tableIndex].name}`);
+        alert(`Advance of â”œÃ³Î“Ã‡Ãœâ”¬â•£${amount} recorded for ${tables[tableIndex].name}`);
         closeModal('advanceModal');
         renderTableGrid();
     }
@@ -1136,7 +1147,7 @@ window.calculateTotal = function() {
     
     const roundOffEl = document.getElementById('cart-roundoff');
     if(roundOffEl) {
-        roundOffEl.innerText = (roundOff >= 0 ? '+' : '') + formatCurrency(roundOff).replace('Γé╣-', '-Γé╣');
+        roundOffEl.innerText = (roundOff >= 0 ? '+' : '') + formatCurrency(roundOff).replace('Î“Ã©â•£-', '-Î“Ã©â•£');
     }
 
     document.getElementById('cart-total').innerText = formatCurrency(finalTotal);
@@ -1186,7 +1197,7 @@ window.processSale = function() {
         const splitUpi = parseFloat(document.getElementById('split-upi-amount').value) || 0;
         
         if (splitCash + splitUpi !== total) {
-            return alert(`Validation Error: Cash (├óΓÇÜ┬╣${splitCash}) + UPI (├óΓÇÜ┬╣${splitUpi}) must exactly equal the Total Bill (├óΓÇÜ┬╣${total}).`);
+            return alert(`Validation Error: Cash (â”œÃ³Î“Ã‡Ãœâ”¬â•£${splitCash}) + UPI (â”œÃ³Î“Ã‡Ãœâ”¬â•£${splitUpi}) must exactly equal the Total Bill (â”œÃ³Î“Ã‡Ãœâ”¬â•£${total}).`);
         }
         splitAmounts = { cash: splitCash, upi: splitUpi };
     }
@@ -1271,7 +1282,7 @@ function showReceipt(sale) {
             </div>` : ''}
             ${sale.roundOff && sale.roundOff !== 0 ? `<div style="display:flex; justify-content:space-between; margin-top: 4px; font-size: 14px; color: var(--text-secondary);">
                 <span>Round Off</span>
-                <span>${(sale.roundOff >= 0 ? '+' : '') + formatCurrency(sale.roundOff).replace('Γé╣-', '-Γé╣')}</span>
+                <span>${(sale.roundOff >= 0 ? '+' : '') + formatCurrency(sale.roundOff).replace('Î“Ã©â•£-', '-Î“Ã©â•£')}</span>
             </div>` : ''}
             <div style="display:flex; justify-content:space-between; margin-top: 16px; font-weight:bold; font-size: 18px;">
                 <span>Total Payable (${sale.paymentMode === 'BOTH' ? 'SPLIT' : sale.paymentMode || 'CASH'})</span>
@@ -1460,7 +1471,9 @@ function renderHistory() {
     const sortedHistory = salesHistory; // salesHistory is already ordered from DB
 
     sortedHistory.forEach(sale => {
-        const itemsStr = sale.items.map(i => `${i.name} (x${i.cartQty})`).join(', ');
+        if (!sale) return;
+        const items = sale.items || [];
+        const itemsStr = items.map(i => `${i.name || 'Unknown'} (x${i.cartQty || 0})`).join(', ');
         
         const tr = document.createElement('tr');
         const pMode = sale.paymentMode || 'CASH';
@@ -1906,4 +1919,4 @@ window.toggleTablesCurtain = function() {
     }
 }
 
-
+
