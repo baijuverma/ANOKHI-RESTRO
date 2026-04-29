@@ -176,6 +176,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 searchInput.value = '';
                 searchInput.dispatchEvent(new Event('input', { bubbles: true }));
                 searchInput.blur();
+            } else if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
+                // Unselect table on ESC
+                currentSelectedTable = null;
+                cart = [];
+                document.getElementById('current-table-name').innerText = 'No Table Selected';
+                document.getElementById('advance-paid-info').style.display = 'none';
+                document.getElementById('dine-in-table-info').style.display = 'none';
+                renderCart();
+                renderTableGrid();
             } else {
                 newBill();
             }
@@ -596,7 +605,7 @@ window.setOrderType = function(type, btn) {
     const tablesContainer = document.getElementById('pos-tables-container');
 
     if (type === 'DINE_IN') {
-        tableInfo.style.display = 'flex';
+        tableInfo.style.display = currentSelectedTable ? 'flex' : 'none';
         dineInControls.style.display = 'grid';
         tablesContainer.style.display = 'block';
         if (currentSelectedTable) {
@@ -760,7 +769,8 @@ function renderTableGrid() {
     tables.forEach(table => {
         const div = document.createElement('div');
         const isOccupied = table.cart.length > 0 || table.advance > 0;
-        div.className = `table-card ${isOccupied ? 'occupied' : ''}`;
+        const isSelected = table.id === currentSelectedTable;
+        div.className = `table-card ${isOccupied ? 'occupied' : ''} ${isSelected ? 'selected' : ''}`;
         div.onclick = () => selectTable(table.id);
 
         let total = 0;
@@ -788,6 +798,7 @@ window.selectTable = function(tableId) {
     document.getElementById('current-table-name').innerText = table.name;
     document.getElementById('advance-amount-display').innerText = formatCurrency(table.advance);
     document.getElementById('advance-paid-info').style.display = table.advance > 0 ? 'block' : 'none';
+    document.getElementById('dine-in-table-info').style.display = 'flex';
 
     closeModal('tableGridModal');
     renderCart();
