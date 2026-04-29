@@ -747,8 +747,9 @@ window.setOrderType = function(type, btn, skipReset = false) {
         
         if (!skipReset) {
             currentSelectedTable = null;
-            cart = [];
+            // Cart is NO LONGER cleared here to allow persisting items across modes
             renderCart();
+            renderTableGrid();
         }
     }
 }
