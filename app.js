@@ -716,12 +716,12 @@ function renderPOSItems(search = '') {
     });
 }
 
-window.setOrderType = function(type, btn) {
+window.setOrderType = function(type, btn, skipReset = false) {
     selectedOrderType = type;
     
     // Update UI
     document.querySelectorAll('.order-type-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
 
     const tableInfo = document.getElementById('dine-in-table-info');
     const advanceBtn = document.getElementById('dine-in-advance-btn');
@@ -744,9 +744,12 @@ window.setOrderType = function(type, btn) {
         if (holdBtn) holdBtn.style.display = 'none';
         tablesContainer.style.display = 'none';
         advanceInfo.style.display = 'none';
-        currentSelectedTable = null;
-        cart = [];
-        renderCart();
+        
+        if (!skipReset) {
+            currentSelectedTable = null;
+            cart = [];
+            renderCart();
+        }
     }
 }
 
@@ -1865,20 +1868,21 @@ window.editSale = function(id) {
     
     // Load sale data into cart
     cart = JSON.parse(JSON.stringify(sale.items)); // Deep copy
-    currentOrderType = sale.orderType || 'COUNTER';
-    activeTableId = sale.tableId || null;
+    const type = sale.orderType || 'COUNTER';
+    currentSelectedTable = sale.tableId || null;
     
     // Update UI
     showView('pos');
-    renderCart();
     
-    // Select correct order type button in UI
-    document.querySelectorAll('.order-type-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.innerText.toUpperCase().includes(currentOrderType)) {
-            btn.classList.add('active');
-        }
-    });
+    // Set order type without resetting cart (handles hiding/showing tables)
+    // Find the button to highlight
+    const targetBtn = Array.from(document.querySelectorAll('.order-type-btn')).find(btn => 
+        btn.innerText.toUpperCase().includes(type)
+    );
+    setOrderType(type, targetBtn, true);
+
+    renderCart();
+    renderPOSItems(); // This highlights the items in the left side menu
 }
 
 // Global Keyboard Shortcuts
