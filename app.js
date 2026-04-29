@@ -107,19 +107,60 @@ window.checkLogin = function() {
     const pwd = pwdInput ? pwdInput.value : '';
     const adminPassword = localStorage.getItem('anokhi_admin_pwd') || '8540';
     
-    if (pwd === adminPassword || pwd === '8540') {
+    if (pwd === adminPassword) {
         const loginScreen = document.getElementById('login-screen');
-        if (loginScreen) loginScreen.style.display = 'none';
+        if (loginScreen) {
+            loginScreen.classList.add('hide');
+            setTimeout(() => {
+                loginScreen.style.display = 'none';
+                loginScreen.classList.remove('hide');
+            }, 500);
+        }
         
-        // Force dashboard view to be active
         showView('dashboard');
-        
         console.log('Login successful');
     } else {
-        alert('Incorrect Password! Please try again.');
+        pwdInput.parentElement.classList.add('shake');
+        setTimeout(() => pwdInput.parentElement.classList.remove('shake'), 500);
+        
         if (pwdInput) {
             pwdInput.value = '';
             pwdInput.focus();
+        }
+    }
+}
+
+window.updateAdminPassword = function() {
+    const newPwd = document.getElementById('new-admin-password').value;
+    const confirmPwd = document.getElementById('confirm-admin-password').value;
+
+    if (!newPwd) {
+        alert('Please enter a new password.');
+        return;
+    }
+
+    if (newPwd !== confirmPwd) {
+        alert('Passwords do not match!');
+        return;
+    }
+
+    localStorage.setItem('anokhi_admin_pwd', newPwd);
+    alert('Password updated successfully! This will be required next time you log in.');
+    
+    document.getElementById('new-admin-password').value = '';
+    document.getElementById('confirm-admin-password').value = '';
+}
+
+window.logout = function() {
+    if (confirm('Are you sure you want to logout and lock the system?')) {
+        const loginScreen = document.getElementById('login-screen');
+        if (loginScreen) {
+            loginScreen.style.display = 'flex';
+            const pwdInput = document.getElementById('login-password');
+            if (pwdInput) {
+                pwdInput.value = '';
+                setTimeout(() => pwdInput.focus(), 100);
+            }
         }
     }
 }

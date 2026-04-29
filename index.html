@@ -18,16 +18,28 @@
     </div>
 
     <!-- Login Screen -->
-    <div id="login-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <div class="glass-panel" style="padding: 40px; text-align: center; max-width: 400px; width: 90%;">
-            <div style="margin-bottom: 24px;">
-                <img src="logo.jpg" alt="Anokhi Restaurant Logo" style="max-width: 250px; height: auto; border-radius: 50%; border: 4px solid var(--accent-color); padding: 4px; background: white;">
+    <div id="login-screen" class="login-overlay">
+        <div class="login-card glass-panel">
+            <div class="login-header">
+                <div class="login-logo-container">
+                    <img src="logo.jpg" alt="Anokhi Restaurant Logo" class="login-logo">
+                </div>
+                <h1>Anokhi Restaurant</h1>
+                <p>Advanced Management System</p>
             </div>
-            <input type="password" id="login-password" placeholder="Enter Password" autofocus style="width: 100%; padding: 12px; margin-bottom: 16px; border-radius: 8px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.3); color: white; font-size: 16px; text-align: center;" onkeyup="if(event.key === 'Enter') checkLogin()">
-            <button onclick="checkLogin()" class="btn-primary full-width" style="padding: 12px; font-size: 16px;">Access System</button>
-            <p style="margin-top: 15px; font-size: 14px;">
-                <a href="#" onclick="openResetModal()" style="color: var(--accent-color); text-decoration: none;">Forgot Password?</a>
-            </p>
+            <div class="login-form">
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="login-password" placeholder="Enter Admin Password" autofocus onkeyup="if(event.key === 'Enter') checkLogin()">
+                </div>
+                <button onclick="checkLogin()" class="btn-primary full-width login-btn">
+                    <span>Unlock System</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="login-footer">
+                <a href="#" onclick="openResetModal()">Forgot Password?</a>
+            </div>
         </div>
     </div>
 
@@ -485,26 +497,50 @@
                     <h1>System Settings</h1>
                     <p>Configure your restaurant layout and preferences</p>
                 </header>
-                <div class="glass-panel mt-4" style="max-width: 600px; padding: 30px;">
-                    <h2 style="margin-bottom: 20px; font-size: 20px; color: var(--accent-color);">Table Configuration</h2>
-                    <div class="form-group">
-                        <label>Total Number of Tables</label>
-                        <div style="display: flex; gap: 15px; align-items: center;">
-                            <button class="qty-btn" style="width: 40px; height: 40px; font-size: 18px;" onclick="adjustTableCount(-1)"><i class="fa-solid fa-minus"></i></button>
-                            <input type="number" id="setting-table-count" readonly style="width: 100px; text-align: center; font-size: 24px; font-weight: 700; background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border);" value="12">
-                            <button class="qty-btn" style="width: 40px; height: 40px; font-size: 18px;" onclick="adjustTableCount(1)"><i class="fa-solid fa-plus"></i></button>
+                
+                <div class="settings-grid mt-4">
+                    <!-- Table Configuration -->
+                    <div class="glass-panel p-4">
+                        <h2 class="settings-title"><i class="fa-solid fa-chair"></i> Table Configuration</h2>
+                        <div class="form-group">
+                            <label>Total Number of Tables</label>
+                            <div style="display: flex; gap: 15px; align-items: center;">
+                                <button class="qty-btn" style="width: 40px; height: 40px; font-size: 18px;" onclick="adjustTableCount(-1)"><i class="fa-solid fa-minus"></i></button>
+                                <input type="number" id="setting-table-count" readonly style="width: 100px; text-align: center; font-size: 24px; font-weight: 700; background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border);" value="12">
+                                <button class="qty-btn" style="width: 40px; height: 40px; font-size: 18px;" onclick="adjustTableCount(1)"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                            <p class="settings-help">Updating tables will refresh the Dine-In grid immediately.</p>
                         </div>
-                        <p style="margin-top: 10px; font-size: 13px; color: var(--text-secondary);">Increasing or decreasing tables will update the Dine-In grid immediately.</p>
+                        <button class="btn-primary" onclick="saveSettings()">Save Configuration</button>
                     </div>
-                    <button class="btn-primary mt-4" onclick="saveSettings()">Save Settings</button>
-                    
-                    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--panel-border);">
-                        <h2 style="margin-bottom: 15px; font-size: 18px; color: var(--warning-color);">Data Recovery</h2>
-                        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">If you accidentally deleted your menu, you can restore the default Bihar Restaurant Menu items here.</p>
+
+                    <!-- Security Configuration -->
+                    <div class="glass-panel p-4">
+                        <h2 class="settings-title"><i class="fa-solid fa-shield-halved"></i> Security & Access</h2>
+                        <div class="form-group">
+                            <label>Change Admin Password</label>
+                            <input type="password" id="new-admin-password" placeholder="Enter new password">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            <input type="password" id="confirm-admin-password" placeholder="Confirm new password">
+                        </div>
+                        <button class="btn-success" onclick="updateAdminPassword()">Update Password</button>
+                        <p class="settings-help mt-2">This password is required to access the system on startup.</p>
+                    </div>
+                </div>
+
+                <div class="glass-panel mt-4 p-4">
+                    <h2 class="settings-title warning"><i class="fa-solid fa-database"></i> Data Management</h2>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                         <button class="btn-primary" style="background: var(--warning-color); border: none;" onclick="importBiharMenu()">
-                            <i class="fa-solid fa-file-import"></i> Import Bihar Menu Items
+                            <i class="fa-solid fa-file-import"></i> Import Default Menu
+                        </button>
+                        <button class="btn-danger" onclick="logout()">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout & Lock System
                         </button>
                     </div>
+                    <p class="settings-help mt-2">Importing default menu will add Bihar Special items to your inventory.</p>
                 </div>
             </section>
 
