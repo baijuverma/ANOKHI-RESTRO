@@ -1860,4 +1860,16 @@ window.editSale = function(id) {
     });
 }
 
+// Global Keyboard Shortcuts
+window.addEventListener('keydown', (e) => {
+    // Close Receipt Modal with Enter or Escape
+    const receiptModal = document.getElementById('receiptModal');
+    if (receiptModal && receiptModal.classList.contains('active')) {
+        if (e.key === 'Enter' || e.key === 'Escape') {
+            closeModal('receiptModal');
+            e.preventDefault();
+        }
+    }
+});
+
 
