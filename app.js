@@ -39,6 +39,9 @@ let tables = getLocalData('anokhi_tables', Array.from({length: 12}, (_, i) => ({
     advanceMode: 'CASH'
 })));
 
+let editingSaleId = null;
+let previousPaidAmount = 0;
+
 // Initial Data Sync from Supabase
 async function syncFromSupabase() {
     if (!db) { console.warn('Supabase unavailable, skipping sync.'); return; }
@@ -1244,6 +1247,12 @@ window.clearCart = function() {
     const upiIn = document.getElementById('pay-upi-amount');
     if(cashIn) cashIn.value = '';
     if(upiIn) upiIn.value = '';
+
+    // Reset editing state
+    editingSaleId = null;
+    previousPaidAmount = 0;
+    const prevPaidRow = document.getElementById('prev-paid-row');
+    if(prevPaidRow) prevPaidRow.style.display = 'none';
     
     renderCart();
 }
@@ -1252,7 +1261,6 @@ window.calculateDues = function() {
     const totalEl = document.getElementById('cart-total');
     if (!totalEl) return;
     
-    // Parse total from text (removing currency symbol and commas)
     const totalStr = totalEl.innerText.replace(/[^0-9.]/g, '');
     const finalTotal = parseFloat(totalStr) || 0;
     
@@ -1263,10 +1271,13 @@ window.calculateDues = function() {
     let cashPaid = parseFloat(cashInput.value) || 0;
     let upiPaid = parseFloat(upiInput.value) || 0;
     
-    let totalPaid = 0;
-    if (pMode === 'CASH') totalPaid = cashPaid;
-    else if (pMode === 'UPI') totalPaid = upiPaid;
-    else totalPaid = cashPaid + upiPaid;
+    let currentPaid = 0;
+    if (pMode === 'CASH') currentPaid = cashPaid;
+    else if (pMode === 'UPI') currentPaid = upiPaid;
+    else currentPaid = cashPaid + upiPaid;
+    
+    // Total Paid = Previous + Current
+    let totalPaid = previousPaidAmount + currentPaid;
     
     let dues = Math.max(0, finalTotal - totalPaid);
     const duesEl = document.getElementById('cart-dues');
@@ -1368,14 +1379,28 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     const total = totals.total;
     const discount = totals.discount;
     const roundOff = totals.roundOff;
-    const saleId = Math.floor(100000 + Math.random() * 900000).toString();
+    // Merge payments if editing
+    let finalCash = payCash;
+    let finalUpi = payUpi;
+    let finalSaleId = Math.floor(100000 + Math.random() * 900000).toString();
+    let finalCustName = custName;
+    let finalCustMobile = custMobile;
 
-    const paymentModeObj = document.querySelector('input[name="payment-mode"]:checked');
-    const paymentMode = paymentModeObj ? paymentModeObj.value : 'CASH';
+    if (editingSaleId) {
+        const oldSale = salesHistory.find(s => s.id == editingSaleId);
+        if (oldSale) {
+            finalSaleId = oldSale.id;
+            finalCash += (oldSale.splitAmounts?.cash || 0);
+            finalUpi += (oldSale.splitAmounts?.upi || 0);
+            if (!finalCustName) finalCustName = oldSale.customerName;
+            if (!finalCustMobile) finalCustMobile = oldSale.customerMobile;
+            
+            // Remove old record
+            salesHistory = salesHistory.filter(s => s.id != editingSaleId);
+        }
+    }
 
-    const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
-    const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
-    const splitAmounts = { cash: payCash, upi: payUpi };
+    const finalSplitAmounts = { cash: finalCash, upi: finalUpi };
 
     // Deduct Inventory
     cart.forEach(cartItem => {
@@ -1387,20 +1412,20 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
 
     // Record Sale
     const sale = {
-        id: saleId,
+        id: finalSaleId,
         date: new Date().toISOString(),
         items: [...cart],
         total: total,
         discount: discount,
         roundOff: roundOff,
-        paymentMode: paymentMode,
-        splitAmounts: splitAmounts,
+        paymentMode: (finalCash > 0 && finalUpi > 0) ? 'BOTH' : (finalUpi > 0 ? 'UPI' : 'CASH'),
+        splitAmounts: finalSplitAmounts,
         orderType: selectedOrderType,
         tableName: selectedOrderType === 'DINE_IN' && currentSelectedTable ? tables.find(t => t.id === currentSelectedTable).name : null,
         advancePaid: totals.advance,
-        customerName: custName,
-        customerMobile: custMobile,
-        dues: Math.max(0, total - (payCash + payUpi))
+        customerName: finalCustName,
+        customerMobile: finalCustMobile,
+        dues: Math.max(0, total - (finalCash + finalUpi))
     };
     
     // Clear held table if applicable
@@ -1414,6 +1439,12 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
 
     salesHistory.unshift(sale);
     saveData();
+
+    // Reset editing state
+    editingSaleId = null;
+    previousPaidAmount = 0;
+    const prevPaidRow = document.getElementById('prev-paid-row');
+    if(prevPaidRow) prevPaidRow.style.display = 'none';
 
     // Show Receipt Modal
     showReceipt(sale);
@@ -2089,11 +2120,14 @@ window.editSale = function(id) {
         if (!confirm('Current cart items will be cleared. Do you want to edit this sale?')) return;
     }
     
-    // Load sale data into cart and try to match with current inventory items by name
+    // Store editing state
+    editingSaleId = sale.id;
+    previousPaidAmount = sale.total - (sale.dues || 0);
+    
+    // Load sale data into cart
     cart = sale.items.map(saleItem => {
         const invItem = inventory.find(i => i.name.trim().toLowerCase() === saleItem.name.trim().toLowerCase());
         if (invItem) {
-            // Priority 1: Link to current inventory ID for full UI functionality
             return { ...saleItem, id: invItem.id };
         }
         return { ...saleItem };
@@ -2105,14 +2139,26 @@ window.editSale = function(id) {
     // Update UI
     showView('pos');
     
+    // Show previous paid in UI
+    const prevPaidRow = document.getElementById('prev-paid-row');
+    const prevPaidEl = document.getElementById('cart-prev-paid');
+    if (prevPaidRow && prevPaidEl) {
+        prevPaidRow.style.display = 'flex';
+        prevPaidEl.innerText = formatCurrency(previousPaidAmount);
+    }
+    
     // Clear search so items are visible
     const searchInput = document.getElementById('pos-search');
     if (searchInput) searchInput.value = '';
     
-    // Set order type without resetting cart (handles hiding/showing tables)
+    // Set order type
     const targetBtn = Array.from(document.querySelectorAll('.order-type-btn')).find(btn => 
         btn.innerText.toUpperCase().includes(type)
     );
+    if (targetBtn) setOrderType(type, targetBtn);
+    
+    calculateTotal(); // Refresh total and dues
+}
     setOrderType(type, targetBtn, true);
 
     renderCart();
