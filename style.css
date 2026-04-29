@@ -837,15 +837,30 @@ input:focus, select:focus {
 }
 
 .curtain-toggle {
+    position: absolute;
+    bottom: -2px; /* Sits right at the bottom edge */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 20px;
+    background: #fef9c3; /* Matching Yellow */
+    border: 1px solid rgba(0,0,0,0.1);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2px;
     cursor: pointer;
-    color: var(--accent-color);
-    margin-bottom: 4px;
-    border-top: 1px dashed rgba(255, 255, 255, 0.05);
+    color: #334155; /* Dark Slate Icon */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 10;
     transition: all 0.2s ease;
+}
+
+.curtain-toggle:hover {
+    height: 24px;
+    background: var(--accent-color);
+    color: white;
 }
 
 .curtain-toggle:hover {

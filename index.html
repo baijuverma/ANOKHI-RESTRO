@@ -371,8 +371,13 @@
                             </div>
 
 
-                            <div class="cart-items" id="cart-items">
-                                <!-- Dynamic content -->
+                            <div class="cart-items-container" style="position: relative; flex: 1.3; display: flex; flex-direction: column; min-height: 0;">
+                                <div class="cart-items" id="cart-items">
+                                    <!-- Dynamic content -->
+                                </div>
+                                <div class="curtain-toggle" onclick="toggleCartDetails()" title="Expand/Collapse Details">
+                                    <i id="curtain-icon" class="fa-solid fa-chevron-up"></i>
+                                </div>
                             </div>
 
                             <div class="cart-summary">
@@ -405,10 +410,6 @@
                                      </div>
                                  </div>
 
-                                 <!-- Curtain Toggle Arrow -->
-                                 <div class="curtain-toggle" onclick="toggleCartDetails()" title="Expand/Collapse Details">
-                                     <i id="curtain-icon" class="fa-solid fa-chevron-up"></i>
-                                 </div>
 
                                  <!-- Always Visible Total -->
                                  <div class="summary-row total">
