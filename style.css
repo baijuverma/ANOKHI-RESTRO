@@ -40,13 +40,13 @@ body {
     display: flex;
     height: 100vh;
     padding: 20px;
-    gap: 20px;
+    gap: 12px;
 }
 
 /* Sidebar */
 .sidebar {
     width: 250px;
-    padding: 24px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
 }
@@ -151,16 +151,16 @@ header p {
 /* Stats Grid */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
     margin-top: 32px;
 }
 
 .stat-card {
-    padding: 24px;
+    padding: 16px;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 12px;
     transition: transform 0.3s ease;
 }
 
@@ -449,7 +449,7 @@ input:focus, select:focus {
 .pos-layout {
     display: grid;
     grid-template-columns: 1fr 400px;
-    gap: 20px;
+    gap: 12px;
     flex: 1;
     min-height: 0;
     overflow: hidden; /* POS has its own scrollable panes */
@@ -458,14 +458,14 @@ input:focus, select:focus {
 .pos-left-pane {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
     overflow: hidden;
 }
 
 .pos-right-pane {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
     overflow: hidden;
 }
 
@@ -953,7 +953,7 @@ input:focus, select:focus {
     }
 
     .modal-content {
-        padding: 24px;
+        padding: 16px;
         margin: 16px;
         width: calc(100% - 32px);
     }

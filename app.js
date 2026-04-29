@@ -478,6 +478,19 @@ function updateDashboard() {
         return sum + (sale.paymentMode === 'UPI' ? sale.total : 0);
     }, 0);
 
+    // Profit Calculation
+    const totalAllRev = salesHistory.reduce((sum, s) => sum + s.total, 0);
+    const totalAllExp = expensesHistory.reduce((sum, e) => sum + e.amount, 0);
+    const netProfit = totalAllRev - totalAllExp;
+    
+    const profitEl = document.getElementById('total-profit');
+    if (profitEl) {
+        profitEl.innerText = formatCurrency(netProfit);
+        profitEl.style.color = netProfit >= 0 ? '#22c55e' : '#ef4444';
+        const card = document.getElementById('profit-card');
+        if (card) card.style.borderLeft = `4px solid ${netProfit >= 0 ? '#22c55e' : '#ef4444'}`;
+    }
+
     let totalItems = inventory.length;
     let lowStock = inventory.filter(i => i.quantity <= (i.lowStockThreshold || 5) && i.quantity > 0).length;
     let outOfStock = inventory.filter(i => i.quantity === 0).length;
