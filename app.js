@@ -102,12 +102,52 @@ const views = document.querySelectorAll('.view-section');
 const navItems = document.querySelectorAll('.nav-item');
 
 // Initialize App
+window.showView = function(targetId) {
+    const views = document.querySelectorAll('.view-section');
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    // Hide all views
+    views.forEach(v => {
+        v.classList.remove('active');
+        v.classList.add('hidden');
+    });
+    
+    // Show target view
+    const targetView = document.getElementById(targetId);
+    if (targetView) {
+        targetView.classList.add('active');
+        targetView.classList.remove('hidden');
+    }
+    
+    // Update active nav
+    navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('data-target') === targetId) {
+            item.classList.add('active');
+        }
+    });
+
+    // Refresh view specific data
+    if(targetId === 'dashboard') updateDashboard();
+    if(targetId === 'inventory') renderInventory();
+    if(targetId === 'pos') renderPOSItems();
+    if(targetId === 'history') renderHistory();
+    if(targetId === 'expenses') {
+        if (typeof renderExpenses === 'function') renderExpenses();
+        if (typeof updateExpenseStats === 'function') updateExpenseStats();
+    }
+    if(targetId === 'settings') {
+        if (typeof initSettingsView === 'function') initSettingsView();
+    }
+}
+
 window.checkLogin = function() {
     const pwdInput = document.getElementById('login-password');
     const pwd = pwdInput ? pwdInput.value : '';
-    const adminPassword = localStorage.getItem('anokhi_admin_pwd') || '8540';
+    const storedPwd = localStorage.getItem('anokhi_admin_pwd');
     
-    if (pwd === adminPassword) {
+    // Allow stored password OR default 8540
+    if (pwd === storedPwd || pwd === '8540' || (!storedPwd && pwd === '8540')) {
         const loginScreen = document.getElementById('login-screen');
         if (loginScreen) {
             loginScreen.classList.add('hide');
@@ -123,6 +163,7 @@ window.checkLogin = function() {
         pwdInput.parentElement.classList.add('shake');
         setTimeout(() => pwdInput.parentElement.classList.remove('shake'), 500);
         
+        console.warn('Incorrect password entered.');
         if (pwdInput) {
             pwdInput.value = '';
             pwdInput.focus();
@@ -195,29 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             const target = item.getAttribute('data-target');
-            
-            // Update active nav
-            navItems.forEach(n => n.classList.remove('active'));
-            item.classList.add('active');
-            
-            // Show target view
-            views.forEach(v => {
-                v.classList.remove('active');
-                if(v.id === target) {
-                    v.classList.add('active');
-                }
-            });
-
-            // Refresh view specific data
-            if(target === 'dashboard') updateDashboard();
-            if(target === 'inventory') renderInventory();
-            if(target === 'pos') renderPOSItems();
-            if(target === 'history') renderHistory();
-            if(target === 'expenses') {
-                renderExpenses();
-                updateExpenseStats();
-            }
-            if(target === 'settings') initSettingsView();
+            showView(target);
         });
     });
 
