@@ -828,6 +828,40 @@ input:focus, select:focus {
     font-size: 14px;
 }
 
+.tables-curtain {
+    overflow: hidden;
+    max-height: 500px; /* Large enough for full grid */
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    opacity: 1;
+}
+
+.tables-curtain.collapsed {
+    max-height: 120px; /* Approximately one row of tables */
+    opacity: 0.9;
+}
+
+.tables-curtain-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+    cursor: pointer;
+    color: var(--accent-color);
+    margin-top: 5px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+}
+
+.tables-curtain-toggle:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.tables-curtain-toggle i {
+    font-size: 14px;
+}
+
 /* Table Grid & Table Cards */
 .table-grid {
     display: grid;

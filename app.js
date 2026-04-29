@@ -1888,4 +1888,17 @@ window.toggleCartDetails = function() {
     }
 }
 
+window.toggleTablesCurtain = function() {
+    const curtain = document.getElementById('tables-curtain');
+    const icon = document.getElementById('tables-curtain-icon');
+    if (curtain) {
+        curtain.classList.toggle('collapsed');
+        if (curtain.classList.contains('collapsed')) {
+            icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+        } else {
+            icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+        }
+    }
+}
+
 

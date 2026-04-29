@@ -319,8 +319,16 @@
                                     <span><i class="fa-solid fa-circle" style="color: var(--success-color); font-size: 8px;"></i> Occupied</span>
                                 </div>
                             </div>
-                            <div class="table-grid" id="table-grid-container" style="margin-top: 10px;">
-                                <!-- Dynamic tables -->
+                            
+                            <div id="tables-curtain" class="tables-curtain">
+                                <div class="table-grid" id="table-grid-container" style="margin-top: 10px;">
+                                    <!-- Dynamic tables -->
+                                </div>
+                            </div>
+
+                            <!-- Tables Toggle Arrow -->
+                            <div class="tables-curtain-toggle" onclick="toggleTablesCurtain()" title="Expand/Collapse Tables">
+                                <i id="tables-curtain-icon" class="fa-solid fa-chevron-up"></i>
                             </div>
                         </div>
 
