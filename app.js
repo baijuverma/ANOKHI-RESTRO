@@ -18,6 +18,7 @@ let expensesHistory = JSON.parse(localStorage.getItem('anokhi_expenses')) || [];
 let cart = [];
 let selectedOrderType = 'DINE_IN';
 let currentSelectedTable = null;
+let inventoryTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
 let tables = JSON.parse(localStorage.getItem('anokhi_tables')) || Array.from({length: 12}, (_, i) => ({
     id: `T${i+1}`,
     name: `Table ${i+1}`,
@@ -514,12 +515,16 @@ function renderInventory() {
     const tbody = document.querySelector('#inventory-table tbody');
     tbody.innerHTML = '';
 
-    if(inventory.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No items found. Add some items to your inventory.</td></tr>';
+    let filtered = inventory;
+    if (inventoryTypeFilter === 'veg') filtered = inventory.filter(i => i.itemType !== 'Non-Veg');
+    else if (inventoryTypeFilter === 'nonveg') filtered = inventory.filter(i => i.itemType === 'Non-Veg');
+
+    if(filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No items found.</td></tr>';
         return;
     }
 
-    inventory.forEach(item => {
+    filtered.forEach(item => {
         let statusClass = 'status-instock';
         let statusText = 'In Stock';
         
@@ -1592,3 +1597,14 @@ window.handlePasswordReset = function() {
 
 
 
+
+
+window.filterInventoryByType = function(type) {
+    inventoryTypeFilter = type;
+    // Update button styles
+    const btns = { all: document.getElementById('filter-all'), veg: document.getElementById('filter-veg'), nonveg: document.getElementById('filter-nonveg') };
+    if (btns.all) { btns.all.style.background = type==='all' ? 'var(--accent-color)' : 'transparent'; btns.all.style.color = type==='all' ? 'white' : 'var(--accent-color)'; }
+    if (btns.veg) { btns.veg.style.background = type==='veg' ? '#22c55e' : 'transparent'; btns.veg.style.color = type==='veg' ? 'white' : '#22c55e'; }
+    if (btns.nonveg) { btns.nonveg.style.background = type==='nonveg' ? '#ef4444' : 'transparent'; btns.nonveg.style.color = type==='nonveg' ? 'white' : '#ef4444'; }
+    renderInventory();
+}

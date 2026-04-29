@@ -149,9 +149,16 @@
                         <h1>Inventory Management</h1>
                         <p>Manage your ingredients and products</p>
                     </div>
-                    <button class="btn-primary" onclick="openAddItemModal()">
-                        <i class="fa-solid fa-plus"></i> Add New Item
-                    </button>
+                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <button id="filter-all" onclick="filterInventoryByType('all')" style="padding:6px 14px; border-radius:20px; border:2px solid var(--accent-color); background:var(--accent-color); color:white; cursor:pointer; font-size:12px; font-weight:700;">All</button>
+                            <button id="filter-veg" onclick="filterInventoryByType('veg')" style="padding:6px 14px; border-radius:20px; border:2px solid #22c55e; background:transparent; color:#22c55e; cursor:pointer; font-size:12px; font-weight:700;">&#9632; Veg</button>
+                            <button id="filter-nonveg" onclick="filterInventoryByType('nonveg')" style="padding:6px 14px; border-radius:20px; border:2px solid #ef4444; background:transparent; color:#ef4444; cursor:pointer; font-size:12px; font-weight:700;">&#9632; Non-Veg</button>
+                        </div>
+                        <button class="btn-primary" onclick="openAddItemModal()">
+                            <i class="fa-solid fa-plus"></i> Add New Item
+                        </button>
+                    </div>
                 </header>
                 <div class="glass-panel mt-4">
                     <div class="table-container">
