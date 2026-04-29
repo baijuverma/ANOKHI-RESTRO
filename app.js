@@ -1551,19 +1551,21 @@ function renderHistory() {
         
         // Highlight logic
         if (sale.status === 'HELD') {
-            tr.style.background = 'rgba(99, 102, 241, 0.1)';
-            tr.style.borderLeft = '4px solid var(--accent-color)';
+            tr.style.background = '#fef9c3'; // Standard Yellow
+            tr.style.color = '#1e293b';      // Dark Text for readability
+            tr.style.borderLeft = '4px solid #f59e0b';
         } else if (sale.status === 'ADVANCE') {
-            tr.style.background = 'rgba(245, 158, 11, 0.1)';
+            tr.style.background = '#fef9c3'; // Standard Yellow
+            tr.style.color = '#1e293b';      // Dark Text
             tr.style.borderLeft = '4px solid var(--warning-color)';
         }
 
         const pMode = sale.paymentMode || 'CASH';
         let pModeBadge = '';
         if (sale.status === 'HELD') {
-            pModeBadge = '<span class="status-badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8; font-weight: 800;">HELD</span>';
+            pModeBadge = '<span class="status-badge" style="background: #334155; color: white; font-weight: 800;">HELD</span>';
         } else if (sale.status === 'ADVANCE') {
-            pModeBadge = '<span class="status-badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; font-weight: 800;">ADVANCE</span>';
+            pModeBadge = '<span class="status-badge" style="background: var(--warning-color); color: white; font-weight: 800;">ADVANCE</span>';
         } else if (pMode === 'UPI') {
             pModeBadge = '<span class="status-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">UPI</span>';
         } else if (pMode === 'BOTH') {
@@ -1573,7 +1575,7 @@ function renderHistory() {
         }
 
         const typeBadge = `
-            <span style="font-size: 11px; display: block; color: var(--text-secondary); margin-top: 4px;">
+            <span style="font-size: 11px; display: block; color: ${sale.status ? '#475569' : 'var(--text-secondary)'}; margin-top: 4px;">
                 ${sale.orderType === 'DINE_IN' ? 'Dine-In' : sale.orderType === 'TAKEAWAY' ? 'Takeaway' : 'Counter'}
             </span>
         `;
@@ -1581,14 +1583,14 @@ function renderHistory() {
         const displayDate = sale.date || sale.timestamp || new Date();
 
         tr.innerHTML = `
-            <td>
+            <td style="color: inherit;">
                 <strong>#${sale.id.toString().slice(-6)}</strong>
                 ${typeBadge}
             </td>
-            <td>${formatDateTime(displayDate)}</td>
-            <td><div style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${itemsStr}">${itemsStr}</div></td>
+            <td style="color: inherit;">${formatDateTime(displayDate)}</td>
+            <td style="color: inherit;"><div style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${itemsStr}">${itemsStr}</div></td>
             <td>${pModeBadge}</td>
-            <td style="color:var(--success-color); font-weight:bold;">${formatCurrency(sale.total)}</td>
+            <td style="color:${sale.status ? '#059669' : 'var(--success-color)'}; font-weight:bold;">${formatCurrency(sale.total)}</td>
             <td>
                 <div style="display: flex; gap: 5px;">
                     <button class="btn-primary" style="padding: 6px 12px; font-size:12px;" onclick="viewReceipt('${sale.id}')">View</button>
