@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dineInBtn = document.querySelector('.order-type-btn[onclick*="DINE_IN"]');
     if (dineInBtn) setOrderType('DINE_IN', dineInBtn);
 
-    // Global Keyboard Search Listener â€” routes ALL keystrokes to the search bar
+    // Global Keyboard Search Listener ├óΓé¼ΓÇ¥ routes ALL keystrokes to the search bar
     document.addEventListener('keydown', (e) => {
         const searchInput = document.getElementById('pos-search');
         const posView = document.getElementById('pos');
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             // If already focused in searchInput, browser handles it naturally
         } else if (e.key === 'Backspace' && active !== searchInput) {
-            // Backspace when search bar not focused â€” focus it and let user delete
+            // Backspace when search bar not focused ├óΓé¼ΓÇ¥ focus it and let user delete
             e.preventDefault();
             searchInput.focus();
             if (searchInput.value.length > 0) {
@@ -200,13 +200,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 searchInput.dispatchEvent(new Event('input', { bubbles: true }));
             }
         } else if (e.key === 'Escape') {
-            // Escape clears search if focused, otherwise triggers cancel order
+            e.preventDefault();
             if (active === searchInput) {
                 searchInput.value = '';
                 searchInput.dispatchEvent(new Event('input', { bubbles: true }));
                 searchInput.blur();
+            } else if (cart.length > 0) {
+                // Animate quantity decrease of last cart item, then offer cancel
+                const lastItem = cart[cart.length - 1];
+                const startQty = lastItem.cartQty;
+                const animateDecrease = (remaining) => {
+                    if (remaining <= 0) {
+                        cart = cart.filter(c => c.id !== lastItem.id);
+                        renderCart();
+                        renderPOSItems(searchInput.value);
+                        if (cart.length === 0) {
+                            setTimeout(() => {
+                                if (confirm('Kya aap bill cancel karna chahte hain?')) {
+                                    newBill();
+                                }
+                            }, 100);
+                        }
+                        return;
+                    }
+                    const cartItem = cart.find(c => c.id === lastItem.id);
+                    if (cartItem) {
+                        cartItem.cartQty = remaining;
+                        renderCart();
+                        document.querySelectorAll('.overlay-qty').forEach(el => { el.textContent = remaining; });
+                    }
+                    setTimeout(() => animateDecrease(remaining - 1), 180);
+                };
+                animateDecrease(startQty);
             } else if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
-                // Unselect table on ESC
                 currentSelectedTable = null;
                 cart = [];
                 document.getElementById('current-table-name').innerText = 'No Table Selected';
@@ -810,8 +836,8 @@ function renderTableGrid() {
         div.innerHTML = `
             <i class="fa-solid fa-chair"></i>
             <h3>${table.name}</h3>
-            ${isOccupied ? `<div class="table-total">â‚¹${total}</div>` : '<div class="table-total" style="color:var(--text-secondary)">Available</div>'}
-            ${table.advance > 0 ? `<div class="table-advance">Adv: â‚¹${table.advance}</div>` : ''}
+            ${isOccupied ? `<div class="table-total">├óΓÇÜ┬╣${total}</div>` : '<div class="table-total" style="color:var(--text-secondary)">Available</div>'}
+            ${table.advance > 0 ? `<div class="table-advance">Adv: ├óΓÇÜ┬╣${table.advance}</div>` : ''}
         `;
         container.appendChild(div);
     });
@@ -884,7 +910,7 @@ window.saveAdvancePayment = function() {
         document.getElementById('advance-amount-display').innerText = formatCurrency(tables[tableIndex].advance);
         document.getElementById('advance-paid-info').style.display = 'block';
         
-        alert(`Advance of â‚¹${amount} recorded for ${tables[tableIndex].name}`);
+        alert(`Advance of ├óΓÇÜ┬╣${amount} recorded for ${tables[tableIndex].name}`);
         closeModal('advanceModal');
         renderTableGrid();
     }
@@ -1036,7 +1062,7 @@ window.calculateTotal = function() {
     
     const roundOffEl = document.getElementById('cart-roundoff');
     if(roundOffEl) {
-        roundOffEl.innerText = (roundOff >= 0 ? '+' : '') + formatCurrency(roundOff).replace('₹-', '-₹');
+        roundOffEl.innerText = (roundOff >= 0 ? '+' : '') + formatCurrency(roundOff).replace('Γé╣-', '-Γé╣');
     }
 
     document.getElementById('cart-total').innerText = formatCurrency(finalTotal);
@@ -1086,7 +1112,7 @@ window.processSale = function() {
         const splitUpi = parseFloat(document.getElementById('split-upi-amount').value) || 0;
         
         if (splitCash + splitUpi !== total) {
-            return alert(`Validation Error: Cash (â‚¹${splitCash}) + UPI (â‚¹${splitUpi}) must exactly equal the Total Bill (â‚¹${total}).`);
+            return alert(`Validation Error: Cash (├óΓÇÜ┬╣${splitCash}) + UPI (├óΓÇÜ┬╣${splitUpi}) must exactly equal the Total Bill (├óΓÇÜ┬╣${total}).`);
         }
         splitAmounts = { cash: splitCash, upi: splitUpi };
     }
@@ -1171,7 +1197,7 @@ function showReceipt(sale) {
             </div>` : ''}
             ${sale.roundOff && sale.roundOff !== 0 ? `<div style="display:flex; justify-content:space-between; margin-top: 4px; font-size: 14px; color: var(--text-secondary);">
                 <span>Round Off</span>
-                <span>${(sale.roundOff >= 0 ? '+' : '') + formatCurrency(sale.roundOff).replace('₹-', '-₹')}</span>
+                <span>${(sale.roundOff >= 0 ? '+' : '') + formatCurrency(sale.roundOff).replace('Γé╣-', '-Γé╣')}</span>
             </div>` : ''}
             <div style="display:flex; justify-content:space-between; margin-top: 16px; font-weight:bold; font-size: 18px;">
                 <span>Total Payable (${sale.paymentMode === 'BOTH' ? 'SPLIT' : sale.paymentMode || 'CASH'})</span>
