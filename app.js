@@ -733,8 +733,6 @@ window.setOrderType = function(type, btn, skipReset = false) {
 
     if (type === 'DINE_IN') {
         tableInfo.style.display = currentSelectedTable ? 'flex' : 'none';
-        if (advanceBtn) advanceBtn.style.display = 'flex';
-        if (holdBtn) holdBtn.style.display = 'flex';
         tablesContainer.style.display = 'block';
         if (currentSelectedTable) {
             const table = tables.find(t => t.id === currentSelectedTable);
@@ -742,8 +740,6 @@ window.setOrderType = function(type, btn, skipReset = false) {
         }
     } else {
         tableInfo.style.display = 'none';
-        if (advanceBtn) advanceBtn.style.display = 'none';
-        if (holdBtn) holdBtn.style.display = 'none';
         tablesContainer.style.display = 'none';
         advanceInfo.style.display = 'none';
         
@@ -754,6 +750,10 @@ window.setOrderType = function(type, btn, skipReset = false) {
             renderTableGrid();
         }
     }
+
+    // Always show Adv and Hold buttons for all modes
+    if (advanceBtn) advanceBtn.style.display = 'flex';
+    if (holdBtn) holdBtn.style.display = 'flex';
 }
 
 window.initSettingsView = function() {
@@ -958,35 +958,69 @@ window.selectTable = function(tableId) {
 }
 
 window.holdOrder = function() {
-    if (!currentSelectedTable) {
-        alert('Please select a table first!');
-        openTableGrid();
-        return;
-    }
+    if (cart.length === 0) return alert('Cart is empty!');
 
-    const tableIndex = tables.findIndex(t => t.id === currentSelectedTable);
-    if (tableIndex > -1) {
-        tables[tableIndex].cart = [...cart];
+    if (selectedOrderType === 'DINE_IN') {
+        if (!currentSelectedTable) {
+            alert('Please select a table first!');
+            openTableGrid();
+            return;
+        }
+
+        const tableIndex = tables.findIndex(t => t.id === currentSelectedTable);
+        if (tableIndex > -1) {
+            tables[tableIndex].cart = [...cart];
+            saveData();
+            
+            // Reset POS
+            currentSelectedTable = null;
+            cart = [];
+            document.getElementById('current-table-name').innerText = 'No Table Selected';
+            document.getElementById('advance-paid-info').style.display = 'none';
+            renderCart();
+            renderTableGrid();
+            alert('Order held on table.');
+        }
+    } else {
+        // Hold Counter/Takeaway order in Sales History
+        const saleData = {
+            id: Date.now(),
+            orderType: selectedOrderType || 'COUNTER',
+            items: [...cart],
+            subtotal: cart.reduce((sum, item) => sum + (item.price * item.cartQty), 0),
+            discount: 0,
+            total: cart.reduce((sum, item) => sum + (item.price * item.cartQty), 0),
+            paymentMode: 'HELD',
+            status: 'HELD',
+            timestamp: new Date().toISOString(),
+            tableId: null
+        };
+        
+        salesHistory.unshift(saleData);
         saveData();
         
-        // Reset POS for next order without showing alert
-        currentSelectedTable = null;
+        // Reset POS
         cart = [];
-        document.getElementById('current-table-name').innerText = 'No Table Selected';
-        document.getElementById('advance-paid-info').style.display = 'none';
         renderCart();
-        renderTableGrid();
+        alert('Order held in history.');
     }
 }
 
 window.openAdvanceModal = function() {
-    if (!currentSelectedTable) {
-        alert('Please select a table first!');
-        openTableGrid();
-        return;
+    if (cart.length === 0) return alert('Cart is empty!');
+
+    if (selectedOrderType === 'DINE_IN') {
+        if (!currentSelectedTable) {
+            alert('Please select a table first!');
+            openTableGrid();
+            return;
+        }
+        const table = tables.find(t => t.id === currentSelectedTable);
+        document.getElementById('advance-table-name').innerText = `Adding Advance for ${table.name}`;
+    } else {
+        document.getElementById('advance-table-name').innerText = `Adding Advance for ${selectedOrderType}`;
     }
-    const table = tables.find(t => t.id === currentSelectedTable);
-    document.getElementById('advance-table-name').innerText = `Adding Advance for ${table.name}`;
+    
     document.getElementById('advance-amount-input').value = '';
     openModal('advanceModal');
 }
@@ -997,19 +1031,45 @@ window.saveAdvancePayment = function() {
 
     if (amount <= 0) return alert('Please enter a valid amount.');
 
-    const tableIndex = tables.findIndex(t => t.id === currentSelectedTable);
-    if (tableIndex > -1) {
-        tables[tableIndex].advance += amount;
-        tables[tableIndex].advanceMode = mode;
-        tables[tableIndex].cart = [...cart]; // Save current cart too
+    if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
+        const tableIndex = tables.findIndex(t => t.id === currentSelectedTable);
+        if (tableIndex > -1) {
+            tables[tableIndex].advance += amount;
+            tables[tableIndex].advanceMode = mode;
+            tables[tableIndex].cart = [...cart];
+            saveData();
+            
+            document.getElementById('advance-amount-display').innerText = formatCurrency(tables[tableIndex].advance);
+            document.getElementById('advance-paid-info').style.display = 'block';
+            
+            alert(`Advance of ₹${amount} recorded for ${tables[tableIndex].name}`);
+            closeModal('advanceModal');
+            renderTableGrid();
+        }
+    } else {
+        // Save Advance for Counter/Takeaway in Sales History
+        const saleData = {
+            id: Date.now(),
+            orderType: selectedOrderType || 'COUNTER',
+            items: [...cart],
+            subtotal: cart.reduce((sum, item) => sum + (item.price * item.cartQty), 0),
+            discount: 0,
+            total: cart.reduce((sum, item) => sum + (item.price * item.cartQty), 0),
+            paymentMode: mode,
+            advance: amount,
+            status: 'ADVANCE',
+            timestamp: new Date().toISOString(),
+            tableId: null
+        };
+        
+        salesHistory.unshift(saleData);
         saveData();
         
-        document.getElementById('advance-amount-display').innerText = formatCurrency(tables[tableIndex].advance);
-        document.getElementById('advance-paid-info').style.display = 'block';
-        
-        alert(`Advance of â”œÃ³Î“Ã‡Ãœâ”¬â•£${amount} recorded for ${tables[tableIndex].name}`);
+        // Reset POS
+        cart = [];
+        renderCart();
+        alert('Advance recorded and bill saved in history.');
         closeModal('advanceModal');
-        renderTableGrid();
     }
 }
 
@@ -1488,10 +1548,24 @@ function renderHistory() {
         const itemsStr = items.map(i => `${i.name || 'Unknown'} (x${i.cartQty || 0})`).join(', ');
         
         const tr = document.createElement('tr');
+        
+        // Highlight logic
+        if (sale.status === 'HELD') {
+            tr.style.background = 'rgba(99, 102, 241, 0.1)';
+            tr.style.borderLeft = '4px solid var(--accent-color)';
+        } else if (sale.status === 'ADVANCE') {
+            tr.style.background = 'rgba(245, 158, 11, 0.1)';
+            tr.style.borderLeft = '4px solid var(--warning-color)';
+        }
+
         const pMode = sale.paymentMode || 'CASH';
         let pModeBadge = '';
-        if (pMode === 'UPI') {
-            pModeBadge = '<span class="status-badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">UPI</span>';
+        if (sale.status === 'HELD') {
+            pModeBadge = '<span class="status-badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8; font-weight: 800;">HELD</span>';
+        } else if (sale.status === 'ADVANCE') {
+            pModeBadge = '<span class="status-badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; font-weight: 800;">ADVANCE</span>';
+        } else if (pMode === 'UPI') {
+            pModeBadge = '<span class="status-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">UPI</span>';
         } else if (pMode === 'BOTH') {
             pModeBadge = '<span class="status-badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">SPLIT</span>';
         } else {
@@ -1504,12 +1578,14 @@ function renderHistory() {
             </span>
         `;
 
+        const displayDate = sale.date || sale.timestamp || new Date();
+
         tr.innerHTML = `
             <td>
-                <strong>#${sale.id}</strong>
+                <strong>#${sale.id.toString().slice(-6)}</strong>
                 ${typeBadge}
             </td>
-            <td>${formatDateTime(sale.date)}</td>
+            <td>${formatDateTime(displayDate)}</td>
             <td><div style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${itemsStr}">${itemsStr}</div></td>
             <td>${pModeBadge}</td>
             <td style="color:var(--success-color); font-weight:bold;">${formatCurrency(sale.total)}</td>
