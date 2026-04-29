@@ -1,7 +1,7 @@
 // Supabase Configuration
 const SUPABASE_URL = 'https://fhshckrdkasopfneujmw.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_qFlDlQChYsm7WobmTOmc6w_Wkb3XSBl';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Data Structures (Initialized with local cache, will be updated from Supabase)
 let inventory = JSON.parse(localStorage.getItem('anokhi_inventory')) || [];
@@ -20,19 +20,19 @@ let tables = JSON.parse(localStorage.getItem('anokhi_tables')) || Array.from({le
 // Initial Data Sync from Supabase
 async function syncFromSupabase() {
     try {
-        const { data: invData } = await supabase.from('inventory').select('*');
+        const { data: invData } = await db.from('inventory').select('*');
         if (invData) {
             inventory = invData;
             localStorage.setItem('anokhi_inventory', JSON.stringify(inventory));
         }
 
-        const { data: salesData } = await supabase.from('sales_history').select('*').order('date', { ascending: false });
+        const { data: salesData } = await db.from('sales_history').select('*').order('date', { ascending: false });
         if (salesData) {
             salesHistory = salesData;
             localStorage.setItem('anokhi_sales', JSON.stringify(salesHistory));
         }
 
-        const { data: tableData } = await supabase.from('tables').select('*');
+        const { data: tableData } = await db.from('tables').select('*');
         if (tableData && tableData.length > 0) {
             // Map db tables to local structure if needed
             tables = tables.map(t => {
@@ -205,12 +205,12 @@ async function saveData() {
     try {
         // Upsert inventory
         if (inventory.length > 0) {
-            await supabase.from('inventory').upsert(inventory);
+            await db.from('inventory').upsert(inventory);
         }
         
         // Upsert tables
         if (tables.length > 0) {
-            await supabase.from('tables').upsert(tables.map(t => ({
+            await db.from('tables').upsert(tables.map(t => ({
                 id: t.id,
                 name: t.name,
                 cart: t.cart,
@@ -221,7 +221,7 @@ async function saveData() {
 
         // For sales history, we usually only add new ones, but upsert is safer if we allow edits
         if (salesHistory.length > 0) {
-            await supabase.from('sales_history').upsert(salesHistory.map(s => ({
+            await db.from('sales_history').upsert(salesHistory.map(s => ({
                 id: s.id,
                 date: s.date,
                 items: s.items,
@@ -528,7 +528,7 @@ window.deleteItem = async function(id) {
         updateDashboard();
         
         // Explicit delete from Supabase
-        await supabase.from('inventory').delete().eq('id', id);
+        await db.from('inventory').delete().eq('id', id);
     }
 }
 
@@ -1329,7 +1329,7 @@ window.deleteSale = function(saleId) {
             saveData();
             
             // Explicit delete from Supabase
-            await supabase.from('sales_history').delete().eq('id', saleId);
+            await db.from('sales_history').delete().eq('id', saleId);
 
             // Re-render
             renderHistory();
