@@ -14,6 +14,7 @@ try {
 // Data Structures (Initialized with local cache, will be updated from Supabase)
 let inventory = JSON.parse(localStorage.getItem('anokhi_inventory')) || [];
 let salesHistory = JSON.parse(localStorage.getItem('anokhi_sales')) || [];
+let expensesHistory = JSON.parse(localStorage.getItem('anokhi_expenses')) || [];
 let cart = [];
 let selectedOrderType = 'DINE_IN';
 let currentSelectedTable = null;
@@ -51,12 +52,20 @@ async function syncFromSupabase() {
             localStorage.setItem('anokhi_tables', JSON.stringify(tables));
         }
 
+        const { data: expData } = await db.from('expenses').select('*').order('date', { ascending: false });
+        if (expData) {
+            expensesHistory = expData;
+            localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
+        }
+
         // Re-render views
         renderInventory();
         renderPOSItems();
         renderHistory();
         renderTableGrid();
+        renderExpenses();
         updateDashboard();
+        updateExpenseStats();
     } catch (err) {
         console.error('Sync Error:', err);
     }
@@ -112,6 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if(target === 'inventory') renderInventory();
             if(target === 'pos') renderPOSItems();
             if(target === 'history') renderHistory();
+            if(target === 'expenses') {
+                renderExpenses();
+                updateExpenseStats();
+            }
             if(target === 'settings') initSettingsView();
         });
     });
@@ -127,6 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
     renderPOSItems();
     renderHistory();
     renderTableGrid();
+    renderExpenses();
+    updateExpenseStats();
 
     // Sync from Supabase in background
     syncFromSupabase();
@@ -1361,4 +1376,123 @@ window.deleteSale = async function(saleId) {
     } else if (password !== null) {
         alert("Incorrect Password! You do not have permission to delete this sale.");
     }
+}
+
+// --- Expenses Logic ---
+window.updateExpenseSubCats = function() {
+    const mainCat = document.getElementById('expense-main-cat').value;
+    const subCatSelect = document.getElementById('expense-sub-cat');
+    subCatSelect.innerHTML = '<option value="">Select Sub-Category</option>';
+
+    const subCats = {
+        'Staff & Operation': ['Salary', 'Advance', 'Rent', 'Bill'],
+        'Material': ['Groceries', 'Vegetable', 'Gas', 'Packaging']
+    };
+
+    if (mainCat && subCats[mainCat]) {
+        subCats[mainCat].forEach(sub => {
+            const opt = document.createElement('option');
+            opt.value = sub;
+            opt.textContent = sub;
+            subCatSelect.appendChild(opt);
+        });
+    }
+}
+
+window.handleExpenseSubmit = async function(e) {
+    e.preventDefault();
+    const mainCat = document.getElementById('expense-main-cat').value;
+    const subCat = document.getElementById('expense-sub-cat').value;
+    const amount = parseFloat(document.getElementById('expense-amount').value);
+    const mode = document.getElementById('expense-payment-mode').value;
+    const desc = document.getElementById('expense-desc').value;
+
+    const newExpense = {
+        id: Date.now().toString(),
+        date: new Date().toISOString(),
+        main_category: mainCat,
+        sub_category: subCat,
+        amount: amount,
+        payment_mode: mode,
+        description: desc
+    };
+
+    expensesHistory.unshift(newExpense);
+    localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
+
+    if (db) {
+        try {
+            await db.from('expenses').insert(newExpense);
+        } catch(err) {
+            console.error('Supabase Expense Error:', err);
+        }
+    }
+
+    e.target.reset();
+    renderExpenses();
+    updateExpenseStats();
+    alert('Expense added successfully!');
+}
+
+function renderExpenses() {
+    const tbody = document.getElementById('expenses-tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+
+    expensesHistory.forEach(exp => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${formatDateLabel(exp.date)}</td>
+            <td>${exp.main_category}</td>
+            <td>${exp.sub_category}</td>
+            <td>${formatCurrency(exp.amount)}</td>
+            <td><span class="status-badge" style="background:rgba(255,255,255,0.1)">${exp.payment_mode}</span></td>
+            <td title="${exp.description || ''}">${exp.description ? (exp.description.substring(0, 20) + (exp.description.length > 20 ? '...' : '')) : '-'}</td>
+            <td>
+                <button class="btn-danger" style="padding:4px 8px; font-size:10px;" onclick="deleteExpense('${exp.id}')">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+window.deleteExpense = async function(id) {
+    if(confirm('Are you sure you want to delete this expense?')) {
+        expensesHistory = expensesHistory.filter(e => e.id !== id);
+        localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
+        
+        if(db) {
+            try {
+                await db.from('expenses').delete().eq('id', id);
+            } catch(err) {
+                console.error('Delete Expense Error:', err);
+            }
+        }
+        
+        renderExpenses();
+        updateExpenseStats();
+    }
+}
+
+function updateExpenseStats() {
+    const staffTotal = expensesHistory
+        .filter(e => e.main_category === 'Staff & Operation')
+        .reduce((sum, e) => sum + e.amount, 0);
+        
+    const materialTotal = expensesHistory
+        .filter(e => e.main_category === 'Material')
+        .reduce((sum, e) => sum + e.amount, 0);
+
+    const staffEl = document.getElementById('total-staff-expenses');
+    const matEl = document.getElementById('total-material-expenses');
+    if(staffEl) staffEl.innerText = formatCurrency(staffTotal);
+    if(matEl) matEl.innerText = formatCurrency(materialTotal);
+}
+
+function formatDateLabel(isoString) {
+    const d = new Date(isoString);
+    return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + 
+           d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 }

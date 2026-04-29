@@ -37,12 +37,26 @@ CREATE TABLE IF NOT EXISTS tables (
   advance_mode TEXT NOT NULL DEFAULT 'CASH'
 );
 
--- 4. ENABLE ROW LEVEL SECURITY
+-- 4. EXPENSES TABLE
+CREATE TABLE IF NOT EXISTS expenses (
+    id TEXT PRIMARY KEY,
+    date TIMESTAMPTZ DEFAULT NOW(),
+    main_category TEXT NOT NULL,
+    sub_category TEXT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_mode TEXT NOT NULL,
+    description TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 5. ENABLE ROW LEVEL SECURITY
 ALTER TABLE inventory ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sales_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tables ENABLE ROW LEVEL SECURITY;
+ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
 
--- 5. ALLOW ALL OPERATIONS (anon users - for local POS use)
+-- 6. ALLOW ALL OPERATIONS (anon users - for local POS use)
 CREATE POLICY "anon_all_inventory" ON inventory FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "anon_all_sales" ON sales_history FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "anon_all_tables" ON tables FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "anon_all_expenses" ON expenses FOR ALL TO anon USING (true) WITH CHECK (true);
