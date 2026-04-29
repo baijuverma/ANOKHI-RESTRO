@@ -175,28 +175,20 @@
                 <div class="glass-panel mt-4" style="padding: 24px;">
                     <form id="expense-form" class="expense-entry-form" onsubmit="handleExpenseSubmit(event)">
                         <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-                             <div class="form-group">
+                            <div class="form-group">
                                 <label>Main Category</label>
-                                <select id="expense-main-cat" onchange="updateExpenseSubCats()" required>
-                                    <option value="">Select Category</option>
-                                    <option value="Staff & Operation">Staff & Operation</option>
-                                    <option value="Material">Material</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <div class="form-group" id="custom-main-cat-group" style="display: none;">
-                                <label>Custom Main Category Name</label>
-                                <input type="text" id="expense-custom-main-cat" placeholder="Enter name...">
+                                <input type="text" id="expense-main-cat" list="main-cat-list" placeholder="Select or type..." required onchange="updateExpenseSubCats()">
+                                <datalist id="main-cat-list">
+                                    <option value="Staff & Operation">
+                                    <option value="Material">
+                                </datalist>
                             </div>
                             <div class="form-group">
                                 <label>Sub Category</label>
-                                <select id="expense-sub-cat" onchange="toggleCustomSubCat()" required>
-                                    <option value="">Select Sub-Category</option>
-                                </select>
-                            </div>
-                            <div class="form-group" id="custom-sub-cat-group" style="display: none;">
-                                <label>Custom Sub-Category Name</label>
-                                <input type="text" id="expense-custom-sub-cat" placeholder="Enter name...">
+                                <input type="text" id="expense-sub-cat" list="sub-cat-list" placeholder="Select or type..." required>
+                                <datalist id="sub-cat-list">
+                                    <!-- Dynamic content -->
+                                </datalist>
                             </div>
                             <div class="form-group">
                                 <label>Amount (₹)</label>
