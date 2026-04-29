@@ -127,9 +127,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 newBill();
             }
         } else if (e.key === 'Enter') {
-            const receiptModal = document.getElementById('receiptModal');
-            if (receiptModal && receiptModal.classList.contains('active')) {
-                closeModal('receiptModal');
+            const activeModal = document.querySelector('.modal.active');
+            if (activeModal) {
+                // If it's a form modal and we are typing in an input, let the form submit
+                // Otherwise, close the modal as requested
+                if (active !== searchInput && active.tagName !== 'INPUT' && active.tagName !== 'SELECT' && active.tagName !== 'TEXTAREA') {
+                    closeModal(activeModal.id);
+                } else if (!activeModal.querySelector('form')) {
+                    // If modal has no form (like receipt), close it anyway
+                    closeModal(activeModal.id);
+                }
             } else if (cart.length > 0) {
                 processSale();
             }
