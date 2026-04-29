@@ -1319,10 +1319,51 @@ window.processSale = function() {
         return alert('Validation Error: Please select a table before completing a Dine-In sale.');
     }
 
-    if (!confirm('Are you sure you want to complete this sale?')) {
-        return;
-    }
+    const totals = calculateTotal();
+    const total = totals.total;
+    const paymentModeObj = document.querySelector('input[name="payment-mode"]:checked');
+    const paymentMode = paymentModeObj ? paymentModeObj.value : 'CASH';
+    const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
+    const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
+    
+    let totalPaid = 0;
+    if (paymentMode === 'CASH') totalPaid = payCash;
+    else if (paymentMode === 'UPI') totalPaid = payUpi;
+    else totalPaid = payCash + payUpi;
 
+    const dues = total - totalPaid;
+
+    if (dues > 0.01) {
+        // CREDIT SALE: Require customer details
+        document.getElementById('modal-dues-amount').innerText = formatCurrency(dues);
+        document.getElementById('cust-name').value = '';
+        document.getElementById('cust-mobile').value = '';
+        openModal('customerModal');
+    } else {
+        // NORMAL SALE: Just confirm
+        if (!confirm('Are you sure you want to complete this sale?')) {
+            return;
+        }
+        finalizeSaleRecord();
+    }
+}
+
+window.completeCreditSale = function() {
+    const name = document.getElementById('cust-name').value.trim();
+    const mobile = document.getElementById('cust-mobile').value.trim();
+    
+    if (!name || !mobile) {
+        return alert('Please enter both Customer Name and Mobile Number.');
+    }
+    if (mobile.length !== 10) {
+        return alert('Please enter a valid 10-digit mobile number.');
+    }
+    
+    finalizeSaleRecord(name, mobile);
+    closeModal('customerModal');
+}
+
+function finalizeSaleRecord(custName = null, custMobile = null) {
     const totals = calculateTotal();
     const total = totals.total;
     const discount = totals.discount;
@@ -1334,17 +1375,6 @@ window.processSale = function() {
 
     const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
     const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
-    
-    // Validate Total Payment
-    let totalPaid = 0;
-    if (paymentMode === 'CASH') totalPaid = payCash;
-    else if (paymentMode === 'UPI') totalPaid = payUpi;
-    else totalPaid = payCash + payUpi;
-
-    if (Math.abs(totalPaid - total) > 0.01) {
-        return alert(`Validation Error: Total Paid (${formatCurrency(totalPaid)}) does not match Total Bill (${formatCurrency(total)}). Please adjust the payment amounts.`);
-    }
-
     const splitAmounts = { cash: payCash, upi: payUpi };
 
     // Deduct Inventory
@@ -1367,7 +1397,10 @@ window.processSale = function() {
         splitAmounts: splitAmounts,
         orderType: selectedOrderType,
         tableName: selectedOrderType === 'DINE_IN' && currentSelectedTable ? tables.find(t => t.id === currentSelectedTable).name : null,
-        advancePaid: totals.advance
+        advancePaid: totals.advance,
+        customerName: custName,
+        customerMobile: custMobile,
+        dues: Math.max(0, total - (payCash + payUpi))
     };
     
     // Clear held table if applicable

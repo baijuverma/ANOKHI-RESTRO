@@ -745,6 +745,37 @@
         </div>
     </div>
 
+    <!-- Customer Details Modal (For Dues/Credit) -->
+    <div id="customerModal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 400px;">
+            <span class="close-btn" onclick="closeModal('customerModal')">&times;</span>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 60px; height: 60px; background: rgba(245, 158, 11, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                    <i class="fa-solid fa-user-pen" style="font-size: 24px; color: var(--warning-color);"></i>
+                </div>
+                <h2>Customer Details</h2>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;">This sale has outstanding dues. Please enter customer details to continue.</p>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fa-solid fa-user"></i> Customer Name</label>
+                <input type="text" id="cust-name" placeholder="Enter full name..." required>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-phone"></i> Mobile Number</label>
+                <input type="tel" id="cust-mobile" placeholder="Enter 10-digit mobile..." maxlength="10" required>
+            </div>
+            
+            <div id="dues-amount-notice" style="margin-bottom: 20px; padding: 12px; background: rgba(248, 113, 113, 0.1); border-radius: 8px; border: 1px solid rgba(248, 113, 113, 0.2); text-align: center;">
+                <span style="color: #f87171; font-weight: 700; font-size: 16px;">Dues: <span id="modal-dues-amount">₹0</span></span>
+            </div>
+            
+            <button class="btn-success full-width" onclick="completeCreditSale()" style="padding: 12px; font-weight: 700; font-size: 16px;">
+                <i class="fa-solid fa-check-double"></i> Complete Sale
+            </button>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="app.js"></script>
 </body>
