@@ -416,6 +416,12 @@
                                      <span id="cart-total-label">Total</span>
                                      <span id="cart-total">₹0</span>
                                  </div>
+                                 
+                                 <!-- Dues / Remaining Row -->
+                                 <div id="dues-row" class="summary-row" style="margin-top: -8px; margin-bottom: 15px; font-size: 14px; font-weight: 600; color: #f87171;">
+                                     <span>Dues</span>
+                                     <span id="cart-dues">₹0.00</span>
+                                 </div>
                             </div>
 
                                 <div id="refund-info" style="display: none; margin-top: 10px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid var(--success-color); text-align: center;">
@@ -435,15 +441,15 @@
                                     </div>
                                 </div>
 
-                                <div id="split-payment-fields" style="display: none; margin-bottom: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+                                <div id="payment-amount-fields" style="margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--panel-border);">
                                     <div style="display: flex; gap: 10px;">
-                                        <div style="flex: 1;">
-                                            <label style="font-size: 11px; color: var(--text-secondary);">Cash</label>
-                                            <input type="number" id="split-cash-amount" min="0" oninput="if(this.value < 0) this.value = 0;" placeholder="0" style="padding: 6px; width: 100%; border-radius: 4px;">
+                                        <div id="field-cash-wrapper" style="flex: 1;">
+                                            <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Paying by Cash</label>
+                                            <input type="number" id="pay-cash-amount" min="0" oninput="calculateDues()" placeholder="0" style="padding: 8px; width: 100%; border-radius: 6px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--panel-border);">
                                         </div>
-                                        <div style="flex: 1;">
-                                            <label style="font-size: 11px; color: var(--text-secondary);">UPI</label>
-                                            <input type="number" id="split-upi-amount" min="0" oninput="if(this.value < 0) this.value = 0;" placeholder="0" style="padding: 6px; width: 100%; border-radius: 4px;">
+                                        <div id="field-upi-wrapper" style="flex: 1; display: none;">
+                                            <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Paying by UPI</label>
+                                            <input type="number" id="pay-upi-amount" min="0" oninput="calculateDues()" placeholder="0" style="padding: 8px; width: 100%; border-radius: 6px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--panel-border);">
                                         </div>
                                     </div>
                                 </div>

@@ -1227,6 +1227,10 @@ window.calculateTotal = function() {
     }
 
     document.getElementById('cart-total').innerText = formatCurrency(finalTotal);
+    
+    // Update dues whenever total changes
+    if (typeof calculateDues === 'function') calculateDues();
+    
     return { subtotal, discount: discountAmount, advance: advancePaid, roundOff, total: finalTotal };
 }
 
@@ -1234,17 +1238,78 @@ window.clearCart = function() {
     cart = [];
     const discountInput = document.getElementById('cart-discount');
     if(discountInput) discountInput.value = '0';
+    
+    // Reset payment fields
+    const cashIn = document.getElementById('pay-cash-amount');
+    const upiIn = document.getElementById('pay-upi-amount');
+    if(cashIn) cashIn.value = '';
+    if(upiIn) upiIn.value = '';
+    
     renderCart();
+}
+
+window.calculateDues = function() {
+    const totalEl = document.getElementById('cart-total');
+    if (!totalEl) return;
+    
+    // Parse total from text (removing currency symbol and commas)
+    const totalStr = totalEl.innerText.replace(/[^0-9.]/g, '');
+    const finalTotal = parseFloat(totalStr) || 0;
+    
+    const pMode = document.querySelector('input[name="payment-mode"]:checked').value;
+    const cashInput = document.getElementById('pay-cash-amount');
+    const upiInput = document.getElementById('pay-upi-amount');
+    
+    let cashPaid = parseFloat(cashInput.value) || 0;
+    let upiPaid = parseFloat(upiInput.value) || 0;
+    
+    let totalPaid = 0;
+    if (pMode === 'CASH') totalPaid = cashPaid;
+    else if (pMode === 'UPI') totalPaid = upiPaid;
+    else totalPaid = cashPaid + upiPaid;
+    
+    let dues = Math.max(0, finalTotal - totalPaid);
+    const duesEl = document.getElementById('cart-dues');
+    const duesRow = document.getElementById('dues-row');
+    
+    if (duesEl) {
+        duesEl.innerText = formatCurrency(dues);
+        if (dues > 0) {
+            duesRow.style.color = '#f87171'; // Red
+        } else {
+            duesRow.style.color = '#10b981'; // Green
+            duesEl.innerText = 'PAID';
+        }
+    }
 }
 
 window.toggleSplitPayment = function() {
     const pMode = document.querySelector('input[name="payment-mode"]:checked').value;
-    const splitFields = document.getElementById('split-payment-fields');
-    if (pMode === 'BOTH') {
-        splitFields.style.display = 'block';
+    const cashWrapper = document.getElementById('field-cash-wrapper');
+    const upiWrapper = document.getElementById('field-upi-wrapper');
+    const cashInput = document.getElementById('pay-cash-amount');
+    const upiInput = document.getElementById('pay-upi-amount');
+    
+    const totals = calculateTotal();
+    const total = totals.total;
+
+    if (pMode === 'CASH') {
+        cashWrapper.style.display = 'block';
+        upiWrapper.style.display = 'none';
+        cashInput.value = total; 
+        upiInput.value = 0;
+    } else if (pMode === 'UPI') {
+        cashWrapper.style.display = 'none';
+        upiWrapper.style.display = 'block';
+        upiInput.value = total;
+        cashInput.value = 0;
     } else {
-        splitFields.style.display = 'none';
+        cashWrapper.style.display = 'block';
+        upiWrapper.style.display = 'block';
+        cashInput.value = '';
+        upiInput.value = '';
     }
+    calculateDues();
 }
 
 window.processSale = function() {
@@ -1267,16 +1332,20 @@ window.processSale = function() {
     const paymentModeObj = document.querySelector('input[name="payment-mode"]:checked');
     const paymentMode = paymentModeObj ? paymentModeObj.value : 'CASH';
 
-    let splitAmounts = null;
-    if (paymentMode === 'BOTH') {
-        const splitCash = parseFloat(document.getElementById('split-cash-amount').value) || 0;
-        const splitUpi = parseFloat(document.getElementById('split-upi-amount').value) || 0;
-        
-        if (splitCash + splitUpi !== total) {
-            return alert(`Validation Error: Cash (â”œÃ³Î“Ã‡Ãœâ”¬â•£${splitCash}) + UPI (â”œÃ³Î“Ã‡Ãœâ”¬â•£${splitUpi}) must exactly equal the Total Bill (â”œÃ³Î“Ã‡Ãœâ”¬â•£${total}).`);
-        }
-        splitAmounts = { cash: splitCash, upi: splitUpi };
+    const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
+    const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
+    
+    // Validate Total Payment
+    let totalPaid = 0;
+    if (paymentMode === 'CASH') totalPaid = payCash;
+    else if (paymentMode === 'UPI') totalPaid = payUpi;
+    else totalPaid = payCash + payUpi;
+
+    if (Math.abs(totalPaid - total) > 0.01) {
+        return alert(`Validation Error: Total Paid (${formatCurrency(totalPaid)}) does not match Total Bill (${formatCurrency(total)}). Please adjust the payment amounts.`);
     }
+
+    const splitAmounts = { cash: payCash, upi: payUpi };
 
     // Deduct Inventory
     cart.forEach(cartItem => {
