@@ -373,7 +373,7 @@ window.openAddItemModal = function() {
 function populateItemNameDatalist() {
     const dl = document.getElementById('item-name-list');
     if (!dl) return;
-    dl.innerHTML = inventory.map(i => `<option value=""></option>`).join('');
+    dl.innerHTML = inventory.map(i => `<option value="${i.name}"></option>`).join('');
 }
 
 function openModal(id) {
@@ -622,6 +622,7 @@ window.editItem = function(id) {
         document.getElementById('item-quantity').value = item.quantity;
         document.getElementById('item-low-stock').value = item.lowStockThreshold || 5;
         document.getElementById('modal-title').innerText = 'Edit Item';
+        populateItemNameDatalist();
         openModal('addItemModal');
     }
 }
