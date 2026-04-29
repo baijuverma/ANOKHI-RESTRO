@@ -127,8 +127,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 newBill();
             }
         } else if (e.key === 'Enter') {
-            // Enter completes sale if cart is not empty
-            if (cart.length > 0) {
+            const receiptModal = document.getElementById('receiptModal');
+            if (receiptModal && receiptModal.classList.contains('active')) {
+                closeModal('receiptModal');
+            } else if (cart.length > 0) {
                 processSale();
             }
         }

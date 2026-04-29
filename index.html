@@ -420,7 +420,7 @@
     </div>
 
     <!-- Receipt Modal -->
-    <div id="receiptModal" class="modal">
+    <div id="receiptModal" class="modal" onclick="if(event.target === this) closeModal('receiptModal')">
         <div class="modal-content glass-panel receipt-content">
             <span class="close-btn" onclick="closeModal('receiptModal')">&times;</span>
             <h2 style="text-align: center;"><i class="fa-solid fa-circle-check"
