@@ -374,13 +374,14 @@
                 </div>
                 <div class="form-group">
                     <label>Category</label>
-                    <select id="item-category" required>
-                        <option value="Main Course">Main Course</option>
-                        <option value="Starter">Starter</option>
-                        <option value="Beverage">Beverage</option>
-                        <option value="Dessert">Dessert</option>
-                        <option value="Raw Material">Raw Material</option>
-                    </select>
+                    <input type="text" id="item-category" list="category-list" required placeholder="Select or type category...">
+                    <datalist id="category-list">
+                        <option value="Main Course">
+                        <option value="Starter">
+                        <option value="Beverage">
+                        <option value="Dessert">
+                        <option value="Raw Material">
+                    </datalist>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
