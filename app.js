@@ -534,26 +534,80 @@ window.saveSettings = function() {
 
 window.importBiharMenu = function() {
     const biharMenu = [
-        { id: 'B1', name: 'Litti Chokha (Desi Ghee)', category: 'Main Course', price: 120, quantity: 50, lowStockThreshold: 10 },
-        { id: 'B2', name: 'Champaran Meat (Handi)', category: 'Main Course', price: 450, quantity: 20, lowStockThreshold: 5 },
-        { id: 'B3', name: 'Sattu Paratha (2 Pcs)', category: 'Main Course', price: 80, quantity: 40, lowStockThreshold: 10 },
-        { id: 'B4', name: 'Dal Pitha', category: 'Starter', price: 100, quantity: 30, lowStockThreshold: 5 },
-        { id: 'B5', name: 'Bihari Chicken Curry', category: 'Main Course', price: 320, quantity: 25, lowStockThreshold: 5 },
-        { id: 'B6', name: 'Malpua (2 Pcs)', category: 'Dessert', price: 60, quantity: 30, lowStockThreshold: 5 },
-        { id: 'B7', name: 'Bel Grami', category: 'Dessert', price: 50, quantity: 40, lowStockThreshold: 10 },
-        { id: 'B8', name: 'Thekua (Pack of 5)', category: 'Dessert', price: 40, quantity: 100, lowStockThreshold: 20 },
-        { id: 'B9', name: 'Sattu Sarbat', category: 'Beverage', price: 40, quantity: 50, lowStockThreshold: 10 },
-        { id: 'B10', name: 'Jaljeera Soda', category: 'Beverage', price: 30, quantity: 50, lowStockThreshold: 10 }
+        // Main Course - Veg
+        { name: 'Litti Chokha (Desi Ghee)', category: 'Main Course', price: 120, quantity: 50, lowStockThreshold: 10 },
+        { name: 'Sattu Paratha (2 Pcs)', category: 'Main Course', price: 80, quantity: 40, lowStockThreshold: 10 },
+        { name: 'Dal Pitha (Steam/Fry)', category: 'Main Course', price: 100, quantity: 30, lowStockThreshold: 5 },
+        { name: 'Bihari Veg Thali', category: 'Main Course', price: 150, quantity: 30, lowStockThreshold: 5 },
+        { name: 'Paneer Butter Masala', category: 'Main Course', price: 220, quantity: 20, lowStockThreshold: 5 },
+        { name: 'Kadai Paneer', category: 'Main Course', price: 240, quantity: 15, lowStockThreshold: 5 },
+        { name: 'Mix Veg', category: 'Main Course', price: 160, quantity: 20, lowStockThreshold: 5 },
+        { name: 'Alu Dum (Bihari Style)', category: 'Main Course', price: 120, quantity: 25, lowStockThreshold: 5 },
+        { name: 'Dal Tadka (Yellow)', category: 'Main Course', price: 110, quantity: 40, lowStockThreshold: 10 },
+        { name: 'Dal Makhani', category: 'Main Course', price: 180, quantity: 15, lowStockThreshold: 5 },
+        
+        // Main Course - Non-Veg
+        { name: 'Champaran Meat (Handi)', category: 'Main Course', price: 450, quantity: 20, lowStockThreshold: 5 },
+        { name: 'Bihari Chicken Curry', category: 'Main Course', price: 320, quantity: 25, lowStockThreshold: 5 },
+        { name: 'Fish Curry (Sarson Wali)', category: 'Main Course', price: 280, quantity: 15, lowStockThreshold: 5 },
+        { name: 'Mutton Taash (Purnia Style)', category: 'Main Course', price: 380, quantity: 10, lowStockThreshold: 3 },
+        { name: 'Chicken Dehati', category: 'Main Course', price: 350, quantity: 20, lowStockThreshold: 5 },
+        { name: 'Egg Curry (2 Eggs)', category: 'Main Course', price: 120, quantity: 30, lowStockThreshold: 5 },
+        
+        // Rice & Breads
+        { name: 'Jeera Rice', category: 'Main Course', price: 100, quantity: 50, lowStockThreshold: 10 },
+        { name: 'Veg Pulao', category: 'Main Course', price: 160, quantity: 30, lowStockThreshold: 5 },
+        { name: 'Chicken Biryani', category: 'Main Course', price: 280, quantity: 20, lowStockThreshold: 5 },
+        { name: 'Tawa Roti', category: 'Main Course', price: 10, quantity: 200, lowStockThreshold: 50 },
+        { name: 'Butter Naan', category: 'Main Course', price: 40, quantity: 100, lowStockThreshold: 20 },
+        { name: 'Garlic Naan', category: 'Main Course', price: 50, quantity: 80, lowStockThreshold: 15 },
+        { name: 'Lachha Paratha', category: 'Main Course', price: 45, quantity: 80, lowStockThreshold: 15 },
+        
+        // Starters & Snacks
+        { name: 'Bihari Boti Kebab', category: 'Starter', price: 260, quantity: 20, lowStockThreshold: 5 },
+        { name: 'Chicken Lollipop (6 Pcs)', category: 'Starter', price: 280, quantity: 15, lowStockThreshold: 5 },
+        { name: 'Veg Chop (4 Pcs)', category: 'Starter', price: 80, quantity: 40, lowStockThreshold: 10 },
+        { name: 'Paneer Tikka', category: 'Starter', price: 220, quantity: 15, lowStockThreshold: 5 },
+        { name: 'Onion Pakoda (Plate)', category: 'Starter', price: 60, quantity: 50, lowStockThreshold: 10 },
+        { name: 'Ghugni Choora', category: 'Starter', price: 70, quantity: 40, lowStockThreshold: 10 },
+        { name: 'Chicken 65', category: 'Starter', price: 240, quantity: 20, lowStockThreshold: 5 },
+        { name: 'Crispy Corn', category: 'Starter', price: 180, quantity: 15, lowStockThreshold: 5 },
+        
+        // Chinese (Common in Bihar Restros)
+        { name: 'Veg Chowmein', category: 'Starter', price: 120, quantity: 30, lowStockThreshold: 5 },
+        { name: 'Chilli Chicken (Dry)', category: 'Starter', price: 260, quantity: 20, lowStockThreshold: 5 },
+        { name: 'Veg Manchurian', category: 'Starter', price: 180, quantity: 20, lowStockThreshold: 5 },
+        { name: 'Chicken Fried Rice', category: 'Main Course', price: 200, quantity: 25, lowStockThreshold: 5 },
+        
+        // Rolls
+        { name: 'Egg Roll', category: 'Starter', price: 50, quantity: 50, lowStockThreshold: 10 },
+        { name: 'Chicken Roll', category: 'Starter', price: 90, quantity: 40, lowStockThreshold: 10 },
+        { name: 'Paneer Roll', category: 'Starter', price: 80, quantity: 30, lowStockThreshold: 5 },
+        
+        // Desserts
+        { name: 'Malpua (2 Pcs)', category: 'Dessert', price: 60, quantity: 30, lowStockThreshold: 5 },
+        { name: 'Bel Grami (250g)', category: 'Dessert', price: 120, quantity: 20, lowStockThreshold: 5 },
+        { name: 'Thekua (Pack of 5)', category: 'Dessert', price: 40, quantity: 100, lowStockThreshold: 20 },
+        { name: 'Gulab Jamun (2 Pcs)', category: 'Dessert', price: 50, quantity: 50, lowStockThreshold: 10 },
+        { name: 'Gajar ka Halwa (Plate)', category: 'Dessert', price: 80, quantity: 25, lowStockThreshold: 5 },
+        { name: 'Khaja (250g)', category: 'Dessert', price: 100, quantity: 20, lowStockThreshold: 5 },
+        { name: 'Balushahi (250g)', category: 'Dessert', price: 120, quantity: 15, lowStockThreshold: 5 },
+        
+        // Beverages
+        { name: 'Sattu Sarbat', category: 'Beverage', price: 40, quantity: 50, lowStockThreshold: 10 },
+        { name: 'Jaljeera Soda', category: 'Beverage', price: 30, quantity: 50, lowStockThreshold: 10 },
+        { name: 'Bel ka Sharbat', category: 'Beverage', price: 50, quantity: 30, lowStockThreshold: 10 },
+        { name: 'Masala Chai', category: 'Beverage', price: 20, quantity: 200, lowStockThreshold: 50 },
+        { name: 'Sweet Lassi', category: 'Beverage', price: 60, quantity: 40, lowStockThreshold: 10 },
+        { name: 'Cold Coffee', category: 'Beverage', price: 90, quantity: 20, lowStockThreshold: 5 }
     ];
 
-    if(confirm('Aap Bihar Restaurant Menu items import karna chahte hain? Ye items aapki inventory mein add ho jayenge.')) {
+    if(confirm(`Aap Bihar Restaurant ke 50+ popular menu items import karna chahte hain?`)) {
         let addedCount = 0;
         biharMenu.forEach(item => {
             const exists = inventory.find(i => i.name.toLowerCase() === item.name.toLowerCase());
             if(!exists) {
-                // Use a unique ID based on timestamp to avoid collisions with B1, B2... if they import multiple times
-                // but keep the logic simple for now as per user request
-                inventory.push({...item, id: Date.now() + Math.random().toString(36).substr(2, 5)});
+                inventory.push({...item, id: Date.now() + Math.random().toString(36).substr(2, 9)});
                 addedCount++;
             }
         });
@@ -562,7 +616,7 @@ window.importBiharMenu = function() {
             saveData();
             renderInventory();
             updateDashboard();
-            alert(`${addedCount} menu items successfully add ho gaye hain!`);
+            alert(`${addedCount} new items successfully add ho gaye hain!`);
         } else {
             alert('Saare items pehle se hi inventory mein hain.');
         }
