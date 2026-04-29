@@ -424,8 +424,57 @@ button, button * {
 
 .form-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
+    align-items: flex-end;
+}
+
+/* Custom Radio Group */
+.radio-group {
+    display: flex;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid var(--panel-border);
+    height: 45px;
+    align-items: center;
+}
+
+.radio-item {
+    flex: 1;
+    position: relative;
+    height: 100%;
+}
+
+.radio-item input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0; width: 0;
+}
+
+.radio-item label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    margin: 0;
+}
+
+.radio-item input:checked + label {
+    background: var(--accent-color);
+    color: white;
+}
+
+.radio-item:hover label:not(.radio-item input:checked + label) {
+    background: rgba(255, 255, 255, 0.05);
 }
 
 label {

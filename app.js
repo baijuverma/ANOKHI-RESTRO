@@ -1628,7 +1628,7 @@ window.handleExpenseSubmit = async function(e) {
     const mainCat = document.getElementById('expense-main-cat').value;
     const subCat = document.getElementById('expense-sub-cat').value;
     const amount = parseFloat(document.getElementById('expense-amount').value);
-    const mode = document.getElementById('expense-payment-mode').value;
+    const mode = document.querySelector('input[name="expense-payment-mode"]:checked').value;
     const desc = document.getElementById('expense-desc').value;
 
     const newExpense = {
