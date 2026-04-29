@@ -1319,7 +1319,7 @@ window.viewReceipt = function(id) {
     if(sale) showReceipt(sale);
 }
 
-window.deleteSale = function(saleId) {
+window.deleteSale = async function(saleId) {
     const password = prompt("Enter Admin Password to delete this sale:");
     if (password === '8540') {
         const saleIndex = salesHistory.findIndex(s => s.id === saleId);
