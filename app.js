@@ -2013,10 +2013,14 @@ window.toggleCartDetails = function() {
 }
 
 window.toggleTablesCurtain = function() {
+    const container = document.getElementById('pos-tables-container');
     const curtain = document.getElementById('tables-curtain');
     const icon = document.getElementById('tables-curtain-icon');
-    if (curtain) {
+    
+    if (curtain && container) {
         curtain.classList.toggle('collapsed');
+        container.classList.toggle('collapsed');
+        
         if (curtain.classList.contains('collapsed')) {
             icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
         } else {

@@ -574,8 +574,15 @@ input:focus, select:focus {
 .tables-section {
     padding: 15px;
     border-bottom: 1px solid var(--panel-border);
-    height: 160px; /* Fixed height for consistent scrolling */
-    overflow-y: scroll; /* Force vertical scroll */
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tables-section.collapsed {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 0;
+    border-bottom: none;
 }
 
 .tables-section::-webkit-scrollbar { width: 4px; }
@@ -874,15 +881,15 @@ input:focus, select:focus {
 }
 
 .tables-curtain {
-    overflow: hidden;
-    max-height: 500px; /* Large enough for full grid */
-    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    overflow-y: scroll;
+    height: 140px; /* Fixed height for consistent look and scrolling */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
     opacity: 1;
 }
 
 .tables-curtain.collapsed {
-    max-height: 120px; /* Approximately one row of tables */
-    opacity: 0.9;
+    height: 0;
+    opacity: 0;
 }
 
 .tables-curtain-toggle {
