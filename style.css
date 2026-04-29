@@ -475,7 +475,7 @@ input:focus, select:focus {
 
 .item-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 16px;
     overflow-y: auto;
     padding: 10px 10px 20px 0;
@@ -496,7 +496,7 @@ input:focus, select:focus {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 140px;
+    min-height: 110px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
@@ -569,7 +569,7 @@ input:focus, select:focus {
 
 .pos-item-card h4 {
     margin-bottom: 6px;
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 600;
     line-height: 1.3;
 }
@@ -587,7 +587,7 @@ input:focus, select:focus {
 .pos-item-card .price {
     color: var(--text-primary);
     font-weight: 800;
-    font-size: 18px;
+    font-size: 15px;
     margin-top: auto;
 }
 
