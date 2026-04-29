@@ -1438,8 +1438,12 @@ function showReceipt(sale) {
         </div>
     `).join('');
 
+    const totalPaid = (sale.splitAmounts?.cash || 0) + (sale.splitAmounts?.upi || 0);
+
     details.innerHTML = `
-        <p style="text-align:center; color:var(--text-secondary); margin-bottom: 8px;">Order #${sale.id}</p>
+        <p style="text-align:center; color:var(--text-secondary); margin-bottom: 4px;">Order #${sale.id}</p>
+        <p style="text-align:center; color:var(--text-secondary); font-size: 11px; margin-bottom: 8px;">${formatDateTime(sale.date)}</p>
+        
         <div style="text-align:center; margin-bottom: 16px;">
             <span class="status-badge" style="background: rgba(255,255,255,0.1); color: var(--text-primary); font-size: 14px; padding: 4px 16px;">
                 ${sale.orderType === 'DINE_IN' ? '<i class="fa-solid fa-utensils"></i> DINE-IN' : 
@@ -1448,30 +1452,52 @@ function showReceipt(sale) {
             </span>
             ${sale.tableName ? `<div style="margin-top: 5px; font-weight: 700; color: var(--accent-color);">${sale.tableName}</div>` : ''}
         </div>
+
+        ${sale.customerName ? `
+        <div style="background: rgba(245, 158, 11, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed var(--warning-color);">
+            <div style="font-size: 12px; color: var(--text-secondary);">Customer Details (Credit Sale)</div>
+            <div style="font-weight: 700; color: var(--warning-color);">${sale.customerName}</div>
+            <div style="font-size: 13px; color: var(--text-primary);">${sale.customerMobile}</div>
+        </div>
+        ` : ''}
+
         <div style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 8px;">
             ${itemsHtml}
-            ${sale.discount > 0 ? `<div style="display:flex; justify-content:space-between; margin-top: 8px; font-size: 14px; color: var(--warning-color);">
-                <span>Discount</span>
-                <span>-${formatCurrency(sale.discount)}</span>
-            </div>` : ''}
-            ${sale.advancePaid > 0 ? `<div style="display:flex; justify-content:space-between; margin-top: 4px; font-size: 14px; color: var(--warning-color);">
-                <span>Advance Already Paid</span>
-                <span>-${formatCurrency(sale.advancePaid)}</span>
-            </div>` : ''}
-            ${sale.roundOff && sale.roundOff !== 0 ? `<div style="display:flex; justify-content:space-between; margin-top: 4px; font-size: 14px; color: var(--text-secondary);">
-                <span>Round Off</span>
-                <span>${(sale.roundOff >= 0 ? '+' : '') + formatCurrency(sale.roundOff).replace('Î“Ã©â•£-', '-Î“Ã©â•£')}</span>
-            </div>` : ''}
-            <div style="display:flex; justify-content:space-between; margin-top: 16px; font-weight:bold; font-size: 18px;">
-                <span>Total Payable (${sale.paymentMode === 'BOTH' ? 'SPLIT' : sale.paymentMode || 'CASH'})</span>
-                <span style="color:var(--success-color);">${formatCurrency(sale.total)}</span>
+            
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 12px; padding-top: 12px;">
+                ${sale.discount > 0 ? `<div style="display:flex; justify-content:space-between; font-size: 14px; color: var(--warning-color);">
+                    <span>Discount</span>
+                    <span>-${formatCurrency(sale.discount)}</span>
+                </div>` : ''}
+                ${sale.advancePaid > 0 ? `<div style="display:flex; justify-content:space-between; margin-top: 4px; font-size: 14px; color: var(--warning-color);">
+                    <span>Advance Already Paid</span>
+                    <span>-${formatCurrency(sale.advancePaid)}</span>
+                </div>` : ''}
+                ${sale.roundOff && sale.roundOff !== 0 ? `<div style="display:flex; justify-content:space-between; margin-top: 4px; font-size: 14px; color: var(--text-secondary);">
+                    <span>Round Off</span>
+                    <span>${(sale.roundOff >= 0 ? '+' : '') + formatCurrency(sale.roundOff).replace('Î“Ã©â•£-', '-Î“Ã©â•£')}</span>
+                </div>` : ''}
+                
+                <div style="display:flex; justify-content:space-between; margin-top: 10px; font-weight:bold; font-size: 18px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                    <span>Grand Total</span>
+                    <span style="color:var(--success-color);">${formatCurrency(sale.total)}</span>
+                </div>
+
+                ${sale.dues > 0 ? `
+                <div style="display:flex; justify-content:space-between; margin-top: 8px; font-size: 14px; color: var(--text-primary); font-weight: 600;">
+                    <span>Paid Amount</span>
+                    <span>${formatCurrency(totalPaid)}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-top: 4px; font-size: 16px; color: #f87171; font-weight: 800; background: rgba(248, 113, 113, 0.1); padding: 5px; border-radius: 4px;">
+                    <span>Dues / Baki</span>
+                    <span>${formatCurrency(sale.dues)}</span>
+                </div>
+                ` : `
+                <div style="display:flex; justify-content:space-between; margin-top: 8px; font-size: 14px; color: var(--success-color); font-weight: 700; text-align: center; display: block;">
+                    <i class="fa-solid fa-circle-check"></i> FULLY PAID (${sale.paymentMode})
+                </div>
+                `}
             </div>
-            ${sale.paymentMode === 'BOTH' && sale.splitAmounts ? `
-            <div style="display:flex; justify-content:space-between; margin-top: 8px; font-size: 14px; color: var(--text-secondary); border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 8px;">
-                <span>Cash Paid: <span style="color:var(--text-primary);">${formatCurrency(sale.splitAmounts.cash)}</span></span>
-                <span>UPI Paid: <span style="color:var(--text-primary);">${formatCurrency(sale.splitAmounts.upi)}</span></span>
-            </div>
-            ` : ''}
         </div>
     `;
 
@@ -1655,29 +1681,32 @@ function renderHistory() {
         
         const tr = document.createElement('tr');
         
-        // Highlight logic
-        if (sale.status === 'HELD') {
-            tr.style.background = '#fef9c3'; // Standard Yellow
-            tr.style.color = '#1e293b';      // Dark Text for readability
-            tr.style.borderLeft = '4px solid #f59e0b';
-        } else if (sale.status === 'ADVANCE') {
-            tr.style.background = '#fef9c3'; // Standard Yellow
-            tr.style.color = '#1e293b';      // Dark Text
-            tr.style.borderLeft = '4px solid var(--warning-color)';
-        }
-
         const pMode = sale.paymentMode || 'CASH';
         let pModeBadge = '';
+        
         if (sale.status === 'HELD') {
             pModeBadge = '<span class="status-badge" style="background: #334155; color: white; font-weight: 800;">HELD</span>';
         } else if (sale.status === 'ADVANCE') {
             pModeBadge = '<span class="status-badge" style="background: var(--warning-color); color: white; font-weight: 800;">ADVANCE</span>';
+        } else if (sale.dues > 0) {
+            pModeBadge = '<span class="status-badge" style="background: #ef4444; color: white; font-weight: 800;">CREDIT</span>';
+            pModeBadge += `<div style="font-size: 11px; color: #ef4444; margin-top: 4px; font-weight: 700;">Dues: ${formatCurrency(sale.dues)}</div>`;
         } else if (pMode === 'UPI') {
             pModeBadge = '<span class="status-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">UPI</span>';
         } else if (pMode === 'BOTH') {
             pModeBadge = '<span class="status-badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">SPLIT</span>';
         } else {
             pModeBadge = '<span class="status-badge status-instock">CASH</span>';
+        }
+
+        // Highlight Row for Credit/Held/Advance
+        if (sale.status === 'HELD' || sale.status === 'ADVANCE') {
+            tr.style.background = '#fef9c3'; 
+            tr.style.color = '#1e293b';      
+            tr.style.borderLeft = '4px solid #f59e0b';
+        } else if (sale.dues > 0) {
+            tr.style.background = 'rgba(239, 68, 68, 0.05)'; 
+            tr.style.borderLeft = '4px solid #ef4444';
         }
 
         const typeBadge = `
@@ -1692,11 +1721,12 @@ function renderHistory() {
             <td style="color: inherit;">
                 <strong>#${sale.id.toString().slice(-6)}</strong>
                 ${typeBadge}
+                ${sale.customerName ? `<div style="font-size: 11px; color: var(--warning-color); font-weight: 700; margin-top: 4px;"><i class="fa-solid fa-user"></i> ${sale.customerName}</div>` : ''}
             </td>
             <td style="color: inherit;">${formatDateTime(displayDate)}</td>
             <td style="color: inherit;"><div style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${itemsStr}">${itemsStr}</div></td>
             <td>${pModeBadge}</td>
-            <td style="color:${sale.status ? '#059669' : 'var(--success-color)'}; font-weight:bold;">${formatCurrency(sale.total)}</td>
+            <td style="color:${(sale.status || sale.dues > 0) ? '#1e293b' : 'var(--success-color)'}; font-weight:bold;">${formatCurrency(sale.total)}</td>
             <td>
                 <div style="display: flex; gap: 5px;">
                     <button class="btn-primary" style="padding: 6px 12px; font-size:12px;" onclick="viewReceipt('${sale.id}')">View</button>
