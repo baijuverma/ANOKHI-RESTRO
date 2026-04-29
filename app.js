@@ -484,6 +484,7 @@ function handleItemSubmit(e) {
     const id = document.getElementById('item-id').value;
     const name = document.getElementById('item-name').value;
     const category = document.getElementById('item-category').value;
+    const itemType = document.querySelector('input[name="item-type"]:checked')?.value || 'Veg';
     const price = parseFloat(document.getElementById('item-price').value);
     const quantity = parseInt(document.getElementById('item-quantity').value);
     const lowStockThreshold = parseInt(document.getElementById('item-low-stock').value) || 5;
@@ -492,13 +493,13 @@ function handleItemSubmit(e) {
         // Update
         const index = inventory.findIndex(i => i.id == id);
         if(index > -1) {
-            inventory[index] = { ...inventory[index], name, category, price, quantity, lowStockThreshold };
+            inventory[index] = { ...inventory[index], name, category, itemType, price, quantity, lowStockThreshold };
         }
     } else {
         // Add
         const newItem = {
             id: Date.now().toString(),
-            name, category, price, quantity, lowStockThreshold
+            name, category, itemType, price, quantity, lowStockThreshold
         };
         inventory.push(newItem);
     }
@@ -578,6 +579,8 @@ window.editItem = function(id) {
         document.getElementById('item-id').value = item.id;
         document.getElementById('item-name').value = item.name;
         document.getElementById('item-category').value = item.category;
+        const typeRadio = document.getElementById(item.itemType === 'Non-Veg' ? 'type-nonveg' : 'type-veg');
+        if (typeRadio) typeRadio.checked = true;
         document.getElementById('item-price').value = item.price;
         document.getElementById('item-quantity').value = item.quantity;
         document.getElementById('item-low-stock').value = item.lowStockThreshold || 5;
