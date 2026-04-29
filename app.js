@@ -450,9 +450,14 @@ function renderPOSItems(search = '') {
                     <button class="overlay-btn" onclick="event.stopPropagation(); updateCartQty('${item.id}', 1)"><i class="fa-solid fa-plus"></i></button>
                 </div>
             ` : ''}
-            <h4>${item.name}</h4>
-            <div class="price">${formatCurrency(item.price)}</div>
-            <div class="stock">${item.quantity} in stock</div>
+            <div>
+                <span class="category">${item.category}</span>
+                <h4>${item.name}</h4>
+            </div>
+            <div>
+                <div class="price">${formatCurrency(item.price)}</div>
+                <div class="stock"><i class="fa-solid fa-layer-group" style="font-size: 10px;"></i> ${item.quantity} in stock</div>
+            </div>
         `;
         grid.appendChild(div);
     });
