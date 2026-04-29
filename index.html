@@ -364,36 +364,46 @@
                             </div>
 
                             <div class="cart-summary">
-                                <div class="summary-row">
-                                    <span>Subtotal</span>
-                                    <span id="cart-subtotal">₹0</span>
-                                </div>
-                                <div class="summary-row" style="margin-bottom: 10px;">
-                                    <span style="display: flex; align-items: center; gap: 8px;">
-                                        Discount
-                                        <div class="segmented-control" style="width: 100px; padding: 2px; border-radius: 8px; gap: 2px;">
-                                            <input type="radio" name="discount-type" id="disc-amount" value="amount" checked onchange="calculateTotal()">
-                                            <label for="disc-amount" style="padding: 4px 0; font-size: 14px;">₹</label>
-                                            
-                                            <input type="radio" name="discount-type" id="disc-percent" value="percent" onchange="calculateTotal()">
-                                            <label for="disc-percent" style="padding: 4px 0; font-size: 14px;">%</label>
-                                        </div>
-                                    </span>
-                                    <input type="number" id="cart-discount" min="0" placeholder="0" value="0" oninput="if(this.value < 0) this.value = 0; calculateTotal();" style="width: 80px; text-align: right; padding: 4px; border-radius: 4px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.3); color: white;">
-                                </div>
-                                <div class="summary-row" style="margin-bottom: 10px; font-size: 13px; color: var(--text-secondary);">
-                                    <span>Round Off</span>
-                                    <span id="cart-roundoff">₹0.00</span>
-                                </div>
-                                
-                                <div id="advance-paid-info" style="display: none; margin-bottom: 10px; padding: 8px; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border: 1px dashed var(--warning-color); text-align: center;">
-                                    <span style="color: var(--warning-color); font-size: 13px; font-weight: 600;">Advance Paid: <span id="advance-amount-display">₹0</span></span>
-                                </div>
+                                 <!-- Collapsible Curtain Details -->
+                                 <div id="cart-details-curtain" class="cart-details-curtain">
+                                     <div class="summary-row">
+                                         <span>Subtotal</span>
+                                         <span id="cart-subtotal">₹0</span>
+                                     </div>
+                                     <div class="summary-row" style="margin-bottom: 10px;">
+                                         <span style="display: flex; align-items: center; gap: 8px;">
+                                             Discount
+                                             <div class="segmented-control" style="width: 100px; padding: 2px; border-radius: 8px; gap: 2px;">
+                                                 <input type="radio" name="discount-type" id="disc-amount" value="amount" checked onchange="calculateTotal()">
+                                                 <label for="disc-amount" style="padding: 4px 0; font-size: 14px;">₹</label>
+                                                 
+                                                 <input type="radio" name="discount-type" id="disc-percent" value="percent" onchange="calculateTotal()">
+                                                 <label for="disc-percent" style="padding: 4px 0; font-size: 14px;">%</label>
+                                             </div>
+                                         </span>
+                                         <input type="number" id="cart-discount" min="0" placeholder="0" value="0" oninput="if(this.value < 0) this.value = 0; calculateTotal();" style="width: 80px; text-align: right; padding: 4px; border-radius: 4px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.3); color: white;">
+                                     </div>
+                                     <div class="summary-row" style="margin-bottom: 10px; font-size: 13px; color: var(--text-secondary);">
+                                         <span>Round Off</span>
+                                         <span id="cart-roundoff">₹0.00</span>
+                                     </div>
+                                     
+                                     <div id="advance-paid-info" style="display: none; margin-bottom: 10px; padding: 8px; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border: 1px dashed var(--warning-color); text-align: center;">
+                                         <span style="color: var(--warning-color); font-size: 13px; font-weight: 600;">Advance Paid: <span id="advance-amount-display">₹0</span></span>
+                                     </div>
+                                 </div>
 
-                                <div class="summary-row total">
-                                    <span id="cart-total-label">Total</span>
-                                    <span id="cart-total">₹0</span>
-                                </div>
+                                 <!-- Curtain Toggle Arrow -->
+                                 <div class="curtain-toggle" onclick="toggleCartDetails()" title="Expand/Collapse Details">
+                                     <i id="curtain-icon" class="fa-solid fa-chevron-up"></i>
+                                 </div>
+
+                                 <!-- Always Visible Total -->
+                                 <div class="summary-row total">
+                                     <span id="cart-total-label">Total</span>
+                                     <span id="cart-total">₹0</span>
+                                 </div>
+                            </div>
 
                                 <div id="refund-info" style="display: none; margin-top: 10px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid var(--success-color); text-align: center;">
                                     <span style="color: var(--success-color); font-size: 14px; font-weight: 700;">Refund: <span id="refund-amount-display">₹0</span></span>

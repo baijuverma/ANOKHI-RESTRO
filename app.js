@@ -1875,4 +1875,17 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
+window.toggleCartDetails = function() {
+    const curtain = document.getElementById('cart-details-curtain');
+    const icon = document.getElementById('curtain-icon');
+    if (curtain) {
+        curtain.classList.toggle('collapsed');
+        if (curtain.classList.contains('collapsed')) {
+            icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+        } else {
+            icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+        }
+    }
+}
+
 

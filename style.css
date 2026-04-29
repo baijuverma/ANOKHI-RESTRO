@@ -792,6 +792,42 @@ input:focus, select:focus {
     margin-bottom: 12px;
 }
 
+.cart-details-curtain {
+    overflow: hidden;
+    max-height: 300px; /* Large enough to fit content */
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, margin 0.3s ease;
+    opacity: 1;
+}
+
+.cart-details-curtain.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+    pointer-events: none;
+}
+
+.curtain-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+    cursor: pointer;
+    color: var(--accent-color);
+    margin-bottom: 4px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+}
+
+.curtain-toggle:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.curtain-toggle i {
+    font-size: 14px;
+}
+
 /* Table Grid & Table Cards */
 .table-grid {
     display: grid;
