@@ -862,6 +862,19 @@ input:focus, select:focus {
     font-size: 14px;
 }
 
+.tables-curtain-toggle.top-toggle {
+    margin-top: -10px;
+    margin-bottom: 8px;
+    border-top: none;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+    padding: 0 0 5px 0;
+}
+
+.tables-curtain-toggle.top-toggle:hover {
+    background: transparent;
+    color: var(--text-primary);
+}
+
 /* Table Grid & Table Cards */
 .table-grid {
     display: grid;
