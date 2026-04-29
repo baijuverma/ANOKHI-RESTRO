@@ -1123,7 +1123,7 @@ function renderCart() {
             </div>
             <div class="cart-controls">
                 <button class="qty-btn" onclick="updateCartQty('${item.id}', -1)"><i class="fa-solid fa-minus"></i></button>
-                <span>${item.cartQty}</span>
+                <span class="cart-qty-num">${item.cartQty}</span>
                 <button class="qty-btn" onclick="updateCartQty('${item.id}', 1)"><i class="fa-solid fa-plus"></i></button>
             </div>
         `;
