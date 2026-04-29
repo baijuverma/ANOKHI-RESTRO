@@ -117,11 +117,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 searchInput.value = searchInput.value.slice(0, -1);
                 searchInput.dispatchEvent(new Event('input', { bubbles: true }));
             }
-        } else if (e.key === 'Escape' && active === searchInput) {
-            // Escape clears the search bar
-            searchInput.value = '';
-            searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-            searchInput.blur();
+        } else if (e.key === 'Escape') {
+            // Escape clears search if focused, otherwise triggers cancel order
+            if (active === searchInput) {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                searchInput.blur();
+            } else {
+                newBill();
+            }
+        } else if (e.key === 'Enter') {
+            // Enter completes sale if cart is not empty
+            if (cart.length > 0) {
+                processSale();
+            }
         }
     });
 });
