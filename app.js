@@ -532,6 +532,43 @@ window.saveSettings = function() {
     alert('Settings saved successfully!');
 }
 
+window.importBiharMenu = function() {
+    const biharMenu = [
+        { id: 'B1', name: 'Litti Chokha (Desi Ghee)', category: 'Main Course', price: 120, quantity: 50, lowStockThreshold: 10 },
+        { id: 'B2', name: 'Champaran Meat (Handi)', category: 'Main Course', price: 450, quantity: 20, lowStockThreshold: 5 },
+        { id: 'B3', name: 'Sattu Paratha (2 Pcs)', category: 'Main Course', price: 80, quantity: 40, lowStockThreshold: 10 },
+        { id: 'B4', name: 'Dal Pitha', category: 'Starter', price: 100, quantity: 30, lowStockThreshold: 5 },
+        { id: 'B5', name: 'Bihari Chicken Curry', category: 'Main Course', price: 320, quantity: 25, lowStockThreshold: 5 },
+        { id: 'B6', name: 'Malpua (2 Pcs)', category: 'Dessert', price: 60, quantity: 30, lowStockThreshold: 5 },
+        { id: 'B7', name: 'Bel Grami', category: 'Dessert', price: 50, quantity: 40, lowStockThreshold: 10 },
+        { id: 'B8', name: 'Thekua (Pack of 5)', category: 'Dessert', price: 40, quantity: 100, lowStockThreshold: 20 },
+        { id: 'B9', name: 'Sattu Sarbat', category: 'Beverage', price: 40, quantity: 50, lowStockThreshold: 10 },
+        { id: 'B10', name: 'Jaljeera Soda', category: 'Beverage', price: 30, quantity: 50, lowStockThreshold: 10 }
+    ];
+
+    if(confirm('Aap Bihar Restaurant Menu items import karna chahte hain? Ye items aapki inventory mein add ho jayenge.')) {
+        let addedCount = 0;
+        biharMenu.forEach(item => {
+            const exists = inventory.find(i => i.name.toLowerCase() === item.name.toLowerCase());
+            if(!exists) {
+                // Use a unique ID based on timestamp to avoid collisions with B1, B2... if they import multiple times
+                // but keep the logic simple for now as per user request
+                inventory.push({...item, id: Date.now() + Math.random().toString(36).substr(2, 5)});
+                addedCount++;
+            }
+        });
+
+        if(addedCount > 0) {
+            saveData();
+            renderInventory();
+            updateDashboard();
+            alert(`${addedCount} menu items successfully add ho gaye hain!`);
+        } else {
+            alert('Saare items pehle se hi inventory mein hain.');
+        }
+    }
+}
+
 window.openTableGrid = function() {
     renderTableGrid();
     openModal('tableGridModal');
