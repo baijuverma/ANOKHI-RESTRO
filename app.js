@@ -1806,4 +1806,10 @@ window.showView = function(target) {
         updateExpenseStats();
     }
     if(target === 'settings') initSettingsView();
-}
+}
+
+window.toggleSidebar = function() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.classList.toggle('collapsed');
+}
+

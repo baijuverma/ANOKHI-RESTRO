@@ -12,6 +12,11 @@
 </head>
 
 <body>
+    <!-- Toggle Sidebar Button -->
+    <div class="toggle-sidebar-btn" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+
     <!-- Login Screen -->
     <div id="login-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center;">
         <div class="glass-panel" style="padding: 40px; text-align: center; max-width: 400px; width: 90%;">
@@ -59,22 +64,22 @@
             </div>
             <nav>
                 <a href="#" class="nav-item active" data-target="dashboard">
-                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                    <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
                 </a>
                 <a href="#" class="nav-item" data-target="pos">
-                    <i class="fa-solid fa-cash-register"></i> New Sale
+                    <i class="fa-solid fa-cash-register"></i> <span>New Sale</span>
                 </a>
                 <a href="#" class="nav-item" data-target="history">
-                    <i class="fa-solid fa-clock-rotate-left"></i> Sales History
+                    <i class="fa-solid fa-clock-rotate-left"></i> <span>Sales History</span>
                 </a>
                 <a href="#" class="nav-item" data-target="inventory">
-                    <i class="fa-solid fa-boxes-stacked"></i> Inventory
+                    <i class="fa-solid fa-boxes-stacked"></i> <span>Inventory</span>
                 </a>
                 <a href="#" class="nav-item" data-target="expenses">
-                    <i class="fa-solid fa-wallet"></i> Expenses
+                    <i class="fa-solid fa-wallet"></i> <span>Expenses</span>
                 </a>
                 <a href="#" class="nav-item" data-target="settings">
-                    <i class="fa-solid fa-gear"></i> Settings
+                    <i class="fa-solid fa-gear"></i> <span>Settings</span>
                 </a>
             </nav>
         </aside>
