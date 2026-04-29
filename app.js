@@ -206,32 +206,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 searchInput.dispatchEvent(new Event('input', { bubbles: true }));
                 searchInput.blur();
             } else if (cart.length > 0) {
-                // Animate quantity decrease of last cart item, then offer cancel
+                // Reduce last cart item qty by 1; remove if 0
                 const lastItem = cart[cart.length - 1];
-                const startQty = lastItem.cartQty;
-                const animateDecrease = (remaining) => {
-                    if (remaining <= 0) {
-                        cart = cart.filter(c => c.id !== lastItem.id);
+                lastItem.cartQty -= 1;
+                if (lastItem.cartQty <= 0) {
+                    cart = cart.filter(c => c.id !== lastItem.id);
+                    if (cart.length === 0) {
                         renderCart();
                         renderPOSItems(searchInput.value);
-                        if (cart.length === 0) {
-                            setTimeout(() => {
-                                if (confirm('Kya aap bill cancel karna chahte hain?')) {
-                                    newBill();
-                                }
-                            }, 100);
-                        }
+                        setTimeout(() => {
+                            if (confirm('Kya aap bill cancel karna chahte hain?')) {
+                                newBill();
+                            }
+                        }, 50);
                         return;
                     }
-                    const cartItem = cart.find(c => c.id === lastItem.id);
-                    if (cartItem) {
-                        cartItem.cartQty = remaining;
-                        renderCart();
-                        document.querySelectorAll('.overlay-qty').forEach(el => { el.textContent = remaining; });
-                    }
-                    setTimeout(() => animateDecrease(remaining - 1), 180);
-                };
-                animateDecrease(startQty);
+                }
+                renderCart();
+                renderPOSItems(searchInput.value);
             } else if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
                 currentSelectedTable = null;
                 cart = [];
