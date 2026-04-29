@@ -343,20 +343,12 @@
                     </div>
 
                     <!-- Right Pane: Order Type + Cart -->
-                    <div class="pos-right-pane">
-                        <div class="glass-panel" style="padding: 20px;">
-                            <div class="order-type-selector" style="margin-bottom: 0;">
-                                <button class="order-type-btn" onclick="setOrderType('DINE_IN', this)">
-                                    <span>Dine-In</span>
-                                </button>
-                                <button class="order-type-btn" onclick="setOrderType('TAKEAWAY', this)">
-                                    <span>Takeaway Parcel</span>
-                                </button>
-                                <button class="order-type-btn" onclick="setOrderType('COUNTER', this)">
-                                    <span>Counter Sale</span>
-                                </button>
+                        <div class="pos-right-pane">
+                            <div class="order-type-selector">
+                                <button class="order-type-btn" onclick="setOrderType('DINE_IN', this)">Dine-In</button>
+                                <button class="order-type-btn" onclick="setOrderType('TAKEAWAY', this)">Takeaway/Parcel</button>
+                                <button class="order-type-btn" onclick="setOrderType('COUNTER', this)">Counter Sale</button>
                             </div>
-                        </div>
 
                         <div class="pos-cart glass-panel">
                             <div id="dine-in-table-info" style="display: none; margin-bottom: 15px; background: rgba(99, 102, 241, 0.1); padding: 12px; border-radius: 12px; border: 1px solid var(--accent-color); display: flex; justify-content: space-between; align-items: center;">
