@@ -3,7 +3,10 @@ const SUPABASE_URL = 'https://fhshckrdkasopfneujmw.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_qFlDlQChYsm7WobmTOmc6w_Wkb3XSBl';
 let db = null;
 try {
-    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const _supa = window.supabase || window.Supabase;
+    if (_supa && _supa.createClient) {
+        db = _supa.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
 } catch(e) {
     console.warn('Supabase not loaded, running in offline mode:', e);
 }
