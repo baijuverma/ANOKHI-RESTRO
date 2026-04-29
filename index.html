@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -92,10 +92,10 @@
                         <div class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
                         <div class="stat-details" style="width: 100%;">
                             <h3>Total Sale (Today)</h3>
-                            <p id="total-revenue">â‚¹0</p>
+                            <p id="total-revenue">₹0</p>
                             <div style="font-size: 12px; margin-top: 5px; color: var(--text-secondary); display: flex; gap: 15px; background: rgba(0,0,0,0.2); padding: 5px 8px; border-radius: 6px;">
-                                <span><i class="fa-solid fa-money-bill-wave" style="color:var(--success-color);"></i> Cash: <span id="today-cash">â‚¹0</span></span>
-                                <span><i class="fa-brands fa-google-pay" style="color:#818cf8;"></i> UPI: <span id="today-upi">â‚¹0</span></span>
+                                <span><i class="fa-solid fa-money-bill-wave" style="color:var(--success-color);"></i> Cash: <span id="today-cash">₹0</span></span>
+                                <span><i class="fa-brands fa-google-pay" style="color:#818cf8;"></i> UPI: <span id="today-upi">₹0</span></span>
                             </div>
                         </div>
                     </div>
@@ -160,7 +160,7 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Category</th>
-                                    <th>Price (â‚¹)</th>
+                                    <th>Price (₹)</th>
                                     <th>Stock</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -188,14 +188,14 @@
                         <div class="stat-icon"><i class="fa-solid fa-users-gear"></i></div>
                         <div class="stat-details">
                             <h3>Staff & Operations</h3>
-                            <p id="total-staff-expenses">â‚¹0</p>
+                            <p id="total-staff-expenses">₹0</p>
                         </div>
                     </div>
                     <div class="stat-card glass-panel">
                         <div class="stat-icon"><i class="fa-solid fa-cart-flatbed"></i></div>
                         <div class="stat-details">
                             <h3>Material Costs</h3>
-                            <p id="total-material-expenses">â‚¹0</p>
+                            <p id="total-material-expenses">₹0</p>
                         </div>
                     </div>
                 </div>
@@ -232,7 +232,7 @@
                                 </datalist>
                             </div>
                             <div class="form-group">
-                                <label>Amount (â‚¹)</label>
+                                <label>Amount (₹)</label>
                                 <div class="input-wrapper">
                                     <input type="number" id="expense-amount" placeholder="0.00" required step="0.01">
                                     <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('expense-amount')"></i>
@@ -344,14 +344,14 @@
                             <div class="cart-summary">
                                 <div class="summary-row">
                                     <span>Subtotal</span>
-                                    <span id="cart-subtotal">â‚¹0</span>
+                                    <span id="cart-subtotal">₹0</span>
                                 </div>
                                 <div class="summary-row" style="margin-bottom: 10px;">
                                     <span style="display: flex; align-items: center; gap: 8px;">
                                         Discount
                                         <div class="discount-toggle" style="display: flex; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 2px;">
                                             <label style="margin: 0; cursor: pointer; padding: 2px 8px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 3px;">
-                                                <input type="radio" name="discount-type" value="amount" checked onchange="calculateTotal()" style="width: auto; margin: 0;"> â‚¹
+                                                <input type="radio" name="discount-type" value="amount" checked onchange="calculateTotal()" style="width: auto; margin: 0;"> ₹
                                             </label>
                                             <label style="margin: 0; cursor: pointer; padding: 2px 8px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 3px;">
                                                 <input type="radio" name="discount-type" value="percent" onchange="calculateTotal()" style="width: auto; margin: 0;"> %
@@ -362,20 +362,20 @@
                                 </div>
                                 <div class="summary-row" style="margin-bottom: 10px; font-size: 13px; color: var(--text-secondary);">
                                     <span>Round Off</span>
-                                    <span id="cart-roundoff">â‚¹0.00</span>
+                                    <span id="cart-roundoff">₹0.00</span>
                                 </div>
                                 
                                 <div id="advance-paid-info" style="display: none; margin-bottom: 10px; padding: 8px; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border: 1px dashed var(--warning-color); text-align: center;">
-                                    <span style="color: var(--warning-color); font-size: 13px; font-weight: 600;">Advance Paid: <span id="advance-amount-display">â‚¹0</span></span>
+                                    <span style="color: var(--warning-color); font-size: 13px; font-weight: 600;">Advance Paid: <span id="advance-amount-display">₹0</span></span>
                                 </div>
 
                                 <div class="summary-row total">
                                     <span id="cart-total-label">Total</span>
-                                    <span id="cart-total">â‚¹0</span>
+                                    <span id="cart-total">₹0</span>
                                 </div>
 
                                 <div id="refund-info" style="display: none; margin-top: 10px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid var(--success-color); text-align: center;">
-                                    <span style="color: var(--success-color); font-size: 14px; font-weight: 700;">Refund: <span id="refund-amount-display">â‚¹0</span></span>
+                                    <span style="color: var(--success-color); font-size: 14px; font-weight: 700;">Refund: <span id="refund-amount-display">₹0</span></span>
                                 </div>
                                 
                                 <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
@@ -527,7 +527,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Price (â‚¹)</label>
+                        <label>Price (₹)</label>
                         <input type="number" id="item-price" required min="0" step="0.01">
                     </div>
                     <div class="form-group">
@@ -641,7 +641,7 @@
             <h2>Record Advance Payment</h2>
             <p id="advance-table-name" style="margin: 10px 0; color: var(--accent-color); font-weight: 600;"></p>
             <div class="form-group mt-4">
-                <label>Advance Amount (â‚¹)</label>
+                <label>Advance Amount (₹)</label>
                 <input type="number" id="advance-amount-input" placeholder="Enter amount..." style="font-size: 20px; text-align: center; font-weight: 700;">
             </div>
             <div class="form-group">
@@ -660,3 +660,4 @@
 </body>
 
 </html>
+

@@ -1,4 +1,4 @@
-﻿// Supabase Configuration
+// Supabase Configuration
 const SUPABASE_URL = 'https://fhshckrdkasopfneujmw.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_qFlDlQChYsm7WobmTOmc6w_Wkb3XSBl';
 let db = null;
@@ -290,7 +290,7 @@ async function saveData() {
 
 // Format Currency
 function formatCurrency(amount) {
-    return 'â‚¹' + parseFloat(amount).toFixed(2);
+    return '\u20B9' + parseFloat(amount).toFixed(2);
 }
 
 // Format Date to DD/MM/YYYY
@@ -1036,7 +1036,7 @@ window.calculateTotal = function() {
     
     const roundOffEl = document.getElementById('cart-roundoff');
     if(roundOffEl) {
-        roundOffEl.innerText = (roundOff >= 0 ? '+' : '') + formatCurrency(roundOff).replace('â‚¹-', '-â‚¹');
+        roundOffEl.innerText = (roundOff >= 0 ? '+' : '') + formatCurrency(roundOff).replace('₹-', '-₹');
     }
 
     document.getElementById('cart-total').innerText = formatCurrency(finalTotal);
@@ -1171,7 +1171,7 @@ function showReceipt(sale) {
             </div>` : ''}
             ${sale.roundOff && sale.roundOff !== 0 ? `<div style="display:flex; justify-content:space-between; margin-top: 4px; font-size: 14px; color: var(--text-secondary);">
                 <span>Round Off</span>
-                <span>${(sale.roundOff >= 0 ? '+' : '') + formatCurrency(sale.roundOff).replace('â‚¹-', '-â‚¹')}</span>
+                <span>${(sale.roundOff >= 0 ? '+' : '') + formatCurrency(sale.roundOff).replace('₹-', '-₹')}</span>
             </div>` : ''}
             <div style="display:flex; justify-content:space-between; margin-top: 16px; font-weight:bold; font-size: 18px;">
                 <span>Total Payable (${sale.paymentMode === 'BOTH' ? 'SPLIT' : sale.paymentMode || 'CASH'})</span>
@@ -1567,4 +1567,7 @@ window.handlePasswordReset = function() {
     closeModal('reset-password-modal');
     document.getElementById('login-password').focus();
 }
+
+
+
 
