@@ -2229,7 +2229,6 @@ window.editSale = function(id) {
     if (targetBtn) setOrderType(type, targetBtn);
     
     calculateTotal(); // Refresh total and dues
-}
     setOrderType(type, targetBtn, true);
 
     renderCart();
