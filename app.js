@@ -838,8 +838,9 @@ window.importBiharMenu = function() {
         { name: 'Chicken 65', category: 'Starter', price: 240, quantity: 20, lowStockThreshold: 5 },
         { name: 'Crispy Corn', category: 'Starter', price: 180, quantity: 15, lowStockThreshold: 5 },
         
-        // Chinese (Common in Bihar Restros)
-        { name: 'Veg Chowmein', category: 'Starter', price: 120, quantity: 30, lowStockThreshold: 5 },
+        // Chinese & Starters
+        { name: 'Veg Chowmein (Full)', category: 'Starter', price: 120, quantity: 30, lowStockThreshold: 5 },
+        { name: 'CHOWMEIN HALF', category: 'Starter', price: 40, quantity: 30, lowStockThreshold: 5 },
         { name: 'Chilli Chicken (Dry)', category: 'Starter', price: 260, quantity: 20, lowStockThreshold: 5 },
         { name: 'Veg Manchurian', category: 'Starter', price: 180, quantity: 20, lowStockThreshold: 5 },
         { name: 'Chicken Fried Rice', category: 'Main Course', price: 200, quantity: 25, lowStockThreshold: 5 },
@@ -849,16 +850,21 @@ window.importBiharMenu = function() {
         { name: 'Chicken Roll', category: 'Starter', price: 90, quantity: 40, lowStockThreshold: 10 },
         { name: 'Paneer Roll', category: 'Starter', price: 80, quantity: 30, lowStockThreshold: 5 },
         
-        // Desserts
+        // Desserts & Sweets
+        { name: 'MAWA MALAI ICE CREAM', category: 'Dessert', price: 10, quantity: 50, lowStockThreshold: 10 },
+        { name: 'RABARI KULFI', category: 'Dessert', price: 25, quantity: 50, lowStockThreshold: 10 },
+        { name: 'KESAR BADAM KULFI', category: 'Dessert', price: 25, quantity: 50, lowStockThreshold: 10 },
+        { name: 'BS CONE', category: 'Dessert', price: 30, quantity: 40, lowStockThreshold: 10 },
         { name: 'Malpua (2 Pcs)', category: 'Dessert', price: 60, quantity: 30, lowStockThreshold: 5 },
         { name: 'Bel Grami (250g)', category: 'Dessert', price: 120, quantity: 20, lowStockThreshold: 5 },
         { name: 'Thekua (Pack of 5)', category: 'Dessert', price: 40, quantity: 100, lowStockThreshold: 20 },
         { name: 'Gulab Jamun (2 Pcs)', category: 'Dessert', price: 50, quantity: 50, lowStockThreshold: 10 },
         { name: 'Gajar ka Halwa (Plate)', category: 'Dessert', price: 80, quantity: 25, lowStockThreshold: 5 },
-        { name: 'Khaja (250g)', category: 'Dessert', price: 100, quantity: 20, lowStockThreshold: 5 },
-        { name: 'Balushahi (250g)', category: 'Dessert', price: 120, quantity: 15, lowStockThreshold: 5 },
         
         // Beverages
+        { name: 'Limca', category: 'Beverage', price: 20, quantity: 50, lowStockThreshold: 10 },
+        { name: 'Fanta 250ml', category: 'Beverage', price: 10, quantity: 50, lowStockThreshold: 10 },
+        { name: 'WATER 0.5 LIT', category: 'Beverage', price: 10, quantity: 100, lowStockThreshold: 20 },
         { name: 'Sattu Sarbat', category: 'Beverage', price: 40, quantity: 50, lowStockThreshold: 10 },
         { name: 'Jaljeera Soda', category: 'Beverage', price: 30, quantity: 50, lowStockThreshold: 10 },
         { name: 'Bel ka Sharbat', category: 'Beverage', price: 50, quantity: 30, lowStockThreshold: 10 },
