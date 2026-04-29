@@ -1515,7 +1515,7 @@ window.handlePasswordReset = function() {
     const dob = document.getElementById('reset-dob').value;
     const newPwd = document.getElementById('new-password').value;
     const confirmPwd = document.getElementById('confirm-new-password').value;
-    const adminDoB = localStorage.getItem('anokhi_admin_dob') || '1995-01-01';
+    const adminDoB = localStorage.getItem('anokhi_admin_dob') || '1989-12-15';
 
     if (!dob || !newPwd || !confirmPwd) {
         alert('Please fill all fields.');
