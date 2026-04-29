@@ -483,9 +483,28 @@
 
             <!-- History View -->
             <section id="history" class="view-section hidden">
-                <header>
-                    <h1>Sales History</h1>
-                    <p>Complete record of all transactions</p>
+                <header class="flex-between">
+                    <div>
+                        <h1>Sales History</h1>
+                        <p>Complete record of all transactions</p>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: flex-start;">
+                        <!-- Monthly Sale Card -->
+                        <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid var(--accent-color); min-width: 180px;">
+                            <h3 style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px;">Month Sales</h3>
+                            <p id="monthly-sale-total" style="font-size: 20px; font-weight: 800; color: white; margin: 0;">₹0</p>
+                            <div style="display: flex; gap: 10px; font-size: 10px; margin-top: 6px; color: var(--text-secondary);">
+                                <span><i class="fa-solid fa-money-bill-wave" style="color:var(--success-color);"></i> <span id="monthly-cash">₹0</span></span>
+                                <span><i class="fa-brands fa-google-pay" style="color:#818cf8;"></i> <span id="monthly-upi">₹0</span></span>
+                            </div>
+                        </div>
+                        <!-- Monthly Profit Card -->
+                        <div class="glass-panel" id="monthly-profit-card" style="padding: 12px 20px; border-left: 4px solid #22c55e; min-width: 180px;">
+                            <h3 style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px;">Month Profit / Loss</h3>
+                            <p id="monthly-profit-total" style="font-size: 20px; font-weight: 900; color: #22c55e; margin: 0;">₹0</p>
+                            <div style="font-size: 10px; margin-top: 6px; color: var(--text-secondary); font-weight: 600;">Net Monthly Gain</div>
+                        </div>
+                    </div>
                 </header>
                 <!-- Sales Chart (Calendar) -->
                 <div class="glass-panel mt-4">

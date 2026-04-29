@@ -1408,6 +1408,46 @@ function renderHistory() {
 
     renderCalendarChart(calendarTotals);
 
+    // Calculate Monthly Summary for the cards in Header
+    const targetMonth = currentCalendarDate ? currentCalendarDate.getMonth() : new Date().getMonth();
+    const targetYear = currentCalendarDate ? currentCalendarDate.getFullYear() : new Date().getFullYear();
+
+    const monthlySales = salesHistory.filter(s => {
+        const d = new Date(s.date);
+        return d.getMonth() === targetMonth && d.getFullYear() === targetYear;
+    });
+
+    const monthlyExpenses = expensesHistory.filter(e => {
+        const d = new Date(e.date);
+        return d.getMonth() === targetMonth && d.getFullYear() === targetYear;
+    });
+
+    let mTotal = 0, mCash = 0, mUpi = 0;
+    monthlySales.forEach(s => {
+        mTotal += s.total;
+        if (s.paymentMode === "UPI") mUpi += s.total;
+        else if (s.paymentMode === "BOTH") {
+            mUpi += s.splitAmounts.upi;
+            mCash += s.splitAmounts.cash;
+        } else mCash += s.total;
+    });
+
+    const mExpTotal = monthlyExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const mNetProfit = mTotal - mExpTotal;
+
+    // Update UI Cards
+    document.getElementById("monthly-sale-total").innerText = formatCurrency(mTotal);
+    document.getElementById("monthly-cash").innerText = formatCurrency(mCash);
+    document.getElementById("monthly-upi").innerText = formatCurrency(mUpi);
+    
+    const mProfitEl = document.getElementById("monthly-profit-total");
+    if (mProfitEl) {
+        mProfitEl.innerText = formatCurrency(mNetProfit);
+        mProfitEl.style.color = mNetProfit >= 0 ? "#22c55e" : "#ef4444";
+        const mProfitCard = document.getElementById("monthly-profit-card");
+        if (mProfitCard) mProfitCard.style.borderLeft = `4px solid ${mNetProfit >= 0 ? "#22c55e" : "#ef4444"}`;
+    }
+
     const sortedHistory = [...salesHistory].reverse();
 
     sortedHistory.forEach(sale => {
