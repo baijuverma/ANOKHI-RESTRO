@@ -860,7 +860,19 @@ window.selectTable = function(tableId) {
     if (!table) return;
 
     currentSelectedTable = tableId;
-    cart = [...table.cart];
+    // Merge current cart items into the table's saved cart
+    const tableCart = [...table.cart];
+    if (cart.length > 0) {
+        cart.forEach(currentItem => {
+            const existing = tableCart.find(t => t.id === currentItem.id);
+            if (existing) {
+                existing.cartQty += currentItem.cartQty;
+            } else {
+                tableCart.push({ ...currentItem });
+            }
+        });
+    }
+    cart = tableCart;
     
     document.getElementById('current-table-name').innerText = table.name;
     document.getElementById('advance-amount-display').innerText = formatCurrency(table.advance);
