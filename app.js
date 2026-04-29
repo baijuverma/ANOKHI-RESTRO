@@ -1872,16 +1872,27 @@ window.editSale = function(id) {
         if (!confirm('Current cart items will be cleared. Do you want to edit this sale?')) return;
     }
     
-    // Load sale data into cart
-    cart = JSON.parse(JSON.stringify(sale.items)); // Deep copy
+    // Load sale data into cart and try to match with current inventory IDs by name
+    cart = sale.items.map(saleItem => {
+        const invItem = inventory.find(i => i.name.toLowerCase() === saleItem.name.toLowerCase());
+        if (invItem) {
+            // Use the current inventory ID so it links correctly to UI cards
+            return { ...saleItem, id: invItem.id };
+        }
+        return { ...saleItem };
+    });
+
     const type = sale.orderType || 'COUNTER';
     currentSelectedTable = sale.tableId || null;
     
     // Update UI
     showView('pos');
     
+    // Clear search so items are visible
+    const searchInput = document.getElementById('pos-search');
+    if (searchInput) searchInput.value = '';
+    
     // Set order type without resetting cart (handles hiding/showing tables)
-    // Find the button to highlight
     const targetBtn = Array.from(document.querySelectorAll('.order-type-btn')).find(btn => 
         btn.innerText.toUpperCase().includes(type)
     );
