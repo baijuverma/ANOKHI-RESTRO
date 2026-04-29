@@ -1603,13 +1603,17 @@ window.updateExpenseSubCats = function() {
     };
 
     if (mainCat && subCats[mainCat]) {
+        subCatInput.disabled = false;
         subCats[mainCat].forEach(sub => {
             const opt = document.createElement('option');
             opt.value = sub;
             subCatList.appendChild(opt);
         });
+    } else {
+        subCatInput.disabled = true;
     }
 }
+
 
 
 window.handleExpenseSubmit = async function(e) {
@@ -1707,10 +1711,12 @@ window.clearInput = function(id) {
     if (input) {
         input.value = '';
         input.focus();
-        // Trigger change event if needed (like for main cat updating sub cats)
-        input.dispatchEvent(new Event('change'));
+        // Trigger both input and change events to ensure dependency logic runs
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
     }
 }
+
 
 window.openResetModal = function() {
     // Reset modal to Step 1
