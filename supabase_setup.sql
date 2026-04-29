@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS inventory (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   category TEXT NOT NULL,
+  item_type TEXT NOT NULL DEFAULT 'Veg',
   price NUMERIC NOT NULL DEFAULT 0,
   quantity INTEGER NOT NULL DEFAULT 0,
   low_stock_threshold INTEGER NOT NULL DEFAULT 5

@@ -34,7 +34,15 @@ async function syncFromSupabase() {
     try {
         const { data: invData } = await db.from('inventory').select('*');
         if (invData && invData.length > 0) {
-            inventory = invData;
+            inventory = invData.map(i => ({
+                id: i.id,
+                name: i.name,
+                category: i.category,
+                itemType: i.item_type || 'Veg',
+                price: i.price,
+                quantity: i.quantity,
+                lowStockThreshold: i.low_stock_threshold || 5
+            }));
             localStorage.setItem('anokhi_inventory', JSON.stringify(inventory));
         }
 
@@ -275,7 +283,15 @@ async function saveData() {
     try {
         // Upsert inventory
         if (inventory.length > 0) {
-            await db.from('inventory').upsert(inventory);
+            await db.from('inventory').upsert(inventory.map(i => ({
+                id: i.id,
+                name: i.name,
+                category: i.category,
+                item_type: i.itemType || 'Veg',
+                price: i.price,
+                quantity: i.quantity,
+                low_stock_threshold: i.lowStockThreshold || 5
+            })));
         }
         
         // Upsert tables
