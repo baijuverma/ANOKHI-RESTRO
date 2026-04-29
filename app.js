@@ -99,6 +99,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Close any active modal on Escape or Enter key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' || e.key === 'Enter') {
+            const activeModal = document.querySelector('.modal.active');
+            if (activeModal) {
+                // Don't close on Enter if user is typing in an input/textarea inside the modal
+                if (e.key === 'Enter' && ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+                closeModal(activeModal.id);
+            }
+        }
+    });
+
+
     // Navigation Logic
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
