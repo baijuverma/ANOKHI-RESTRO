@@ -999,3 +999,30 @@ input[type=number] {
     background: rgba(99, 102, 241, 0.2);
     box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
 }
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper input {
+    padding-right: 35px !important;
+    width: 100%;
+}
+
+.clear-input-btn {
+    position: absolute;
+    right: 10px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.5;
+    transition: all 0.2s;
+    z-index: 5;
+}
+
+.clear-input-btn:hover {
+    opacity: 1;
+    color: var(--danger-color);
+}

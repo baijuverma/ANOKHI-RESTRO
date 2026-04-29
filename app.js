@@ -1495,3 +1495,13 @@ function formatDateLabel(isoString) {
     return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + 
            d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 }
+
+window.clearInput = function(id) {
+    const input = document.getElementById(id);
+    if (input) {
+        input.value = '';
+        input.focus();
+        // Trigger change event if needed (like for main cat updating sub cats)
+        input.dispatchEvent(new Event('change'));
+    }
+}

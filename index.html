@@ -177,7 +177,10 @@
                         <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                             <div class="form-group">
                                 <label>Main Category</label>
-                                <input type="text" id="expense-main-cat" list="main-cat-list" placeholder="Select or type..." required onchange="updateExpenseSubCats()">
+                                <div class="input-wrapper">
+                                    <input type="text" id="expense-main-cat" list="main-cat-list" placeholder="Select or type..." required onchange="updateExpenseSubCats()">
+                                    <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('expense-main-cat')"></i>
+                                </div>
                                 <datalist id="main-cat-list">
                                     <option value="Staff & Operation">
                                     <option value="Material">
@@ -185,14 +188,20 @@
                             </div>
                             <div class="form-group">
                                 <label>Sub Category</label>
-                                <input type="text" id="expense-sub-cat" list="sub-cat-list" placeholder="Select or type..." required>
+                                <div class="input-wrapper">
+                                    <input type="text" id="expense-sub-cat" list="sub-cat-list" placeholder="Select or type..." required>
+                                    <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('expense-sub-cat')"></i>
+                                </div>
                                 <datalist id="sub-cat-list">
                                     <!-- Dynamic content -->
                                 </datalist>
                             </div>
                             <div class="form-group">
                                 <label>Amount (₹)</label>
-                                <input type="number" id="expense-amount" placeholder="0.00" required step="0.01">
+                                <div class="input-wrapper">
+                                    <input type="number" id="expense-amount" placeholder="0.00" required step="0.01">
+                                    <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('expense-amount')"></i>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Payment Mode</label>
