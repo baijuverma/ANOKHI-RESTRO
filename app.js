@@ -508,7 +508,7 @@ function updateDashboard() {
     const tbody = document.querySelector('#recent-sales-table tbody');
     tbody.innerHTML = '';
     
-    const recentSales = [...salesHistory].reverse().slice(0, 5);
+    const recentSales = [...salesHistory].slice(0, 5);
     if(recentSales.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No recent sales</td></tr>';
     }
@@ -1219,7 +1219,7 @@ window.processSale = function() {
         }
     }
 
-    salesHistory.push(sale);
+    salesHistory.unshift(sale);
     saveData();
 
     // Show Receipt Modal
