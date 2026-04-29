@@ -1402,9 +1402,9 @@ function renderHistory() {
         const pMode = sale.paymentMode || 'CASH';
         if(pMode === 'UPI') {
             calendarTotals[dateStr].upi += sale.total;
-        } else if (pMode === 'BOTH') {
-            calendarTotals[dateStr].upi += sale.splitAmounts.upi;
-            calendarTotals[dateStr].cash += sale.splitAmounts.cash;
+        } else if (pMode === 'BOTH' && sale.splitAmounts) {
+            calendarTotals[dateStr].upi += (sale.splitAmounts.upi || 0);
+            calendarTotals[dateStr].cash += (sale.splitAmounts.cash || 0);
         } else {
             calendarTotals[dateStr].cash += sale.total;
         }
@@ -1430,9 +1430,9 @@ function renderHistory() {
     monthlySales.forEach(s => {
         mTotal += s.total;
         if (s.paymentMode === "UPI") mUpi += s.total;
-        else if (s.paymentMode === "BOTH") {
-            mUpi += s.splitAmounts.upi;
-            mCash += s.splitAmounts.cash;
+        else if (s.paymentMode === "BOTH" && s.splitAmounts) {
+            mUpi += (s.splitAmounts.upi || 0);
+            mCash += (s.splitAmounts.cash || 0);
         } else mCash += s.total;
     });
 
