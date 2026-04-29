@@ -923,17 +923,31 @@ input:focus, select:focus {
 
 /* Table Grid & Table Cards */
 .table-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 16px;
-    margin-top: 20px;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 15px;
+    margin-top: 10px;
+    padding: 10px 5px;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-grid::-webkit-scrollbar {
+    height: 5px;
+}
+
+.table-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
 }
 
 .table-card {
+    flex: 0 0 140px; /* Fixed width for single row scrolling */
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--panel-border);
     border-radius: 12px;
-    padding: 20px 10px;
+    padding: 15px 10px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
