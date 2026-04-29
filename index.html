@@ -327,18 +327,18 @@
                             </div>
                         </div>
 
-                        <div class="pos-items glass-panel">
-                            <!-- Integrated Header Row: Search + Toggle + Filters -->
+                        <div class="pos-items glass-panel" style="position: relative; padding-top: 25px;">
+                            <!-- Tables Toggle Arrow (Absolute Top Center) -->
+                            <div class="tables-curtain-toggle top-center-toggle" onclick="toggleTablesCurtain()" title="Expand/Collapse Tables">
+                                <i id="tables-curtain-icon" class="fa-solid fa-chevron-up"></i>
+                            </div>
+
+                            <!-- Integrated Header Row: Search + Filters -->
                             <div class="items-header-row" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px;">
                                 <!-- Search Bar (Left) -->
-                                <div class="search-bar" style="flex: 1; max-width: 220px; margin: 0;">
+                                <div class="search-bar" style="flex: 1; max-width: 250px; margin: 0;">
                                     <i class="fa-solid fa-search"></i>
                                     <input type="text" id="pos-search" placeholder="Search...">
-                                </div>
-
-                                <!-- Tables Toggle Arrow (Center) -->
-                                <div class="tables-curtain-toggle top-toggle" style="margin: 0; padding: 0; border: none; flex: 0 0 auto;" onclick="toggleTablesCurtain()" title="Expand/Collapse Tables">
-                                    <i id="tables-curtain-icon" class="fa-solid fa-chevron-up"></i>
                                 </div>
 
                                 <!-- Filters (Right) -->

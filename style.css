@@ -852,10 +852,24 @@ input:focus, select:focus {
     transition: all 0.2s ease;
 }
 
-.tables-curtain-toggle:hover {
-    color: var(--text-primary);
+.tables-curtain-toggle.top-center-toggle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
+    padding: 2px 20px;
+    border-radius: 0 0 10px 10px;
+    cursor: pointer;
+    z-index: 10;
+    border: 1px solid var(--panel-border);
+    border-top: none;
+    transition: all 0.3s ease;
+}
+
+.tables-curtain-toggle.top-center-toggle:hover {
+    background: var(--accent-color);
+    color: white;
 }
 
 .tables-curtain-toggle i {
