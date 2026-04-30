@@ -1151,10 +1151,11 @@ input:focus, select:focus {
     z-index: 10;
 }
 
-.table-card:hover {
-    transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.08);
+.table-card.selected {
+    background: var(--accent-color);
     border-color: var(--accent-color);
+    color: white;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
 }
 
 .table-card.occupied {

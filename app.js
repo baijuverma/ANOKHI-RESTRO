@@ -1194,11 +1194,18 @@ function addToCart(item) {
     if(existing) {
         if(existing.cartQty < item.quantity) {
             existing.cartQty++;
+            // Move existing item to the TOP of the cart list when added again
+            const index = cart.indexOf(existing);
+            if (index > -1) {
+                cart.splice(index, 1);
+                cart.unshift(existing);
+            }
         } else {
             alert('Not enough stock!');
         }
     } else {
-        cart.push({...item, cartQty: 1});
+        // Add new item to the TOP
+        cart.unshift({...item, cartQty: 1});
     }
     renderCart();
 }
