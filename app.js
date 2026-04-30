@@ -1224,10 +1224,10 @@ function addToCart(item) {
 }
 
 window.updateCartQty = function(id, delta) {
-    const itemIndex = cart.findIndex(c => String(c.id) === String(id)); 
+    const itemIndex = cart.findIndex(c => String(c.id) == String(id)); 
     if(itemIndex > -1) {
         const item = cart[itemIndex];
-        const invItem = inventory.find(i => String(i.id) === String(id));
+        const invItem = inventory.find(i => String(i.id) == String(id));
         
         item.cartQty += delta;
         if(item.cartQty <= 0) {
@@ -1236,18 +1236,10 @@ window.updateCartQty = function(id, delta) {
             item.cartQty = invItem.quantity;
             alert('Not enough stock!');
         }
-
-        const invIdx = inventory.findIndex(inv => String(inv.id) === String(id));
-        if (invIdx > -1) {
-            const selectedItem = inventory.splice(invIdx, 1)[0];
-            inventory.unshift(selectedItem);
-        }
     }
     renderCart();
-    // Use a small timeout to ensure DOM is ready and state is committed
-    setTimeout(() => {
-        if(typeof renderPOSItems === 'function') renderPOSItems(); 
-    }, 10);
+    // Re-render menu to update the number on the card
+    if(typeof renderPOSItems === 'function') renderPOSItems(); 
 }
 
 function renderCart() {
