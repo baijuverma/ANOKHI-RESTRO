@@ -8,9 +8,10 @@ export const renderPOSGrid = (container, search = '', filterType = 'all') => {
 
     const filtered = inventory.filter(item => {
         const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
-        const matchesFilter = filterType === 'all' || 
-                             (filterType === 'veg' && item.itemType === 'Veg') || 
-                             (filterType === 'nonveg' && item.itemType === 'Non-Veg');
+        const itemType = (item.itemType || '').toLowerCase();
+        const filter = filterType.toLowerCase();
+        
+        const matchesFilter = filter === 'all' || itemType === filter;
         return matchesSearch && matchesFilter && item.quantity > 0;
     });
 
