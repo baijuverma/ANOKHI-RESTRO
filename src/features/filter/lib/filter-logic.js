@@ -24,8 +24,8 @@ export const matchesFilterType = (item, filterType) => {
 
     const itemType = normalizeType(item.itemType || 'Veg');
     
-    // Exact match or contains check for maximum resilience
-    return itemType === filter || itemType.includes(filter) || filter.includes(itemType);
+    // Strict match to prevent 'nonveg' from matching 'veg'
+    return itemType === filter;
 };
 
 /**

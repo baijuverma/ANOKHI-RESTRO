@@ -1,7 +1,9 @@
 import { storage } from '../../shared/lib/utils.js';
 import { getSupabase } from '../../shared/api/supabase.js';
 
-export let inventory = storage.get('anokhi_inventory', []);
+// Unified state: Use window.inventory if it exists (legacy sync), otherwise load from storage
+export let inventory = window.inventory || storage.get('anokhi_inventory', []);
+if (!window.inventory) window.inventory = inventory;
 
 export const syncInventory = async () => {
     const db = getSupabase();
@@ -19,6 +21,7 @@ export const syncInventory = async () => {
                 quantity: i.quantity,
                 lowStockThreshold: i.low_stock_threshold || 5
             }));
+            window.inventory = inventory; // Sync to legacy global
             storage.set('anokhi_inventory', inventory);
         }
     } catch (err) {
