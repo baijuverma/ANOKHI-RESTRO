@@ -1,5 +1,5 @@
 export const formatCurrency = (amount) => {
-    return 'â‚¹' + parseFloat(amount).toFixed(2);
+    return '\u20B9' + parseFloat(amount).toFixed(2);
 };
 
 export const getDDMMYYYY = (date) => {
