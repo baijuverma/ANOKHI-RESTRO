@@ -171,6 +171,26 @@ window.checkLogin = function() {
     }
 }
 
+window.verifySettingsDoB = function() {
+    const dob = document.getElementById('settings-admin-dob').value;
+    const adminDoB = localStorage.getItem('anokhi_admin_dob') || '1989-12-15';
+    const pwdSection = document.getElementById('settings-password-section');
+    const dobSection = document.getElementById('settings-dob-section');
+
+    if (!dob) {
+        alert('Please enter Admin Date of Birth.');
+        return;
+    }
+
+    if (dob === adminDoB) {
+        pwdSection.classList.remove('force-hidden');
+        dobSection.classList.add('force-hidden');
+        alert('Identity Verified! You can now update your password.');
+    } else {
+        alert('Security Check Failed: Incorrect Admin Date of Birth.');
+    }
+}
+
 window.updateAdminPassword = function() {
     const newPwd = document.getElementById('new-admin-password').value;
     const confirmPwd = document.getElementById('confirm-admin-password').value;
@@ -188,8 +208,12 @@ window.updateAdminPassword = function() {
     localStorage.setItem('anokhi_admin_pwd', newPwd);
     alert('Password updated successfully! This will be required next time you log in.');
     
+    // Reset and hide sections
     document.getElementById('new-admin-password').value = '';
     document.getElementById('confirm-admin-password').value = '';
+    document.getElementById('settings-admin-dob').value = '';
+    document.getElementById('settings-password-section').classList.add('force-hidden');
+    document.getElementById('settings-dob-section').classList.remove('force-hidden');
 }
 
 window.logout = function() {

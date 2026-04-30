@@ -495,16 +495,30 @@
                     <!-- Security Configuration -->
                     <div class="glass-panel p-4">
                         <h2 class="settings-title"><i class="fa-solid fa-shield-halved"></i> Security & Access</h2>
-                        <div class="form-group">
-                            <label>Change Admin Password</label>
-                            <input type="password" id="new-admin-password" placeholder="Enter new password">
+                        
+                        <!-- Step 1: DOB Verification -->
+                        <div id="settings-dob-section">
+                            <div class="form-group">
+                                <label>Admin Date of Birth (Security Check)</label>
+                                <input type="date" id="settings-admin-dob">
+                            </div>
+                            <button class="btn-primary" onclick="verifySettingsDoB()">Verify Identity</button>
                         </div>
-                        <div class="form-group">
-                            <label>Confirm Password</label>
-                            <input type="password" id="confirm-admin-password" placeholder="Confirm new password">
+
+                        <!-- Step 2: Password Fields (Initially Hidden) -->
+                        <div id="settings-password-section" class="force-hidden" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--panel-border);">
+                            <div class="form-group">
+                                <label>New Admin Password</label>
+                                <input type="password" id="new-admin-password" placeholder="Enter new password">
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm Password</label>
+                                <input type="password" id="confirm-admin-password" placeholder="Confirm new password">
+                            </div>
+                            <button class="btn-success" onclick="updateAdminPassword()">Update Password</button>
                         </div>
-                        <button class="btn-success" onclick="updateAdminPassword()">Update Password</button>
-                        <p class="settings-help mt-2">This password is required to access the system on startup.</p>
+                        
+                        <p class="settings-help mt-3">This password is required to access the system on startup.</p>
                     </div>
                 </div>
 
