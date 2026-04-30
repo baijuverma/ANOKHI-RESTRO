@@ -1997,27 +1997,44 @@ window.handleExpenseSubmit = async function(e) {
     e.preventDefault();
     const mainCat = document.getElementById('expense-main-cat').value;
     const subCat = document.getElementById('expense-sub-cat').value;
-    const amount = parseFloat(document.getElementById('expense-amount').value);
-    const mode = document.querySelector('input[name="expense-payment-mode"]:checked').value;
     const desc = document.getElementById('expense-desc').value;
 
-    const newExpense = {
-        id: Date.now().toString(),
-        date: new Date().toISOString(),
-        main_category: mainCat,
-        sub_category: subCat,
-        amount: amount,
-        payment_mode: mode,
-        description: desc
-    };
+    const cash = parseFloat(document.getElementById('expense-cash').value) || 0;
+    const upi = parseFloat(document.getElementById('expense-upi').value) || 0;
+    const udhar = parseFloat(document.getElementById('expense-udhar').value) || 0;
 
-    expensesHistory.unshift(newExpense);
+    if (cash === 0 && upi === 0 && udhar === 0) {
+        return alert('Please enter an amount in at least one field (Cash, UPI, or Udhar).');
+    }
+
+    const modes = [
+        { name: 'Cash', val: cash },
+        { name: 'UPI', val: upi },
+        { name: 'Udhar', val: udhar }
+    ];
+
+    let addedCount = 0;
+    modes.forEach(m => {
+        if (m.val > 0) {
+            const newExpense = {
+                id: (Date.now() + addedCount).toString(),
+                date: new Date().toISOString(),
+                main_category: mainCat,
+                sub_category: subCat,
+                amount: m.val,
+                payment_mode: m.name,
+                description: desc
+            };
+            expensesHistory.unshift(newExpense);
+            addedCount++;
+        }
+    });
+
     saveData();
-
     e.target.reset();
     renderExpenses();
     updateExpenseStats();
-    alert('Expense added successfully!');
+    alert('Expense(s) added successfully!');
 }
 
 function renderExpenses() {
