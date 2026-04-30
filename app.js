@@ -27,11 +27,11 @@ let inventory = getLocalData('anokhi_inventory', []);
 let salesHistory = getLocalData('anokhi_sales', []);
 let expensesHistory = getLocalData('anokhi_expenses', []);
 let cart = window.cart || []; window.cart = cart;
-let selectedOrderType = 'DINE_IN';
-let currentSelectedTable = null;
+window.selectedOrderType = 'DINE_IN';
+window.currentSelectedTable = null;
 let inventoryTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
 let posTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
-let tables = getLocalData('anokhi_tables', Array.from({length: 12}, (_, i) => ({
+window.tables = getLocalData('anokhi_tables', Array.from({length: 12}, (_, i) => ({
     id: `T${i+1}`,
     name: `Table ${i+1}`,
     cart: [],

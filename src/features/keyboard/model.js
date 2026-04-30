@@ -19,8 +19,9 @@ export const initKeyboardShortcuts = () => {
 
             if (targetCart && targetCart.length > 0) {
                 const lastItem = targetCart[targetCart.length - 1];
-                
-                // Decrement qty
+                console.log('ESC: Targeting item', lastItem.name, 'current qty', lastItem.cartQty || lastItem.quantity);
+
+                // Decrement qty (Force update both names)
                 if (lastItem.cartQty !== undefined) lastItem.cartQty -= 1;
                 if (lastItem.quantity !== undefined) lastItem.quantity -= 1;
 
@@ -34,7 +35,7 @@ export const initKeyboardShortcuts = () => {
                         const table = (window.tables || []).find(t => String(t.id) === String(window.currentSelectedTable));
                         if (table) table.cart = newCart;
                     } else {
-                        // Update global cart
+                        // Update global cart references
                         if (typeof cart !== 'undefined') {
                             cart.length = 0;
                             newCart.forEach(i => cart.push(i));
@@ -43,11 +44,13 @@ export const initKeyboardShortcuts = () => {
                     }
                 }
 
-                // Force Refresh All UI Widgets
+                // ULTIMATE REFRESH: Force every possible render function
                 if (typeof window.refreshUI === 'function') window.refreshUI();
                 if (typeof renderCart === 'function') renderCart();
                 if (typeof renderPOSItems === 'function') renderPOSItems();
                 if (typeof renderTableGrid === 'function') renderTableGrid();
+            } else {
+                console.log('ESC: Cart is empty, nothing to reduce.');
             }
         }
 
