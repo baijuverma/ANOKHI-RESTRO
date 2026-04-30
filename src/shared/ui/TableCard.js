@@ -12,19 +12,27 @@ export const createTableCard = (table, isSelected, onClick) => {
     };
 
     const startTime = table.lastUpdated || table.timestamp || Date.now();
-    const selectedStyle = isSelected ? 'background: #ffffff !important; border-color: var(--accent-color) !important; box-shadow: 0 0 15px rgba(255,255,255,0.3) !important;' : '';
-    const textColor = isSelected ? '#1a1a1a' : 'white';
-    const subTextColor = isSelected ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.7)';
+    
+    // FORCE WHITE ON SELECTION (Bypasses any CSS)
+    if (isSelected) {
+        div.style.setProperty('background-color', '#ffffff', 'important');
+        div.style.setProperty('background', '#ffffff', 'important');
+        div.style.setProperty('border-color', '#6366f1', 'important');
+        div.style.setProperty('box-shadow', '0 0 20px rgba(255,255,255,0.5)', 'important');
+    }
+
+    const textColor = isSelected ? '#000000' : '#ffffff';
+    const subText = isOccupied ? (isSelected ? '#ef4444' : '#ef4444') : (isSelected ? '#22c55e' : '#22c55e');
 
     div.className = `table-card ${isSelected ? 'selected' : ''} ${isOccupied ? 'occupied' : ''}`;
-    div.setAttribute('style', selectedStyle);
+    div.setAttribute('data-fsd', 'true');
 
     div.innerHTML = `
         <span class="bullet" style="position:absolute; top:8px; right:8px; background:${isOccupied ? '#ef4444' : '#22c55e'}; width:6px; height:6px;"></span>
-        <div class="table-name" style="color: ${textColor} !important;">${table.name}</div>
-        <div class="table-status" style="font-size: 9px; line-height: 1.2; color: ${subTextColor} !important;">
+        <div class="table-name" style="color: ${textColor} !important; font-weight: 800 !important;">${table.name}</div>
+        <div class="table-status" style="font-size: 9px; line-height: 1.2;">
             ${isOccupied ? 
-                `<span style="color:#ef4444; font-weight:700;">Occupied</span><br><span class="table-timer" data-start="${startTime}" style="color: ${isSelected ? '#000000' : '#ffffff'} !important;">${getDuration(startTime)}</span>` : 
+                `<span style="color:#ef4444; font-weight:700;">Occupied</span><br><span class="table-timer" data-start="${startTime}" style="color: ${textColor} !important; font-weight: 900 !important;">${getDuration(startTime)}</span>` : 
                 `<span style="color:#22c55e; font-weight:700;">Available</span>`}
         </div>
     `;
