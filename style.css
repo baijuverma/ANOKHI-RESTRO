@@ -1177,28 +1177,30 @@ input:focus, select:focus {
 
 .overlay-btn {
     position: absolute;
-    bottom: 2px; /* Slightly lower for symbol-only look */
-    width: 40px;
-    height: 40px;
-    border: none; /* Box Removed */
-    background: transparent; /* Box Removed */
+    bottom: 2px;
+    width: 44px;
+    height: 44px;
+    border: none !important;
+    background: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
     color: #6366f1; /* Deep Indigo/Blue */
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    font-size: 22px; /* Larger symbols since no box */
+    font-size: 26px; /* Larger symbols */
     font-weight: 900;
     transition: all 0.2s;
     pointer-events: auto;
-    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 .overlay-btn.minus { left: 2px; }
 .overlay-btn.plus { right: 2px; }
 
 .overlay-btn:hover {
-    transform: scale(1.3);
+    transform: scale(1.2);
     color: white;
 }
 
