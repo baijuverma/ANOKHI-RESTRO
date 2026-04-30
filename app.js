@@ -445,7 +445,7 @@ async function saveData() {
 
 // Format Currency
 function formatCurrency(amount) {
-    return '\u20B9' + parseFloat(amount).toFixed(2);
+    return String.fromCharCode(8377) + parseFloat(amount).toFixed(2);
 }
 
 // Format Date to DD/MM/YYYY

@@ -1,5 +1,5 @@
 export const formatCurrency = (amount) => {
-    return '\u20B9' + parseFloat(amount).toFixed(2);
+    return String.fromCharCode(8377) + parseFloat(amount).toFixed(2);
 };
 
 export const getDDMMYYYY = (date) => {

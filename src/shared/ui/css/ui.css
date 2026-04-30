@@ -23,6 +23,11 @@ input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0
 }
 .pos-item-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.07); }
 .pos-item-card.in-cart { border-color: var(--accent-color); background: rgba(99,102,241,0.1); }
+.pos-item-card.in-cart .price { 
+    font-size: 18px !important; 
+    font-weight: 800 !important; 
+    color: #ffffff !important; 
+}
 
 .pos-item-card .category { font-size: 10px; text-transform: uppercase; color: #818cf8; font-weight: 700; }
 .pos-item-card h4 { font-size: 15px; margin: 4px 0; color: white; line-height: 1.2; }
