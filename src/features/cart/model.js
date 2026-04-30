@@ -1,13 +1,16 @@
 import { inventory, reorderInventory } from '../../entities/inventory/model.js';
 
-export let cart = [];
+export let cart = window.cart || [];
+
+const syncWithWindow = () => {
+    window.cart = cart;
+};
 
 export const addToCart = (item) => {
     const existing = cart.find(c => String(c.id) === String(item.id));
     if (existing) {
         if (existing.cartQty < item.quantity) {
             existing.cartQty++;
-            // Reorder cart: move active item to top
             const idx = cart.indexOf(existing);
             cart.splice(idx, 1);
             cart.unshift(existing);
@@ -19,8 +22,7 @@ export const addToCart = (item) => {
     }
 
     reorderInventory(item.id);
-    
-    // Global Refresh (Will be handled by Widgets later)
+    syncWithWindow();
     if (window.refreshUI) window.refreshUI();
 };
 
@@ -38,10 +40,20 @@ export const updateCartQty = (id, delta) => {
             alert('Not enough stock!');
         }
     }
+    syncWithWindow();
     if (window.refreshUI) window.refreshUI();
+};
+
+// New: Function for Escape key logic
+export const reduceLastItemQty = () => {
+    if (cart.length > 0) {
+        const lastItem = cart[cart.length - 1];
+        updateCartQty(lastItem.id, -1);
+    }
 };
 
 export const clearCart = () => {
     cart = [];
+    syncWithWindow();
     if (window.refreshUI) window.refreshUI();
 };

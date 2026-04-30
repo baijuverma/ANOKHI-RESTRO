@@ -26,7 +26,7 @@ function getLocalData(key, defaultVal) {
 let inventory = getLocalData('anokhi_inventory', []);
 let salesHistory = getLocalData('anokhi_sales', []);
 let expensesHistory = getLocalData('anokhi_expenses', []);
-let cart = [];
+let cart = window.cart || []; window.cart = cart;
 let selectedOrderType = 'DINE_IN';
 let currentSelectedTable = null;
 let inventoryTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
