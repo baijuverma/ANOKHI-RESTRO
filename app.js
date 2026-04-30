@@ -1625,6 +1625,7 @@ function showReceipt(sale) {
 }
 
 let currentCalendarDate = null;
+let showOnlyDues = false; // New global flag for filtering
 
 window.updateCalendarView = function() {
     const m = parseInt(document.getElementById('calendar-month-select').value);
@@ -1714,6 +1715,30 @@ function renderCalendarChart(dailyTotals) {
     wrapper.innerHTML = html;
 }
 
+window.toggleDuesFilter = function() {
+    showOnlyDues = !showOnlyDues;
+    const statusText = document.getElementById('dues-filter-status');
+    const card = document.getElementById('dues-filter-card');
+    
+    if (showOnlyDues) {
+        if(statusText) {
+            statusText.innerText = 'Filter: DUES ONLY (Click to Clear)';
+            statusText.style.background = '#ef4444';
+            statusText.style.color = 'white';
+        }
+        if(card) card.style.background = 'rgba(239, 68, 68, 0.15)';
+    } else {
+        if(statusText) {
+            statusText.innerText = 'Click to Filter Dues';
+            statusText.style.background = 'rgba(239, 68, 68, 0.1)';
+            statusText.style.color = 'var(--text-secondary)';
+        }
+        if(card) card.style.background = 'rgba(239, 68, 68, 0.05)';
+    }
+    
+    renderHistory();
+}
+
 // History Logic
 function renderHistory() {
     const tbody = document.querySelector('#history-table tbody');
@@ -1797,7 +1822,9 @@ function renderHistory() {
         if (mProfitCard) mProfitCard.style.borderLeft = `4px solid ${mNetProfit >= 0 ? "#22c55e" : "#ef4444"}`;
     }
 
-    const sortedHistory = salesHistory; // salesHistory is already ordered from DB
+    const sortedHistory = showOnlyDues 
+        ? salesHistory.filter(s => (s.dues || 0) > 0.01) 
+        : salesHistory;
 
     sortedHistory.forEach(sale => {
         if (!sale) return;
