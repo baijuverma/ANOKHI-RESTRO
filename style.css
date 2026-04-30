@@ -11,6 +11,7 @@
     --warning-color: #f59e0b;
     --font-family: 'Inter', sans-serif;
     --glass-grad: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    --dropdown-bg: rgba(30, 41, 59, 0.95);
 }
 
 .login-overlay {
@@ -677,6 +678,107 @@ input:focus, select:focus {
     color: white;
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
 }
+
+/* Payment Mode Dropdown Styles */
+.payment-selection-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--panel-border);
+}
+
+.payment-dropdown-container {
+    position: relative;
+    display: inline-block;
+    min-width: 100px;
+}
+
+.payment-mode-btn {
+    width: 100%;
+    padding: 10px 15px;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-dropdown-container:hover .payment-mode-btn {
+    background: var(--accent-hover);
+}
+
+.payment-dropdown-content {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--dropdown-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    z-index: 1000;
+    margin-bottom: 5px;
+    overflow: hidden;
+}
+
+.payment-dropdown-container:hover .payment-dropdown-content {
+    display: block;
+}
+
+.payment-dropdown-content div {
+    padding: 10px 15px;
+    color: white;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.2s ease;
+}
+
+.payment-dropdown-content div:hover {
+    background: rgba(99, 102, 241, 0.2);
+    color: var(--accent-color);
+}
+
+.payment-input-group {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+}
+
+.payment-input-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+.payment-input-wrapper label {
+    position: absolute;
+    top: -8px;
+    left: 8px;
+    background: var(--bg-dark);
+    padding: 0 4px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    border-radius: 4px;
+    z-index: 1;
+}
+
+.payment-input-wrapper input {
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    height: 40px;
+}
+
 
 /* POS Layout */
 .pos-layout {

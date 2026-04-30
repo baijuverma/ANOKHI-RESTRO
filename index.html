@@ -446,28 +446,26 @@
                                     <span style="color: var(--success-color); font-size: 14px; font-weight: 700;">Refund: <span id="refund-amount-display">₹0</span></span>
                                 </div>
                                 
-                                <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-                                    <div class="segmented-control">
-                                        <input type="radio" name="payment-mode" id="pos-cash" value="CASH" checked onchange="toggleSplitPayment()">
-                                        <label for="pos-cash">Cash</label>
-
-                                        <input type="radio" name="payment-mode" id="pos-upi" value="UPI" onchange="toggleSplitPayment()">
-                                        <label for="pos-upi">UPI</label>
-
-                                        <input type="radio" name="payment-mode" id="pos-both" value="BOTH" onchange="toggleSplitPayment()">
-                                        <label for="pos-both">Split</label>
-                                    </div>
-                                </div>
-
-                                <div id="payment-amount-fields" style="margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px solid var(--panel-border);">
-                                    <div style="display: flex; gap: 10px;">
-                                        <div id="field-cash-wrapper" style="flex: 1;">
-                                            <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Paying by Cash</label>
-                                            <input type="number" id="pay-cash-amount" min="0" oninput="calculateDues()" placeholder="0" style="padding: 8px; width: 100%; border-radius: 6px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--panel-border);">
+                                <div class="payment-selection-row" style="margin-bottom: 15px;">
+                                    <div class="payment-dropdown-container">
+                                        <button class="payment-mode-btn" id="current-payment-mode-display">
+                                            <span>Cash</span> <i class="fa-solid fa-chevron-down"></i>
+                                        </button>
+                                        <div class="payment-dropdown-content">
+                                            <div onclick="updatePaymentMode('CASH')">Cash</div>
+                                            <div onclick="updatePaymentMode('UPI')">UPI</div>
+                                            <div onclick="updatePaymentMode('BOTH')">Split</div>
                                         </div>
-                                        <div id="field-upi-wrapper" style="flex: 1; display: none;">
-                                            <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Paying by UPI</label>
-                                            <input type="number" id="pay-upi-amount" min="0" oninput="calculateDues()" placeholder="0" style="padding: 8px; width: 100%; border-radius: 6px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--panel-border);">
+                                    </div>
+
+                                    <div class="payment-input-group">
+                                        <div id="field-cash-wrapper" class="payment-input-wrapper">
+                                            <label>Cash</label>
+                                            <input type="number" id="pay-cash-amount" min="0" oninput="calculateDues()" placeholder="0">
+                                        </div>
+                                        <div id="field-upi-wrapper" class="payment-input-wrapper" style="display: none;">
+                                            <label>UPI</label>
+                                            <input type="number" id="pay-upi-amount" min="0" oninput="calculateDues()" placeholder="0">
                                         </div>
                                     </div>
                                 </div>
