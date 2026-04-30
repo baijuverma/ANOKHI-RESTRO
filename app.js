@@ -1326,13 +1326,7 @@ window.calculateTotal = function() {
 
     const refundInfo = document.getElementById('refund-info');
     const totalLabel = document.getElementById('cart-total-label');
-    let labelText = (refundAmount > 0) ? 'Payable' : 'Total';
-    
-    if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
-        const table = tables.find(t => t.id === currentSelectedTable);
-        if (table) labelText += ` (${table.name})`;
-    }
-    if(totalLabel) totalLabel.innerText = labelText;
+    if(totalLabel) totalLabel.innerText = (refundAmount > 0) ? 'Payable' : 'Total';
 
     document.getElementById('cart-total').innerText = formatCurrency(finalTotal);
     
