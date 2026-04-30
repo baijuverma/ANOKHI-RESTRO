@@ -1,0 +1,64 @@
+/* Item Cards */
+.pos-item-card {
+    position: relative;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.pos-item-card:hover {
+    background: rgba(255, 255, 255, 0.07);
+    transform: translateY(-4px);
+    border-color: rgba(99, 102, 241, 0.4);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.pos-item-card.in-cart {
+    border-color: var(--accent-color) !important;
+    background: rgba(99, 102, 241, 0.1) !important;
+}
+
+/* Table Cards */
+.table-card {
+    padding: 20px;
+    text-align: center;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    background: rgba(255,255,255,0.05);
+}
+
+.table-card:hover {
+    background: rgba(255,255,255,0.1);
+    transform: scale(1.05);
+}
+
+.table-card.selected {
+    border-color: var(--accent-color) !important;
+    background: rgba(99, 102, 241, 0.2) !important;
+}
+
+.table-card.occupied {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: var(--danger-color);
+}
+
+/* Cart Item */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}

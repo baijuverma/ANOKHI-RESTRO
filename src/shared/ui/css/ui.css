@@ -1,0 +1,33 @@
+/* Atoms: Smallest Units */
+button { cursor: pointer; border: none; border-radius: 10px; transition: all 0.3s ease; }
+.btn-primary { background: var(--accent-color); color: white; padding: 10px 20px; }
+.btn-primary:hover { background: var(--accent-hover); }
+
+input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 8px; }
+
+.bullet { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.bullet-veg { background: var(--success-color); }
+.bullet-nonveg { background: var(--danger-color); }
+
+/* Molecules: Composite Units */
+.pos-item-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.pos-item-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.07); }
+.pos-item-card.in-cart { border-color: var(--accent-color); background: rgba(99,102,241,0.1); }
+
+/* Table Cards */
+.table-card {
+    padding: 20px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+    text-align: center;
+    cursor: pointer;
+}
+.table-card.selected { border-color: var(--accent-color); background: rgba(99,102,241,0.2); }
+.table-card.occupied { background: rgba(239, 68, 68, 0.15); border-color: var(--danger-color); }
