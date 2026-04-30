@@ -440,7 +440,7 @@
                                     <span style="color: var(--success-color); font-size: 14px; font-weight: 700;">Refund: <span id="refund-amount-display">₹0</span></span>
                                 </div>
                                 
-                                <div class="payment-input-container">
+                                <div class="payment-input-container" style="margin-top: 5px;">
                                     <div class="input-group-floating">
                                         <input type="number" id="pay-cash-amount" min="0" oninput="calculateDues()" placeholder=" " required>
                                         <label for="pay-cash-amount">Cash</label>
@@ -450,8 +450,7 @@
                                         <label for="pay-upi-amount">UPI</label>
                                     </div>
                                 </div>
-
-                                <div class="pos-action-buttons" style="display: flex; gap: 8px; margin-top: 0px;">
+                                <div class="pos-action-buttons" style="display: flex; gap: 8px; margin-top: 2px;">
                                     <button id="dine-in-advance-btn" class="btn-primary" style="background: var(--warning-color); border: none; padding: 10px 5px; font-size: 11px; flex: 1; display: none;" onclick="openAdvanceModal()" title="Shortcut: F4">
                                         <i class="fa-solid fa-hand-holding-dollar"></i> Adv [F4]
                                     </button>
