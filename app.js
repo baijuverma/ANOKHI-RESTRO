@@ -788,9 +788,8 @@ function renderPOSItems(search = '') {
     }
 
     filtered.forEach(item => {
-        // Sync check: Ensure we find the item even if ID types differ
-        const cartItem = cart.find(c => String(c.id) === String(item.id)) || 
-                         cart.find(c => c.name.trim().toLowerCase() === item.name.trim().toLowerCase());
+        // Robust sync: Always get the latest quantity from the cart
+        const cartItem = cart.find(c => String(c.id) == String(item.id));
         const inCart = !!cartItem;
         
         const div = document.createElement('div');
