@@ -9,6 +9,10 @@ import { setFilter, currentFilter } from './features/filter/model.js';
 import { setOrderType, currentOrderType } from './features/order-type/model.js';
 import { initKeyboardShortcuts } from './features/keyboard/model.js';
 import { syncLayoutVisibility } from './features/layout/model.js';
+import { renderInventoryTable } from './widgets/inventory-table/ui.js';
+import { renderSalesHistory } from './widgets/sales-history/ui.js';
+import { renderExpenseTable } from './widgets/expense-table/ui.js';
+import { renderDashboardStats } from './widgets/dashboard-stats/ui.js';
 
 // Global exports for HTML compatibility (Legacy support)
 window.addToCart = addToCart;
@@ -95,6 +99,36 @@ window.refreshUI = () => {
 
     // Refresh the Cart Widget
     window.renderCart();
+
+    // -------------------------------------------------------------------------
+    // SECTION-WISE MODULAR REFRESH (FSD WIDGETS)
+    // -------------------------------------------------------------------------
+
+    // 1. Refresh Inventory Section
+    if (window.inventory) {
+        renderInventoryTable('inventory-tbody', window.inventory);
+    }
+
+    // 2. Refresh Sales History Section
+    if (window.sales) {
+        renderSalesHistory('sales-tbody', window.sales);
+    }
+
+    // 3. Refresh Expenses Section
+    if (window.expenses) {
+        renderExpenseTable('expenses-tbody', window.expenses);
+    }
+
+    // 4. Refresh Dashboard Stats
+    const totalSale = (window.sales || []).reduce((acc, curr) => acc + (parseFloat(curr.total) || 0), 0);
+    const totalExpense = (window.expenses || []).reduce((acc, curr) => acc + (parseFloat(curr.amount) || 0), 0);
+    const totalOrders = (window.sales || []).length;
+    
+    renderDashboardStats({ 
+        totalSale: totalSale.toFixed(2), 
+        totalExpense: totalExpense.toFixed(2),
+        totalOrders: totalOrders
+    });
 };
 
 const init = async () => {
