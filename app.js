@@ -788,8 +788,8 @@ function renderPOSItems(search = '') {
     }
 
     filtered.forEach(item => {
-        // Try to find in cart by ID first, then by Name (fallback for edited sales)
-        const cartItem = cart.find(c => c.id === item.id) || 
+        // Use == for flexible ID matching (string vs number)
+        const cartItem = cart.find(c => c.id == item.id) || 
                          cart.find(c => c.name.trim().toLowerCase() === item.name.trim().toLowerCase());
         const inCart = !!cartItem;
         
@@ -1225,7 +1225,6 @@ function addToCart(item) {
 }
 
 window.updateCartQty = function(id, delta) {
-    // Use == to match even if types (string vs number) differ
     const itemIndex = cart.findIndex(c => c.id == id); 
     if(itemIndex > -1) {
         const item = cart[itemIndex];
@@ -1237,6 +1236,13 @@ window.updateCartQty = function(id, delta) {
         } else if (invItem && item.cartQty > invItem.quantity) {
             item.cartQty = invItem.quantity;
             alert('Not enough stock!');
+        }
+
+        // REORDER MENU: Move the item to the front of the inventory list on +/- too
+        const invIdx = inventory.findIndex(inv => inv.id == id);
+        if (invIdx > -1) {
+            const selectedItem = inventory.splice(invIdx, 1)[0];
+            inventory.unshift(selectedItem);
         }
     }
     renderCart();
