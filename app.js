@@ -788,8 +788,8 @@ function renderPOSItems(search = '') {
     }
 
     filtered.forEach(item => {
-        // Use == for flexible ID matching (string vs number)
-        const cartItem = cart.find(c => c.id == item.id) || 
+        // Sync check: Ensure we find the item even if ID types differ
+        const cartItem = cart.find(c => String(c.id) === String(item.id)) || 
                          cart.find(c => c.name.trim().toLowerCase() === item.name.trim().toLowerCase());
         const inCart = !!cartItem;
         
@@ -1225,10 +1225,10 @@ function addToCart(item) {
 }
 
 window.updateCartQty = function(id, delta) {
-    const itemIndex = cart.findIndex(c => c.id == id); 
+    const itemIndex = cart.findIndex(c => String(c.id) === String(id)); 
     if(itemIndex > -1) {
         const item = cart[itemIndex];
-        const invItem = inventory.find(i => i.id == id);
+        const invItem = inventory.find(i => String(i.id) === String(id));
         
         item.cartQty += delta;
         if(item.cartQty <= 0) {
@@ -1238,15 +1238,17 @@ window.updateCartQty = function(id, delta) {
             alert('Not enough stock!');
         }
 
-        // REORDER MENU: Move the item to the front of the inventory list on +/- too
-        const invIdx = inventory.findIndex(inv => inv.id == id);
+        const invIdx = inventory.findIndex(inv => String(inv.id) === String(id));
         if (invIdx > -1) {
             const selectedItem = inventory.splice(invIdx, 1)[0];
             inventory.unshift(selectedItem);
         }
     }
     renderCart();
-    if(typeof renderPOSItems === 'function') renderPOSItems(); 
+    // Use a small timeout to ensure DOM is ready and state is committed
+    setTimeout(() => {
+        if(typeof renderPOSItems === 'function') renderPOSItems(); 
+    }, 10);
 }
 
 function renderCart() {
