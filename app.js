@@ -172,23 +172,26 @@ window.checkLogin = function() {
 }
 
 window.verifySettingsDoB = function() {
-    const dobInput = document.getElementById('settings-admin-dob').value; // Usually YYYY-MM-DD
+    console.log("verifySettingsDoB function called!");
+    const dobInput = document.getElementById('settings-admin-dob').value;
     const adminDoB = localStorage.getItem('anokhi_admin_dob') || '1989-12-15';
-    const pwdSection = document.getElementById('settings-password-section');
-    const dobSection = document.getElementById('settings-dob-section');
+    
+    console.log("Input Value:", dobInput);
+    console.log("Expected Value:", adminDoB);
 
     if (!dobInput) {
-        alert('Please select or enter the Admin Date of Birth.');
+        alert('Please select the Date of Birth first.');
         return;
     }
 
-    // Standardize both dates to YYYY-MM-DD format for comparison
     if (dobInput === adminDoB) {
-        pwdSection.classList.remove('force-hidden');
-        dobSection.classList.add('force-hidden');
-        alert('Identity Verified! You can now update your password.');
+        console.log("Verification Success!");
+        document.getElementById('settings-password-section').classList.remove('force-hidden');
+        document.getElementById('settings-dob-section').classList.add('force-hidden');
+        alert('Verified! Please enter new password.');
     } else {
-        alert('Security Check Failed!\nYour Input: ' + dobInput + '\nRequired Format: YYYY-MM-DD\nExpected: ' + adminDoB);
+        console.log("Verification Failed!");
+        alert('Incorrect DOB! System expected ' + adminDoB + ' but got ' + dobInput);
     }
 }
 
