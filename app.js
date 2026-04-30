@@ -795,7 +795,16 @@ function renderPOSItems(search = '') {
         
         const div = document.createElement('div');
         div.className = `pos-item-card ${inCart ? 'in-cart' : ''}`;
-        if (!inCart) div.onclick = () => addToCart(item);
+        if (!inCart) div.onclick = () => {
+            addToCart(item);
+            // Move item to front
+            const idx = inventory.findIndex(i => i.id === item.id);
+            if(idx > -1) {
+                const moved = inventory.splice(idx, 1);
+                inventory.unshift(moved[0]);
+                renderPOSItems();
+            }
+        };
         
         const bulletColor = item.itemType === 'Non-Veg' ? '#ef4444' : '#22c55e';
         div.innerHTML = `
@@ -1194,19 +1203,24 @@ function addToCart(item) {
     if(existing) {
         if(existing.cartQty < item.quantity) {
             existing.cartQty++;
-            // Move existing item to the TOP of the cart list when added again
-            const index = cart.indexOf(existing);
-            if (index > -1) {
-                cart.splice(index, 1);
-                cart.unshift(existing);
-            }
+            // Reorder cart
+            const cIdx = cart.indexOf(existing);
+            if (cIdx > -1) { cart.splice(cIdx, 1); cart.unshift(existing); }
         } else {
             alert('Not enough stock!');
         }
     } else {
-        // Add new item to the TOP
         cart.unshift({...item, cartQty: 1});
     }
+
+    // REORDER MENU: Move the selected item to the front of the inventory list
+    const invIdx = inventory.findIndex(inv => inv.id === item.id);
+    if (invIdx > -1) {
+        const selectedItem = inventory.splice(invIdx, 1)[0];
+        inventory.unshift(selectedItem);
+    }
+
+    renderInventory(); // Refresh menu to show reordered items
     renderCart();
 }
 

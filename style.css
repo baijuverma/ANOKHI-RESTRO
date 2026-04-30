@@ -1152,10 +1152,16 @@ input:focus, select:focus {
 }
 
 .table-card.selected {
-    background: var(--accent-color);
-    border-color: var(--accent-color);
-    color: white;
+    background: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+    color: white !important;
     box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+}
+
+.pos-item-card.in-cart {
+    border-color: var(--accent-color) !important;
+    background: rgba(99, 102, 241, 0.1) !important;
+    transform: scale(1.02);
 }
 
 .table-card.occupied {
