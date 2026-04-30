@@ -9,7 +9,7 @@ export const createCartItem = (item, index, onUpdateQty) => {
     div.innerHTML = `
         <div class="cart-col-sr">${index + 1}</div>
         <div class="cart-col-info">
-            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-name">${item.name.length > 10 ? item.name.substring(0, 8) + '..' : item.name}</div>
             <div class="cart-item-unit-price">${formatCurrency(item.price)} / itm</div>
         </div>
         <div class="cart-col-qty">
