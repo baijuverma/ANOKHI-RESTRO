@@ -11,6 +11,12 @@ try {
     console.warn('Supabase not loaded, running in offline mode:', e);
 }
 
+// Utility: Truncate Name to 10 chars (8 text + 2 dots)
+function truncateName(name) {
+    if (!name) return '';
+    return name.length > 10 ? name.substring(0, 8) + '..' : name;
+}
+
 // Safe Storage Helper
 function getLocalData(key, defaultVal) {
     try {
@@ -528,7 +534,7 @@ window.showStockList = function(type) {
             
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${item.name.length > 10 ? item.name.substring(0, 8) + '..' : item.name}</td>
+                <td>${truncateName(item.name)}</td>
                 <td>${item.category}</td>
                 <td style="color: ${statusColor}; font-weight: bold;">${item.quantity}</td>
             `;
@@ -566,7 +572,7 @@ window.showTodaySalesList = function() {
             const data = itemsSold[id];
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${data.name.length > 10 ? data.name.substring(0, 8) + '..' : data.name}</td>
+                <td>${truncateName(data.name)}</td>
                 <td style="font-weight:bold; color:var(--accent-color);">${data.qty}</td>
                 <td>${formatCurrency(data.total)}</td>
             `;
@@ -701,7 +707,7 @@ function renderInventory() {
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><strong>${item.name.length > 10 ? item.name.substring(0, 8) + '..' : item.name}</strong></td>
+            <td><strong>${truncateName(item.name)}</strong></td>
             <td>${item.category}</td>
             <td>${formatCurrency(item.price)}</td>
             <td>${item.quantity}</td>
@@ -800,7 +806,7 @@ function renderCart() {
         div.innerHTML = `
             <div class="cart-col-sr">${index + 1}</div>
             <div class="cart-col-info">
-                <div class="cart-item-name">${item.name.length > 10 ? item.name.substring(0, 8) + '..' : item.name}</div>
+                <div class="cart-item-name">${truncateName(item.name)}</div>
                 <div class="cart-item-unit-price">${formatCurrency(item.price)} / itm</div>
             </div>
             <div class="cart-col-qty">
@@ -1129,7 +1135,7 @@ function showReceipt(sale) {
     const details = document.getElementById('receipt-details');
     let itemsHtml = sale.items.map(i => `
         <div class="receipt-item">
-            <span>${i.name.length > 10 ? i.name.substring(0, 8) + '..' : i.name} (x${i.cartQty})</span>
+            <span>${truncateName(i.name)} (x${i.cartQty})</span>
             <span>${formatCurrency(i.price * i.cartQty)}</span>
         </div>
     `).join('');
