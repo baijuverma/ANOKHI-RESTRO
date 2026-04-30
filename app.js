@@ -357,6 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('dine-in-table-info').style.display = 'none';
                 renderCart();
                 renderTableGrid();
+                if(typeof renderPOSItems === 'function') renderPOSItems(); 
             } else {
                 newBill();
             }
