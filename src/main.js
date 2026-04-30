@@ -99,15 +99,6 @@ const init = async () => {
     // Refresh UI initially
     window.refreshUI();
 
-    // Event Listeners for Order Type Buttons (FSD Direct Binding)
-    const orderTypeContainer = document.getElementById('order-type-container');
-    if (orderTypeContainer) {
-        const buttons = orderTypeContainer.querySelectorAll('button');
-        buttons.forEach(btn => {
-            btn.onclick = () => setOrderType(btn.getAttribute('data-type'));
-        });
-    }
-
     // Event Listeners for Search
     const searchInput = document.getElementById('pos-search');
     if (searchInput) {
