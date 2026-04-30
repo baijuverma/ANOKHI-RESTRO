@@ -172,22 +172,23 @@ window.checkLogin = function() {
 }
 
 window.verifySettingsDoB = function() {
-    const dob = document.getElementById('settings-admin-dob').value;
+    const dobInput = document.getElementById('settings-admin-dob').value; // Usually YYYY-MM-DD
     const adminDoB = localStorage.getItem('anokhi_admin_dob') || '1989-12-15';
     const pwdSection = document.getElementById('settings-password-section');
     const dobSection = document.getElementById('settings-dob-section');
 
-    if (!dob) {
-        alert('Please enter Admin Date of Birth.');
+    if (!dobInput) {
+        alert('Please select or enter the Admin Date of Birth.');
         return;
     }
 
-    if (dob === adminDoB) {
+    // Standardize both dates to YYYY-MM-DD format for comparison
+    if (dobInput === adminDoB) {
         pwdSection.classList.remove('force-hidden');
         dobSection.classList.add('force-hidden');
         alert('Identity Verified! You can now update your password.');
     } else {
-        alert('Security Check Failed: Incorrect Admin Date of Birth.');
+        alert('Security Check Failed!\nYour Input: ' + dobInput + '\nRequired Format: YYYY-MM-DD\nExpected: ' + adminDoB);
     }
 }
 
