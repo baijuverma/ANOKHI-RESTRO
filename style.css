@@ -561,9 +561,9 @@ button, button * {
 /* Floating Label Input Group */
 .payment-input-container {
     display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding: 15px 10px;
+    gap: 10px;
+    margin-bottom: 5px;
+    padding: 5px 10px;
 }
 
 .input-group-floating {
