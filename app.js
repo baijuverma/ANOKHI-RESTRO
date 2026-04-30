@@ -90,14 +90,14 @@ async function syncFromSupabase() {
             localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
         }
 
-        // Re-render views
-        renderInventory();
-        renderPOSItems();
-        renderHistory();
-        renderTableGrid();
-        renderExpenses();
-        updateDashboard();
-        updateExpenseStats();
+        // Re-render views safely
+        if (typeof renderInventory === 'function') renderInventory();
+        if (typeof renderPOSItems === 'function') renderPOSItems();
+        if (typeof renderHistory === 'function') renderHistory();
+        if (typeof renderTableGrid === 'function') renderTableGrid();
+        if (typeof renderExpenses === 'function') renderExpenses();
+        if (typeof updateDashboard === 'function') updateDashboard();
+        if (typeof updateExpenseStats === 'function') updateExpenseStats();
     } catch (err) {
         console.error('Sync Error:', err);
     }
@@ -666,8 +666,8 @@ function handleItemSubmit(e) {
 
     saveData();
     closeModal('addItemModal');
-    renderInventory();
-    updateDashboard();
+    if (typeof renderInventory === 'function') renderInventory();
+    if (typeof updateDashboard === 'function') updateDashboard();
 }
 
 function renderInventory() {
@@ -735,8 +735,8 @@ function handleRestockSubmit(e) {
         inventory[index].quantity += qtyToAdd;
         saveData();
         closeModal('restockModal');
-        renderInventory();
-        updateDashboard();
+        if (typeof renderInventory === 'function') renderInventory();
+        if (typeof updateDashboard === 'function') updateDashboard();
     }
 }
 
@@ -762,8 +762,8 @@ window.deleteItem = async function(id) {
     if(confirm('Are you sure you want to delete this item?')) {
         inventory = inventory.filter(i => i.id !== id);
         saveData();
-        renderInventory();
-        updateDashboard();
+        if (typeof renderInventory === 'function') renderInventory();
+        if (typeof updateDashboard === 'function') updateDashboard();
         
         // Explicit delete from Supabase
         await db.from('inventory').delete().eq('id', id);
@@ -828,7 +828,7 @@ function renderCart() {
     const searchVal = document.getElementById('pos-search') ? document.getElementById('pos-search').value : '';
     if (typeof window.renderPOSItems === 'function') {
         window.renderPOSItems(searchVal);
-    } else {
+    } else if (typeof renderPOSItems === 'function') {
         renderPOSItems(searchVal);
     }
 }
@@ -1118,10 +1118,10 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     document.getElementById('current-table-name').innerText = 'No Table Selected';
     document.getElementById('advance-paid-info').style.display = 'none';
     clearCart();
-    renderInventory();
-    renderPOSItems();
-    updateDashboard();
-    renderTableGrid();
+    if (typeof renderInventory === 'function') renderInventory();
+    if (typeof renderPOSItems === 'function') renderPOSItems();
+    if (typeof updateDashboard === 'function') updateDashboard();
+    if (typeof renderTableGrid === 'function') renderTableGrid();
 }
 
 function showReceipt(sale) {
@@ -1508,7 +1508,7 @@ window.loadMoreSales = async function() {
         if (data && data.length > 0) {
             salesHistory = [...salesHistory, ...data];
             // No need to re-render everything, just append to table
-            renderHistory(); 
+            if (typeof renderHistory === 'function') renderHistory(); 
         } else {
             // No more data
             if (btn) btn.innerHTML = 'No more transactions';
@@ -1893,16 +1893,16 @@ window.showView = function(target) {
         }
     });
 
-    // Refresh view specific data
-    if(target === 'dashboard') updateDashboard();
-    if(target === 'inventory') renderInventory();
-    if(target === 'pos') renderPOSItems();
-    if(target === 'history') renderHistory();
+    // Refresh view specific data safely
+    if(target === 'dashboard' && typeof updateDashboard === 'function') updateDashboard();
+    if(target === 'inventory' && typeof renderInventory === 'function') renderInventory();
+    if(target === 'pos' && typeof renderPOSItems === 'function') renderPOSItems();
+    if(target === 'history' && typeof renderHistory === 'function') renderHistory();
     if(target === 'expenses') {
-        renderExpenses();
-        updateExpenseStats();
+        if (typeof renderExpenses === 'function') renderExpenses();
+        if (typeof updateExpenseStats === 'function') updateExpenseStats();
     }
-    if(target === 'settings') initSettingsView();
+    if(target === 'settings' && typeof initSettingsView === 'function') initSettingsView();
 }
 
 window.toggleSidebar = function() {
@@ -1959,7 +1959,7 @@ window.editSale = function(id) {
     setOrderType(type, targetBtn, true);
 
     renderCart();
-    renderPOSItems(); // This highlights the items in the left side menu
+    if (typeof renderPOSItems === 'function') renderPOSItems(); 
 }
 
 // Global Keyboard Shortcuts
