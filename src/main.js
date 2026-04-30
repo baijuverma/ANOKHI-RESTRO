@@ -10,6 +10,11 @@ window.addToCart = addToCart;
 window.updateCartQty = updateCartQty;
 window.logout = logout;
 
+window.renderPOSItems = (search = '') => {
+    const gridContainer = document.getElementById('pos-item-grid');
+    if (gridContainer) renderPOSGrid(gridContainer, search);
+};
+
 window.renderCart = () => {
     renderCartWidget('cart-items');
 };
