@@ -7,18 +7,32 @@ export const renderCartWidget = (containerId) => {
     if (!container) return;
     
     container.innerHTML = '';
-    let subtotal = 0;
+    
+    if (cart.length > 0) {
+        // Add Header Row
+        const header = document.createElement('div');
+        header.className = 'cart-header';
+        header.innerHTML = `
+            <div class="cart-col-sr">SR</div>
+            <div class="cart-col-info">ITEMS</div>
+            <div class="cart-col-qty">QTY.</div>
+            <div class="cart-col-total">PRICE</div>
+            <div class="cart-col-action"></div>
+        `;
+        container.appendChild(header);
+    }
 
-    cart.forEach(item => {
+    let subtotal = 0;
+    cart.forEach((item, index) => {
         subtotal += (item.price * item.cartQty);
-        const itemEl = createCartItem(item, updateCartQty);
+        const itemEl = createCartItem(item, index, updateCartQty);
         container.appendChild(itemEl);
     });
 
-    // Update Summary in index.html (Direct DOM manipulation for now)
+    // Update Summary
     const subtotalEl = document.getElementById('cart-subtotal');
     if (subtotalEl) subtotalEl.innerText = formatCurrency(subtotal);
 
-    // Trigger total calculation in app.js for now (Hybrid Sync)
     if (typeof window.calculateTotal === 'function') window.calculateTotal();
 };
+

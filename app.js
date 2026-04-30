@@ -676,8 +676,11 @@ function renderInventory() {
     tbody.innerHTML = '';
 
     let filtered = inventory;
-    if (inventoryTypeFilter === 'veg') filtered = inventory.filter(i => i.itemType !== 'Non-Veg');
-    else if (inventoryTypeFilter === 'nonveg') filtered = inventory.filter(i => i.itemType === 'Non-Veg');
+    if (inventoryTypeFilter === 'veg') {
+        filtered = inventory.filter(i => (i.itemType || '').toLowerCase().replace(/[- ]/g, '') !== 'nonveg');
+    } else if (inventoryTypeFilter === 'nonveg') {
+        filtered = inventory.filter(i => (i.itemType || '').toLowerCase().replace(/[- ]/g, '') === 'nonveg');
+    }
 
     if(filtered.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No items found.</td></tr>';
@@ -744,7 +747,8 @@ window.editItem = function(id) {
         document.getElementById('item-id').value = item.id;
         document.getElementById('item-name').value = item.name;
         document.getElementById('item-category').value = item.category;
-        const typeRadio = document.getElementById(item.itemType === 'Non-Veg' ? 'type-nonveg' : 'type-veg');
+        const isNonVeg = (item.itemType || '').toLowerCase().replace(/[- ]/g, '') === 'nonveg';
+        const typeRadio = document.getElementById(isNonVeg ? 'type-nonveg' : 'type-veg');
         if (typeRadio) typeRadio.checked = true;
         document.getElementById('item-price').value = item.price;
         document.getElementById('item-quantity').value = item.quantity;
@@ -770,36 +774,63 @@ window.deleteItem = async function(id) {
 // POS Logic
 function renderCart() {
     const cartContainer = document.getElementById('cart-items');
+    if (!cartContainer) return;
     cartContainer.innerHTML = '';
     
-    let subtotal = 0;
+    if (cart.length > 0) {
+        const header = document.createElement('div');
+        header.className = 'cart-header';
+        header.innerHTML = `
+            <div class="cart-col-sr">SR</div>
+            <div class="cart-col-info">ITEMS</div>
+            <div class="cart-col-qty">QTY.</div>
+            <div class="cart-col-total">PRICE</div>
+            <div class="cart-col-action"></div>
+        `;
+        cartContainer.appendChild(header);
+    }
 
-    cart.forEach(item => {
+    let subtotal = 0;
+    cart.forEach((item, index) => {
         const itemTotal = item.price * item.cartQty;
         subtotal += itemTotal;
 
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
-            <div class="cart-item-info">
-                <h4>${item.name}</h4>
-                <p>${formatCurrency(item.price)} x ${item.cartQty}</p>
+            <div class="cart-col-sr">${index + 1}</div>
+            <div class="cart-col-info">
+                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-unit-price">${formatCurrency(item.price)} / itm</div>
             </div>
-            <div class="cart-controls">
-                <button class="qty-btn" onclick="updateCartQty('${item.id}', -1)"><i class="fa-solid fa-minus"></i></button>
-                <span class="cart-qty-num">${item.cartQty}</span>
-                <button class="qty-btn" onclick="updateCartQty('${item.id}', 1)"><i class="fa-solid fa-plus"></i></button>
+            <div class="cart-col-qty">
+                <div class="qty-selector">
+                    <button class="qty-btn" onclick="updateCartQty('${item.id}', -1)"><i class="fa-solid fa-minus"></i></button>
+                    <span class="qty-val">${item.cartQty}</span>
+                    <button class="qty-btn" onclick="updateCartQty('${item.id}', 1)"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            </div>
+            <div class="cart-col-total">${formatCurrency(itemTotal)}</div>
+            <div class="cart-col-action">
+                <button class="cart-delete-btn" onclick="updateCartQty('${item.id}', -${item.cartQty})" title="Remove Item">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
             </div>
         `;
         cartContainer.appendChild(div);
     });
 
-    document.getElementById('cart-subtotal').innerText = formatCurrency(subtotal);
+    const subtotalEl = document.getElementById('cart-subtotal');
+    if (subtotalEl) subtotalEl.innerText = formatCurrency(subtotal);
     calculateTotal();
     
-    // Also refresh POS items grid to show/update +/- overlays
+    // Also refresh POS items grid
     const searchVal = document.getElementById('pos-search') ? document.getElementById('pos-search').value : '';
-    renderPOSItems(searchVal);
+    if (typeof window.renderPOSItems === 'function') {
+        window.renderPOSItems(searchVal);
+    } else {
+        renderPOSItems(searchVal);
+    }
 }
 
 window.newBill = function() {
@@ -1655,19 +1686,108 @@ window.deleteExpense = async function(id) {
     }
 }
 
-function updateExpenseStats() {
-    const staffTotal = expensesHistory
-        .filter(e => e.main_category === 'Staff & Operation')
-        .reduce((sum, e) => sum + e.amount, 0);
-        
-    const materialTotal = expensesHistory
-        .filter(e => e.main_category === 'Material')
-        .reduce((sum, e) => sum + e.amount, 0);
+let analyticsChart = null;
 
-    const staffEl = document.getElementById('total-staff-expenses');
-    const matEl = document.getElementById('total-material-expenses');
-    if(staffEl) staffEl.innerText = formatCurrency(staffTotal);
-    if(matEl) matEl.innerText = formatCurrency(materialTotal);
+function updateExpenseStats() {
+    // Generate analytics data for the last 7 days
+    const last7Days = [];
+    const salesData = [];
+    const expensesData = [];
+    const profitData = [];
+
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(today.getDate() - i);
+        const dateLabel = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+        const dateFull = getDDMMYYYY(d);
+        
+        last7Days.push(dateLabel);
+
+        const daySales = salesHistory
+            .filter(s => getDDMMYYYY(new Date(s.date)) === dateFull)
+            .reduce((sum, s) => sum + (s.total || 0), 0);
+        
+        const dayExpenses = expensesHistory
+            .filter(e => getDDMMYYYY(new Date(e.date)) === dateFull)
+            .reduce((sum, e) => sum + (e.amount || 0), 0);
+
+        salesData.push(daySales);
+        expensesData.push(dayExpenses);
+        profitData.push(daySales - dayExpenses);
+    }
+
+    const ctx = document.getElementById('expenses-analytics-chart');
+    if (!ctx) return;
+
+    if (analyticsChart) {
+        analyticsChart.destroy();
+    }
+
+    analyticsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: last7Days,
+            datasets: [
+                {
+                    label: 'Sales',
+                    data: salesData,
+                    backgroundColor: '#22c55e',
+                    borderRadius: 4,
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.7
+                },
+                {
+                    label: 'Expenses',
+                    data: expensesData,
+                    backgroundColor: '#ef4444',
+                    borderRadius: 4,
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.7
+                },
+                {
+                    label: 'Profit',
+                    data: profitData,
+                    backgroundColor: '#818cf8',
+                    borderRadius: 4,
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.7
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }, // Custom legend used in HTML
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    borderWidth: 1,
+                    padding: 10,
+                    displayColors: true,
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + String.fromCharCode(8377) + context.parsed.y.toFixed(2);
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+                    ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } }
+                },
+                x: {
+                    grid: { display: false, drawBorder: false },
+                    ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } }
+                }
+            }
+        }
+    });
 }
 
 function formatDateLabel(isoString) {

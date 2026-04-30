@@ -1,23 +1,34 @@
+import { normalizeType } from './lib/filter-logic.js';
+
 export let currentFilter = 'all';
+
+/**
+ * Updates the visual state of filter buttons in the UI.
+ * @param {string} activeType 
+ */
+export const updateFilterUI = (activeType) => {
+    const filterContainer = document.getElementById('pos-filter-container');
+    if (!filterContainer) return;
+
+    const buttons = filterContainer.querySelectorAll('button');
+    buttons.forEach(btn => {
+        const btnType = btn.getAttribute('data-type');
+        const isActive = btnType === activeType;
+        
+        if (isActive) {
+            btn.style.background = (activeType === 'veg') ? '#22c55e' : (activeType === 'nonveg' ? '#ef4444' : 'var(--accent-color)');
+            btn.style.color = 'white';
+        } else {
+            btn.style.background = 'transparent';
+            btn.style.color = (btnType === 'veg') ? '#22c55e' : (btnType === 'nonveg' ? '#ef4444' : 'var(--accent-color)');
+        }
+    });
+};
 
 export const setFilter = (type) => {
     currentFilter = type;
-    
-    // UI Update logic (Buttons styling)
-    const filterContainer = document.getElementById('pos-filter-container');
-    if (filterContainer) {
-        const buttons = filterContainer.querySelectorAll('button');
-        buttons.forEach(btn => {
-            const btnType = btn.getAttribute('data-type');
-            if (btnType === type) {
-                btn.style.background = (type === 'veg') ? '#22c55e' : (type === 'nonveg' ? '#ef4444' : 'var(--accent-color)');
-                btn.style.color = 'white';
-            } else {
-                btn.style.background = 'transparent';
-                btn.style.color = (btnType === 'veg') ? '#22c55e' : (btnType === 'nonveg' ? '#ef4444' : 'var(--accent-color)');
-            }
-        });
-    }
+    updateFilterUI(type);
     
     if (typeof window.refreshUI === 'function') window.refreshUI();
 };
+

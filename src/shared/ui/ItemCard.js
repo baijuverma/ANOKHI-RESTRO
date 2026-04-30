@@ -2,7 +2,8 @@ import { formatCurrency } from '../../shared/lib/utils.js';
 
 export const createItemCard = (item, cartQty, onAdd, onUpdateQty) => {
     const inCart = cartQty > 0;
-    const bulletColor = item.itemType === 'Non-Veg' ? '#ef4444' : '#22c55e';
+    const isNonVeg = (item.itemType || '').toLowerCase().replace(/[- ]/g, '') === 'nonveg';
+    const bulletColor = isNonVeg ? '#ef4444' : '#22c55e';
     
     const div = document.createElement('div');
     div.className = `pos-item-card ${inCart ? 'in-cart' : ''}`;
