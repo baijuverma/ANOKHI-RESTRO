@@ -1177,10 +1177,10 @@ input:focus, select:focus {
 
 .overlay-btn {
     position: absolute;
-    bottom: 8px;
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
+    bottom: 4px; /* Lowered to bottom line */
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
     border: 1px solid var(--accent-color);
     background: #1e1e2e;
     color: white;
@@ -1190,45 +1190,38 @@ input:focus, select:focus {
     cursor: pointer;
     font-size: 14px;
     font-weight: 900;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
     transition: all 0.2s;
     pointer-events: auto;
 }
 
-.overlay-btn.minus { left: 8px; border-color: #ef4444; color: #ef4444; }
-.overlay-btn.plus { right: 8px; border-color: #22c55e; color: #22c55e; }
-
-.overlay-btn:hover {
-    transform: scale(1.1);
-    background: var(--accent-color);
-    color: white;
-    border-color: var(--accent-color);
-}
+.overlay-btn.minus { left: 5px; border-color: #ef4444; color: #ef4444; }
+.overlay-btn.plus { right: 5px; border-color: #22c55e; color: #22c55e; }
 
 .overlay-qty-float {
     position: absolute;
-    bottom: 12px;
+    bottom: 6px; /* Lowered to bottom line */
     left: 50%;
     transform: translateX(-50%);
-    background: #1e1e2e;
-    border: 1px solid var(--accent-color);
-    padding: 2px 12px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 800;
+    background: transparent; /* Background removed */
+    border: none; /* Border removed */
+    padding: 0;
+    font-size: 18px; /* Slightly larger for visibility */
+    font-weight: 900;
     color: var(--accent-color);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    text-shadow: 0 0 8px rgba(0,0,0,0.9); /* High contrast shadow */
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-shadow: none;
 }
 
 .overlay-qty-float::before {
     content: 'QTY';
-    font-size: 7px;
+    font-size: 8px;
     color: var(--text-secondary);
-    letter-spacing: 1px;
-    margin-bottom: -2px;
+    font-weight: 700;
+    margin-bottom: -4px;
 }
 
 @keyframes fadeIn {
