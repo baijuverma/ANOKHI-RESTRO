@@ -4,6 +4,7 @@ import { addToCart, updateCartQty, reduceLastItemQty, cart } from './features/ca
 import { renderPOSGrid } from './widgets/pos-grid/ui.js';
 import { renderCartWidget } from './widgets/cart/ui.js';
 import { renderTableGrid as renderTableWidget } from './widgets/table-grid/ui.js';
+import { renderOrderTypeWidget } from './widgets/order-type/ui.js';
 import { setFilter, currentFilter } from './features/filter/model.js';
 import { setOrderType, currentOrderType } from './features/order-type/model.js';
 
@@ -23,6 +24,10 @@ window.renderTableGrid = () => {
             window.refreshUI();
         }
     });
+};
+
+window.renderOrderType = () => {
+    renderOrderTypeWidget('order-type-container');
 };
 
 window.toggleTablesCurtain = () => {
@@ -57,6 +62,9 @@ window.refreshUI = () => {
     
     // Refresh the table selection highlight if legacy exists
     if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
+
+    // Refresh Order Type Widget
+    window.renderOrderType();
 
     // Update Table Indicator next to Total
     const tableIndicator = document.getElementById('total-table-indicator');
