@@ -1316,8 +1316,10 @@ window.clearCart = function() {
     // Reset payment fields
     const cashIn = document.getElementById('pay-cash-amount');
     const upiIn = document.getElementById('pay-upi-amount');
+    const duesDisp = document.getElementById('pay-dues-display');
     if(cashIn) cashIn.value = '';
     if(upiIn) upiIn.value = '';
+    if(duesDisp) duesDisp.value = '';
 
     // Reset editing state
     editingSaleId = null;
@@ -1335,62 +1337,39 @@ window.calculateDues = function() {
     const totalStr = totalEl.innerText.replace(/[^0-9.]/g, '');
     const finalTotal = parseFloat(totalStr) || 0;
     
-    const pMode = document.querySelector('input[name="payment-mode"]:checked').value;
     const cashInput = document.getElementById('pay-cash-amount');
     const upiInput = document.getElementById('pay-upi-amount');
+    const duesDisplay = document.getElementById('pay-dues-display');
     
     let cashPaid = parseFloat(cashInput.value) || 0;
     let upiPaid = parseFloat(upiInput.value) || 0;
     
-    let currentPaid = 0;
-    if (pMode === 'CASH') currentPaid = cashPaid;
-    else if (pMode === 'UPI') currentPaid = upiPaid;
-    else currentPaid = cashPaid + upiPaid;
-    
     // Total Paid = Previous + Current
-    let totalPaid = previousPaidAmount + currentPaid;
+    let totalPaid = previousPaidAmount + cashPaid + upiPaid;
     
     let dues = Math.max(0, finalTotal - totalPaid);
+    
+    // Update the new horizontal Baki field
+    if (duesDisplay) {
+        duesDisplay.value = dues > 0 ? formatCurrency(dues) : 'PAID';
+    }
+
     const duesEl = document.getElementById('cart-dues');
     const duesRow = document.getElementById('dues-row');
     
     if (duesEl) {
         duesEl.innerText = formatCurrency(dues);
         if (dues > 0) {
-            duesRow.style.color = '#f87171'; // Red
+            if(duesRow) duesRow.style.color = '#f87171'; // Red
         } else {
-            duesRow.style.color = '#10b981'; // Green
+            if(duesRow) duesRow.style.color = '#10b981'; // Green
             duesEl.innerText = 'PAID';
         }
     }
 }
 
 window.toggleSplitPayment = function() {
-    const pMode = document.querySelector('input[name="payment-mode"]:checked').value;
-    const cashWrapper = document.getElementById('field-cash-wrapper');
-    const upiWrapper = document.getElementById('field-upi-wrapper');
-    const cashInput = document.getElementById('pay-cash-amount');
-    const upiInput = document.getElementById('pay-upi-amount');
-    
-    const totals = calculateTotal();
-    const total = totals.total;
-
-    if (pMode === 'CASH') {
-        cashWrapper.style.display = 'block';
-        upiWrapper.style.display = 'none';
-        cashInput.value = total; 
-        upiInput.value = 0;
-    } else if (pMode === 'UPI') {
-        cashWrapper.style.display = 'none';
-        upiWrapper.style.display = 'block';
-        upiInput.value = total;
-        cashInput.value = 0;
-    } else {
-        cashWrapper.style.display = 'block';
-        upiWrapper.style.display = 'block';
-        cashInput.value = '';
-        upiInput.value = '';
-    }
+    // Redundant now as both fields are always visible
     calculateDues();
 }
 
@@ -1403,15 +1382,10 @@ window.processSale = function() {
 
     const totals = calculateTotal();
     const total = totals.total;
-    const paymentModeObj = document.querySelector('input[name="payment-mode"]:checked');
-    const paymentMode = paymentModeObj ? paymentModeObj.value : 'CASH';
     const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
     const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
     
-    let totalPaid = 0;
-    if (paymentMode === 'CASH') totalPaid = payCash;
-    else if (paymentMode === 'UPI') totalPaid = payUpi;
-    else totalPaid = payCash + payUpi;
+    let totalPaid = payCash + payUpi;
 
     const dues = total - totalPaid;
 
@@ -1450,6 +1424,10 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     const total = totals.total;
     const discount = totals.discount;
     const roundOff = totals.roundOff;
+    // Get current payment values
+    const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
+    const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
+
     // Merge payments if editing
     let finalCash = payCash;
     let finalUpi = payUpi;

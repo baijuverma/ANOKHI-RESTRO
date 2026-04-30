@@ -558,8 +558,69 @@ button, button * {
 
 .close-btn:hover { color: var(--text-primary); }
 
-.form-group {
+/* Floating Label Input Group */
+.payment-input-container {
+    display: flex;
+    gap: 12px;
     margin-bottom: 20px;
+    padding: 15px 10px;
+}
+
+.input-group-floating {
+    position: relative;
+    flex: 1;
+}
+
+.input-group-floating input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--panel-border);
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    background: transparent !important;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.input-group-floating label {
+    position: absolute;
+    top: 14px;
+    left: 12px;
+    color: var(--text-secondary);
+    background-color: transparent;
+    transition: 0.2s ease all;
+    pointer-events: none;
+    font-size: 14px;
+    margin: 0;
+}
+
+.input-group-floating input:focus ~ label,
+.input-group-floating input:not(:placeholder-shown) ~ label {
+    top: -10px; 
+    left: 10px;
+    font-size: 12px;
+    color: var(--accent-color);
+    font-weight: bold;
+    background-color: #1e1b4b; /* Matching the dark theme background */
+    padding: 0 5px; 
+}
+
+.input-group-floating input:focus {
+    border-color: var(--accent-color);
+}
+
+.input-group-floating input.dues-field {
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.3);
+}
+
+.input-group-floating input.dues-field:focus {
+    border-color: #f87171;
+}
+
+.input-group-floating input.dues-field ~ label {
+    color: #f87171;
 }
 
 .form-row {
