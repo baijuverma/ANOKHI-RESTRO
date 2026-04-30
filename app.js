@@ -17,6 +17,16 @@ function truncateName(name) {
     return name.length > 10 ? name.substring(0, 8) + '..' : name;
 }
 
+// Defensive Stubs for Modular Functions (Prevents crashes on file:// protocol)
+window.renderInventory = window.renderInventory || function() {};
+window.renderPOSItems = window.renderPOSItems || function() {};
+window.renderHistory = window.renderHistory || function() {};
+window.renderTableGrid = window.renderTableGrid || function() {};
+window.renderExpenses = window.renderExpenses || function() {};
+window.updateDashboard = window.updateDashboard || function() {};
+window.updateExpenseStats = window.updateExpenseStats || function() {};
+window.initSettingsView = window.initSettingsView || function() {};
+
 // Safe Storage Helper
 function getLocalData(key, defaultVal) {
     try {
@@ -37,13 +47,14 @@ window.selectedOrderType = 'DINE_IN';
 window.currentSelectedTable = null;
 let inventoryTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
 let posTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
-window.tables = getLocalData('anokhi_tables', Array.from({length: 12}, (_, i) => ({
+let tables = getLocalData('anokhi_tables', Array.from({length: 12}, (_, i) => ({
     id: `T${i+1}`,
     name: `Table ${i+1}`,
     cart: [],
     advance: 0,
     advanceMode: 'CASH'
 })));
+window.tables = tables;
 
 let editingSaleId = null;
 let previousPaidAmount = 0;
@@ -1993,9 +2004,9 @@ window.saveSettings = function() {
     const count = parseInt(input.value);
     
     // Update tables array
-    if (count > tables.length) {
-        for (let i = tables.length; i < count; i++) {
-            tables.push({
+    if (count > window.tables.length) {
+        for (let i = window.tables.length; i < count; i++) {
+            window.tables.push({
                 id: `T${i + 1}`,
                 name: `Table ${i + 1}`,
                 cart: [],
@@ -2003,7 +2014,8 @@ window.saveSettings = function() {
             });
         }
     } else {
-        tables = tables.slice(0, count);
+        window.tables = window.tables.slice(0, count);
+        tables = window.tables; // Update local reference too
     }
     
     saveData();
