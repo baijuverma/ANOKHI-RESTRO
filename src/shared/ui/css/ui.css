@@ -43,7 +43,16 @@ input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0
     letter-spacing: 0.5px;
 }
 
-.pos-item-card .category { display: none !important; }
+.pos-item-card .category, 
+.pos-item-card .item-category, 
+.pos-item-card .pos-category, 
+.pos-item-card .card-category { 
+    display: none !important; 
+    visibility: hidden !important; 
+    height: 0 !important; 
+    margin: 0 !important; 
+    padding: 0 !important;
+}
 .pos-item-card h4 { font-size: 15px; margin: 4px 0; color: white; line-height: 1.2; }
 .pos-item-card .price { 
     font-size: 18px; 
