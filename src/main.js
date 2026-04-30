@@ -4,12 +4,13 @@ import { addToCart, updateCartQty, reduceLastItemQty, cart } from './features/ca
 import { renderPOSGrid } from './widgets/pos-grid/ui.js';
 import { renderCartWidget } from './widgets/cart/ui.js';
 import { renderTableGrid as renderTableWidget } from './widgets/table-grid/ui.js';
-import { logout } from './features/auth/model.js';
+import { setFilter, currentFilter } from './features/filter/model.js';
 
 // Global exports for HTML compatibility (Legacy support)
 window.addToCart = addToCart;
 window.updateCartQty = updateCartQty;
 window.logout = logout;
+window.setPOSFilter = setFilter; // Bridge for any legacy calls
 
 window.renderTableGrid = () => {
     renderTableWidget('pos-tables-container', window.currentSelectedTable, (id) => {
@@ -36,32 +37,6 @@ window.toggleTablesCurtain = () => {
         wrapper.classList.add('tables-collapsed');
         icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
     }
-};
-
-let currentFilter = 'all';
-
-window.setPOSFilter = (type) => {
-    currentFilter = type;
-    
-    // Update button styles (Legacy sync)
-    const btns = { 
-        all: document.getElementById('pos-filter-all'), 
-        veg: document.getElementById('pos-filter-veg'), 
-        nonveg: document.getElementById('pos-filter-nonveg') 
-    };
-    
-    Object.keys(btns).forEach(key => {
-        if (!btns[key]) return;
-        if (key === type) {
-            btns[key].style.background = (key === 'veg') ? '#22c55e' : (key === 'nonveg' ? '#ef4444' : 'var(--accent-color)');
-            btns[key].style.color = 'white';
-        } else {
-            btns[key].style.background = 'transparent';
-            btns[key].style.color = (key === 'veg') ? '#22c55e' : (key === 'nonveg' ? '#ef4444' : 'var(--accent-color)');
-        }
-    });
-
-    window.refreshUI();
 };
 
 window.renderPOSItems = (search = '') => {
@@ -105,6 +80,15 @@ const init = async () => {
             }
         }
     });
+
+    // Event Listeners for Filter Buttons (FSD Direct Binding)
+    const filterContainer = document.getElementById('pos-filter-container');
+    if (filterContainer) {
+        const buttons = filterContainer.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.onclick = () => setFilter(btn.getAttribute('data-type'));
+        });
+    }
 
     // Event Listeners for Search
     const searchInput = document.getElementById('pos-search');

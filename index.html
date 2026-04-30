@@ -356,10 +356,10 @@
                                 </div>
 
                                 <!-- Filters (Right) -->
-                                <div style="display: flex; gap: 4px; flex: 1; justify-content: flex-end;">
-                                    <button id="pos-filter-all" onclick="setPOSFilter('all')" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--accent-color); background: var(--accent-color); color: white; cursor: pointer; font-size: 11px; font-weight: 700;">All</button>
-                                    <button id="pos-filter-veg" onclick="setPOSFilter('veg')" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #22c55e; background: transparent; color: #22c55e; cursor: pointer; font-size: 11px; font-weight: 700;">Veg</button>
-                                    <button id="pos-filter-nonveg" onclick="setPOSFilter('nonveg')" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #ef4444; background: transparent; color: #ef4444; cursor: pointer; font-size: 11px; font-weight: 700;">Non-Veg</button>
+                                <div id="pos-filter-container" style="display: flex; gap: 4px; flex: 1; justify-content: flex-end;">
+                                    <button data-type="all" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--accent-color); background: var(--accent-color); color: white; cursor: pointer; font-size: 11px; font-weight: 700;">All</button>
+                                    <button data-type="veg" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #22c55e; background: transparent; color: #22c55e; cursor: pointer; font-size: 11px; font-weight: 700;">Veg</button>
+                                    <button data-type="nonveg" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #ef4444; background: transparent; color: #ef4444; cursor: pointer; font-size: 11px; font-weight: 700;">Non-Veg</button>
                                 </div>
                             </div>
                             <div class="item-grid pos-grid-shared" id="pos-item-grid">
