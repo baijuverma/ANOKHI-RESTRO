@@ -56,6 +56,28 @@ window.renderCart = () => {
     renderCartWidget('cart-items');
 };
 
+window.toggleCartDetails = () => {
+    const cartContainer = document.querySelector('.cart-items-container');
+    const detailsCurtain = document.getElementById('cart-details-curtain');
+    const toggleBtn = document.querySelector('.curtain-toggle');
+    const icon = document.getElementById('curtain-icon');
+
+    if (cartContainer && detailsCurtain) {
+        cartContainer.classList.toggle('expanded');
+        detailsCurtain.classList.toggle('hidden-details');
+        if (toggleBtn) toggleBtn.classList.toggle('active');
+        
+        // Toggle icon class for rotation
+        if (icon) {
+            if (cartContainer.classList.contains('expanded')) {
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            } else {
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            }
+        }
+    }
+};
+
 window.refreshUI = () => {
     const gridContainer = document.getElementById('pos-item-grid');
     const searchVal = document.getElementById('pos-search')?.value || '';

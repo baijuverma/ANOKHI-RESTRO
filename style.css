@@ -1696,3 +1696,22 @@ input[type=number] {
 }. c a t e g o r y   {   d i s p l a y :   n o n e   ! i m p o r t a n t ;   } 
  
  
+
+/* Cart Expansion Styles */
+.cart-items-container.expanded {
+    flex: 10 !important; /* Take most of the space */
+    height: auto !important;
+}
+
+.cart-details-curtain.hidden-details {
+    display: none !important;
+}
+
+.curtain-toggle.active i {
+    transform: rotate(180deg);
+}
+
+.pos-cart.expanded-state {
+    display: flex;
+    flex-direction: column;
+}
