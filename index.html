@@ -11,10 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .global-header-actions {
-            position: absolute;
-            top: 10px;
-            right: 25px;
-            z-index: 100;
+            /* Now handled by inline style for fixed positioning */
         }
         .modern-logout-btn {
             background: #ef4444 !important;
@@ -35,6 +32,14 @@
 </head>
 
 <body>
+    <!-- Fixed Global Logout Button (Top Right of Screen) -->
+    <div class="global-header-actions" style="position: fixed; top: 10px; right: 15px; z-index: 99999;">
+        <button class="modern-logout-btn" onclick="logout()" title="Logout & Lock System">
+            <i class="fa-solid fa-power-off"></i>
+            <span class="btn-text">Logout</span>
+        </button>
+    </div>
+
     <!-- Toggle Sidebar Button -->
     <div class="toggle-sidebar-btn" onclick="toggleSidebar()">
         <i class="fa-solid fa-bars"></i>
@@ -121,14 +126,6 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Global Header Actions (Top Right) -->
-            <div class="global-header-actions">
-                <button class="modern-logout-btn" onclick="logout()" title="Logout & Lock System">
-                    <i class="fa-solid fa-power-off"></i>
-                    <span class="btn-text">Logout</span>
-                </button>
-            </div>
-
             <!-- Dashboard View -->
             <section id="dashboard" class="view-section active">
                 <header>
