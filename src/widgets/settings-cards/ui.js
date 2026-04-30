@@ -45,7 +45,7 @@ export const initSettingsWidgets = () => {
     window.saveSettings = saveTableSettings;
     window.importItems = importDefaultMenu;
     
-    // Render widgets
+    // Render widgets if containers exist
     renderTableConfig('table-config-widget');
     renderDataManagement('data-management-widget');
 };
