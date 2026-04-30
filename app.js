@@ -1037,12 +1037,14 @@ function renderTableGrid() {
 }
 
 window.selectTable = function(tableId) {
+    console.log("Table Selected:", tableId);
     const table = tables.find(t => t.id === tableId);
     if (!table) return;
 
     currentSelectedTable = tableId;
+    
     // Merge current cart items into the table's saved cart
-    const tableCart = [...table.cart];
+    const tableCart = [...(table.cart || [])];
     if (cart.length > 0) {
         cart.forEach(currentItem => {
             const existing = tableCart.find(t => t.id === currentItem.id);
@@ -1056,13 +1058,21 @@ window.selectTable = function(tableId) {
     cart = tableCart;
     
     document.getElementById('current-table-name').innerText = table.name;
-    document.getElementById('advance-amount-display').innerText = formatCurrency(table.advance);
-    document.getElementById('advance-paid-info').style.display = table.advance > 0 ? 'block' : 'none';
-    document.getElementById('dine-in-table-info').style.display = 'flex';
+    const advAmtDisp = document.getElementById('advance-amount-display');
+    if(advAmtDisp) advAmtDisp.innerText = formatCurrency(table.advance);
+    
+    const advInfo = document.getElementById('advance-paid-info');
+    if(advInfo) advInfo.style.display = table.advance > 0 ? 'block' : 'none';
+    
+    const dineInInfo = document.getElementById('dine-in-table-info');
+    if(dineInInfo) dineInInfo.style.display = 'flex';
 
     closeModal('tableGridModal');
     renderCart();
     renderTableGrid();
+    
+    // Alert for debugging
+    alert('Table ' + table.name + ' selected!');
 }
 
 window.holdOrder = function() {
