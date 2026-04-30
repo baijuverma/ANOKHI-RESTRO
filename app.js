@@ -1307,6 +1307,7 @@ window.newBill = function() {
     
     renderCart();
     renderTableGrid(); // Update the grid so table turns from RED to GLASS/GREEN
+    if(typeof renderPOSItems === 'function') renderPOSItems(); 
 }
 
 window.calculateTotal = function() {
