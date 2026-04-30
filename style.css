@@ -1170,46 +1170,65 @@ input:focus, select:focus {
     left: 0;
     width: 100%;
     height: 100%;
-    background: transparent; /* Fully Transparent */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    z-index: 5;
-    border-radius: 12px;
-    animation: fadeIn 0.2s ease;
+    background: transparent;
+    pointer-events: none; /* Let clicks through to card except buttons */
+    z-index: 10;
 }
 
 .overlay-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: 2px solid var(--accent-color);
-    background: white;
-    color: var(--accent-color);
+    position: absolute;
+    bottom: 8px;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--accent-color);
+    background: #1e1e2e;
+    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 900;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     transition: all 0.2s;
+    pointer-events: auto;
 }
+
+.overlay-btn.minus { left: 8px; border-color: #ef4444; color: #ef4444; }
+.overlay-btn.plus { right: 8px; border-color: #22c55e; color: #22c55e; }
 
 .overlay-btn:hover {
     transform: scale(1.1);
     background: var(--accent-color);
     color: white;
+    border-color: var(--accent-color);
 }
 
-.overlay-qty {
-    font-size: 24px;
-    font-weight: 900;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -2px -2px 4px rgba(0,0,0,0.8), 2px -2px 4px rgba(0,0,0,0.8), -2px 2px 4px rgba(0,0,0,0.8);
-    min-width: 40px;
-    text-align: center;
+.overlay-qty-float {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e1e2e;
+    border: 1px solid var(--accent-color);
+    padding: 2px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--accent-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.overlay-qty-float::before {
+    content: 'QTY';
+    font-size: 7px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    margin-bottom: -2px;
 }
 
 @keyframes fadeIn {

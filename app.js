@@ -811,9 +811,9 @@ function renderPOSItems(search = '') {
             <span style="position:absolute; top:8px; right:8px; width:10px; height:10px; border-radius:50%; background:${bulletColor}; box-shadow:0 0 4px ${bulletColor}; z-index:3;"></span>
             ${inCart ? `
                 <div class="pos-item-overlay">
-                    <button class="overlay-btn" onclick="event.stopPropagation(); updateCartQty('${item.id}', -1)"><i class="fa-solid fa-minus"></i></button>
-                    <span class="overlay-qty">${cartItem.cartQty}</span>
-                    <button class="overlay-btn" onclick="event.stopPropagation(); updateCartQty('${item.id}', 1)"><i class="fa-solid fa-plus"></i></button>
+                    <button class="overlay-btn minus" onclick="event.stopPropagation(); updateCartQty('${item.id}', -1)"><i class="fa-solid fa-minus"></i></button>
+                    <div class="overlay-qty-float">${cartItem.cartQty}</div>
+                    <button class="overlay-btn plus" onclick="event.stopPropagation(); updateCartQty('${item.id}', 1)"><i class="fa-solid fa-plus"></i></button>
                 </div>
             ` : ''}
             <div>
