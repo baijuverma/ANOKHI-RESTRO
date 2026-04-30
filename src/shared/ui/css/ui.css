@@ -29,6 +29,22 @@ input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0
     color: #ffffff !important; 
 }
 
+.stock-badge-top {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    z-index: 5;
+    white-space: nowrap;
+}
+
 .pos-item-card .category { font-size: 10px; text-transform: uppercase; color: #818cf8; font-weight: 700; }
 .pos-item-card h4 { font-size: 15px; margin: 4px 0; color: white; line-height: 1.2; }
 .pos-item-card .price { 
