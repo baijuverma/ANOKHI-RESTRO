@@ -107,6 +107,18 @@ const init = async () => {
     // Refresh UI initially
     window.refreshUI();
 
+    // Global Timer Tick (Updates all visible table timers every second)
+    setInterval(() => {
+        document.querySelectorAll('.table-timer').forEach(el => {
+            const start = el.getAttribute('data-start');
+            if (!start) return;
+            const diff = Math.floor((Date.now() - new Date(start)) / 1000);
+            const mins = Math.floor(diff / 60);
+            const secs = diff % 60;
+            el.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        });
+    }, 1000);
+
     // Event Listeners for Search
     const searchInput = document.getElementById('pos-search');
     if (searchInput) {
