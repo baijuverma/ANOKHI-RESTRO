@@ -41,7 +41,6 @@ let tables = getLocalData('anokhi_tables', Array.from({length: 12}, (_, i) => ({
 
 let editingSaleId = null;
 let previousPaidAmount = 0;
-let currentPaymentMode = 'CASH'; // 'CASH' | 'UPI' | 'BOTH'
 
 // Initial Data Sync from Supabase
 async function syncFromSupabase() {
@@ -1319,7 +1318,6 @@ window.clearCart = function() {
     const upiIn = document.getElementById('pay-upi-amount');
     if(cashIn) cashIn.value = '';
     if(upiIn) upiIn.value = '';
-    updatePaymentMode('CASH');
 
     // Reset editing state
     editingSaleId = null;
@@ -1337,7 +1335,7 @@ window.calculateDues = function() {
     const totalStr = totalEl.innerText.replace(/[^0-9.]/g, '');
     const finalTotal = parseFloat(totalStr) || 0;
     
-    const pMode = currentPaymentMode;
+    const pMode = document.querySelector('input[name="payment-mode"]:checked').value;
     const cashInput = document.getElementById('pay-cash-amount');
     const upiInput = document.getElementById('pay-upi-amount');
     
@@ -1367,19 +1365,8 @@ window.calculateDues = function() {
     }
 }
 
-    calculateDues();
-}
-
-window.updatePaymentMode = function(mode) {
-    currentPaymentMode = mode;
-    
-    // Update Display Text
-    const display = document.getElementById('current-payment-mode-display');
-    if (display) {
-        const text = mode === 'BOTH' ? 'Split' : (mode === 'UPI' ? 'UPI' : 'Cash');
-        display.querySelector('span').innerText = text;
-    }
-
+window.toggleSplitPayment = function() {
+    const pMode = document.querySelector('input[name="payment-mode"]:checked').value;
     const cashWrapper = document.getElementById('field-cash-wrapper');
     const upiWrapper = document.getElementById('field-upi-wrapper');
     const cashInput = document.getElementById('pay-cash-amount');
@@ -1388,12 +1375,12 @@ window.updatePaymentMode = function(mode) {
     const totals = calculateTotal();
     const total = totals.total;
 
-    if (mode === 'CASH') {
+    if (pMode === 'CASH') {
         cashWrapper.style.display = 'block';
         upiWrapper.style.display = 'none';
         cashInput.value = total; 
         upiInput.value = 0;
-    } else if (mode === 'UPI') {
+    } else if (pMode === 'UPI') {
         cashWrapper.style.display = 'none';
         upiWrapper.style.display = 'block';
         upiInput.value = total;
@@ -1416,7 +1403,8 @@ window.processSale = function() {
 
     const totals = calculateTotal();
     const total = totals.total;
-    const paymentMode = currentPaymentMode;
+    const paymentModeObj = document.querySelector('input[name="payment-mode"]:checked');
+    const paymentMode = paymentModeObj ? paymentModeObj.value : 'CASH';
     const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
     const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
     
@@ -1462,10 +1450,6 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     const total = totals.total;
     const discount = totals.discount;
     const roundOff = totals.roundOff;
-    // Get current payment values
-    const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
-    const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
-    
     // Merge payments if editing
     let finalCash = payCash;
     let finalUpi = payUpi;
