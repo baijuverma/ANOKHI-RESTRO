@@ -1170,8 +1170,7 @@ input:focus, select:focus {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4); /* Much more transparent */
-    backdrop-filter: blur(2px); /* Subtle blur effect */
+    background: transparent; /* Fully Transparent */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1182,30 +1181,34 @@ input:focus, select:focus {
 }
 
 .overlay-btn {
-    width: 32px;
-    height: 32px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    border: 2px solid var(--accent-color);
+    background: white;
+    color: var(--accent-color);
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 18px;
+    font-weight: 900;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     transition: all 0.2s;
 }
 
 .overlay-btn:hover {
-    background: white;
-    color: var(--accent-color);
+    transform: scale(1.1);
+    background: var(--accent-color);
+    color: white;
 }
 
 .overlay-qty {
-    font-size: 20px;
-    font-weight: 800;
+    font-size: 24px;
+    font-weight: 900;
     color: white;
-    min-width: 30px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -2px -2px 4px rgba(0,0,0,0.8), 2px -2px 4px rgba(0,0,0,0.8), -2px 2px 4px rgba(0,0,0,0.8);
+    min-width: 40px;
     text-align: center;
 }
 

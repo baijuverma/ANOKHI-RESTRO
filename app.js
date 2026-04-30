@@ -1233,12 +1233,13 @@ window.updateCartQty = function(id, delta) {
         item.cartQty += delta;
         if(item.cartQty <= 0) {
             cart.splice(itemIndex, 1);
-        } else if (item.cartQty > invItem.quantity) {
+        } else if (invItem && item.cartQty > invItem.quantity) {
             item.cartQty = invItem.quantity;
             alert('Not enough stock!');
         }
     }
     renderCart();
+    renderPOSItems(); // Ensure menu overlay updates instantly
 }
 
 function renderCart() {
