@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 searchInput.value = searchInput.value.slice(0, -1);
                 searchInput.dispatchEvent(new Event('input', { bubbles: true }));
             }
-        } else if (e.key === 'Escape') {
+        } else if (false && e.key === 'Escape') {
             e.preventDefault();
             if (active === searchInput) {
                 searchInput.value = '';

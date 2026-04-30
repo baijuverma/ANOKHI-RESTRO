@@ -122,12 +122,16 @@ const init = async () => {
     // Keyboard Shortcuts (ESC to reduce quantity)
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            const cart = window.cart || [];
+            let cart = window.cart || [];
             if (cart.length > 0) {
                 const lastItem = cart[cart.length - 1];
-                if (typeof window.updateCartQty === 'function') {
-                    window.updateCartQty(lastItem.id, lastItem.quantity - 1);
-                }
+                lastItem.quantity -= 1;
+                
+                // STRICT FILTER: Remove if 0 or less
+                window.cart = cart.filter(item => item.quantity > 0);
+                
+                // Refresh all UI parts
+                if (typeof window.refreshUI === 'function') window.refreshUI();
             }
         }
     });
