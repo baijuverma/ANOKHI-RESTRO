@@ -1374,9 +1374,18 @@ window.calculateDues = function() {
     
     let dues = Math.max(0, finalTotal - totalPaid);
     
-    // Update the UI element
+    // Update the UI element and visibility
     const duesEl = document.getElementById('cart-dues');
+    const duesRow = document.getElementById('dues-row');
     if (duesEl) duesEl.innerText = formatCurrency(dues);
+    
+    if (duesRow) {
+        if (dues > 0.01) {
+            duesRow.style.display = 'flex';
+        } else {
+            duesRow.style.display = 'none';
+        }
+    }
 }
 
 window.toggleSplitPayment = function() {
