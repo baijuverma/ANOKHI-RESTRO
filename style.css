@@ -1715,3 +1715,19 @@ input[type=number] {
     display: flex;
     flex-direction: column;
 }
+
+/* Targeted Hiding for Cart Details */
+#cart-details-curtain.hidden-details {
+    display: none !important;
+}
+
+/* Ensure Round Off and Total stay visible */
+.cart-summary {
+    display: flex;
+    flex-direction: column;
+}
+
+.total-row-container {
+    border-top: 1px dashed rgba(255,255,255,0.1);
+    margin-top: auto;
+}
