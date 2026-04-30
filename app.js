@@ -1784,6 +1784,11 @@ function renderHistory() {
     if (mCashEl) mCashEl.innerText = formatCurrency(mCash);
     if (mUpiEl) mUpiEl.innerText = formatCurrency(mUpi);
     
+    // Calculate Total Dues from all time
+    const totalDuesHistory = salesHistory.reduce((sum, s) => sum + (parseFloat(s.dues) || 0), 0);
+    const totalDuesHistoryEl = document.getElementById("history-total-dues");
+    if (totalDuesHistoryEl) totalDuesHistoryEl.innerText = formatCurrency(totalDuesHistory);
+
     const mProfitEl = document.getElementById("monthly-profit-total");
     if (mProfitEl) {
         mProfitEl.innerText = formatCurrency(mNetProfit);
