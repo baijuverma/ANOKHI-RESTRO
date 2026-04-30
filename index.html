@@ -370,10 +370,10 @@
 
                     <!-- Right Pane: Order Type + Cart -->
                         <div class="pos-right-pane">
-                            <div class="order-type-selector">
-                                <button class="order-type-btn" onclick="setOrderType('DINE_IN', this)">Dine-In</button>
-                                <button class="order-type-btn" onclick="setOrderType('TAKEAWAY', this)">Takeaway/Parcel</button>
-                                <button class="order-type-btn" onclick="setOrderType('COUNTER', this)">Counter Sale</button>
+                            <div id="order-type-container" class="order-type-selector" style="display: flex; gap: 8px; margin-bottom: 15px;">
+                                <button class="order-type-btn" data-type="DINE_IN" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: var(--accent-color); color: white; cursor: pointer;">Dine-In</button>
+                                <button class="order-type-btn" data-type="TAKEAWAY" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: var(--text-secondary); cursor: pointer;">Takeaway</button>
+                                <button class="order-type-btn" data-type="COUNTER" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: var(--text-secondary); cursor: pointer;">Counter Sale</button>
                             </div>
 
                         <div class="pos-cart glass-panel">

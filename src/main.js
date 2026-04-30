@@ -5,12 +5,14 @@ import { renderPOSGrid } from './widgets/pos-grid/ui.js';
 import { renderCartWidget } from './widgets/cart/ui.js';
 import { renderTableGrid as renderTableWidget } from './widgets/table-grid/ui.js';
 import { setFilter, currentFilter } from './features/filter/model.js';
+import { setOrderType, currentOrderType } from './features/order-type/model.js';
 
 // Global exports for HTML compatibility (Legacy support)
 window.addToCart = addToCart;
 window.updateCartQty = updateCartQty;
 window.logout = logout;
-window.setPOSFilter = setFilter; // Bridge for any legacy calls
+window.setPOSFilter = setFilter;
+window.setOrderType = setOrderType;
 
 window.renderTableGrid = () => {
     renderTableWidget('pos-tables-container', window.currentSelectedTable, (id) => {
@@ -96,6 +98,15 @@ const init = async () => {
 
     // Refresh UI initially
     window.refreshUI();
+
+    // Event Listeners for Order Type Buttons (FSD Direct Binding)
+    const orderTypeContainer = document.getElementById('order-type-container');
+    if (orderTypeContainer) {
+        const buttons = orderTypeContainer.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.onclick = () => setOrderType(btn.getAttribute('data-type'));
+        });
+    }
 
     // Event Listeners for Search
     const searchInput = document.getElementById('pos-search');
