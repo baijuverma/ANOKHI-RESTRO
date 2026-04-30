@@ -43,7 +43,7 @@ input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0
     letter-spacing: 0.5px;
 }
 
-.pos-item-card .category { font-size: 10px; text-transform: uppercase; color: #818cf8; font-weight: 700; }
+.pos-item-card .category { display: none !important; }
 .pos-item-card h4 { font-size: 15px; margin: 4px 0; color: white; line-height: 1.2; }
 .pos-item-card .price { 
     font-size: 18px; 
