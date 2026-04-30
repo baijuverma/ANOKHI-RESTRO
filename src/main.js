@@ -81,14 +81,8 @@ const init = async () => {
         }
     });
 
-    // Event Listeners for Filter Buttons (FSD Direct Binding)
-    const filterContainer = document.getElementById('pos-filter-container');
-    if (filterContainer) {
-        const buttons = filterContainer.querySelectorAll('button');
-        buttons.forEach(btn => {
-            btn.onclick = () => setFilter(btn.getAttribute('data-type'));
-        });
-    }
+    // Refresh UI initially
+    window.refreshUI();
 
     // Event Listeners for Search
     const searchInput = document.getElementById('pos-search');
