@@ -94,7 +94,12 @@ window.refreshUI = () => {
     const curtainArea = document.getElementById('tables-curtain-area');
     const curtainBtn = document.getElementById('tables-curtain-toggle-btn');
     
-    const isDineIn = (window.selectedOrderType || 'DINE_IN') === 'DINE_IN';
+    // Normalize type for comparison
+    const rawType = window.selectedOrderType || 'DINE_IN';
+    const normalizedType = String(rawType).toUpperCase();
+    const isDineIn = normalizedType === 'DINE_IN';
+
+    console.log('FSD Refresh: Mode is', normalizedType, 'IsDineIn:', isDineIn);
 
     // Show/Hide Curtain Elements based on Order Type
     if (curtainArea) curtainArea.style.display = isDineIn ? 'block' : 'none';
