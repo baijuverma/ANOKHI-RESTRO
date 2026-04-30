@@ -56,6 +56,17 @@ window.refreshUI = () => {
     // Refresh the table selection highlight if legacy exists
     if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
 
+    // Update Table Indicator next to Total
+    const tableIndicator = document.getElementById('total-table-indicator');
+    if (tableIndicator) {
+        if (window.currentSelectedTable) {
+            const tableName = window.tables?.find(t => String(t.id) === String(window.currentSelectedTable))?.name || window.currentSelectedTable;
+            tableIndicator.textContent = `(${tableName})`;
+        } else {
+            tableIndicator.textContent = '';
+        }
+    }
+
     // Refresh the Cart Widget
     window.renderCart();
 };
