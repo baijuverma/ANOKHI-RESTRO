@@ -1177,45 +1177,43 @@ input:focus, select:focus {
 
 .overlay-btn {
     position: absolute;
-    bottom: 4px;
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    border: 1px solid #475569; /* Deep Grey Border */
-    background: #1e1e2e;
-    color: #94a3b8; /* Deep Grey Text/Icon */
+    bottom: 2px; /* Slightly lower for symbol-only look */
+    width: 40px;
+    height: 40px;
+    border: none; /* Box Removed */
+    background: transparent; /* Box Removed */
+    color: #6366f1; /* Deep Indigo/Blue */
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 22px; /* Larger symbols since no box */
     font-weight: 900;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
     transition: all 0.2s;
     pointer-events: auto;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
-.overlay-btn.minus { left: 5px; }
-.overlay-btn.plus { right: 5px; }
+.overlay-btn.minus { left: 2px; }
+.overlay-btn.plus { right: 2px; }
 
 .overlay-btn:hover {
-    transform: scale(1.1);
-    background: #475569;
+    transform: scale(1.3);
     color: white;
 }
 
 .overlay-qty-float {
     position: absolute;
-    bottom: 6px;
+    bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
     background: transparent;
     border: none;
     padding: 0;
-    font-size: 18px;
+    font-size: 22px; /* Bold deep number */
     font-weight: 900;
-    color: #94a3b8; /* Deep Grey Number */
-    text-shadow: 0 0 8px rgba(0,0,0,0.9);
+    color: #6366f1; /* Deep Indigo/Blue */
+    text-shadow: 0 0 10px rgba(0,0,0,0.8);
     display: flex;
     flex-direction: column;
     align-items: center;
