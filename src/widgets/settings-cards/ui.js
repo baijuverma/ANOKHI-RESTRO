@@ -40,12 +40,17 @@ export const renderDataManagement = (containerId) => {
 };
 
 export const initSettingsWidgets = () => {
-    // Global exports for legacy onclick support
-    window.adjustTableCount = adjustTableCount;
-    window.saveSettings = saveTableSettings;
-    window.importItems = importDefaultMenu;
-    
-    // Render widgets if containers exist
-    renderTableConfig('table-config-widget');
-    renderDataManagement('data-management-widget');
+    try {
+        console.log('Initializing Settings Widgets...');
+        // Global exports for legacy onclick support
+        window.adjustTableCount = adjustTableCount;
+        window.saveSettings = saveTableSettings;
+        window.importItems = importDefaultMenu;
+        
+        // Render widgets if containers exist
+        renderTableConfig('table-config-widget');
+        renderDataManagement('data-management-widget');
+    } catch (error) {
+        console.error('Error initializing settings widgets:', error);
+    }
 };

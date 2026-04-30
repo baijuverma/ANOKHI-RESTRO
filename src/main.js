@@ -19,7 +19,6 @@ import { initSettingsWidgets } from './widgets/settings-cards/ui.js';
 // Global exports for HTML compatibility (Legacy support)
 window.addToCart = addToCart;
 window.updateCartQty = updateCartQty;
-window.logout = logout;
 window.setPOSFilter = setFilter;
 window.setOrderType = setOrderType;
 window.initSettingsView = initSettingsWidgets;
