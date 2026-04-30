@@ -1878,14 +1878,7 @@ window.filterInventoryByType = function(type) {
     renderInventory();
 }
 
-window.setPOSFilter = function(type) {
-    posTypeFilter = type;
-    const btns = { all: document.getElementById('pos-filter-all'), veg: document.getElementById('pos-filter-veg'), nonveg: document.getElementById('pos-filter-nonveg') };
-    if (btns.all) { btns.all.style.background = type==='all' ? 'var(--accent-color)' : 'transparent'; btns.all.style.color = type==='all' ? 'white' : 'var(--accent-color)'; }
-    if (btns.veg) { btns.veg.style.background = type==='veg' ? '#22c55e' : 'transparent'; btns.veg.style.color = type==='veg' ? 'white' : '#22c55e'; }
-    if (btns.nonveg) { btns.nonveg.style.background = type==='nonveg' ? '#ef4444' : 'transparent'; btns.nonveg.style.color = type==='nonveg' ? 'white' : '#ef4444'; }
-    renderPOSItems(document.getElementById('pos-search')?.value || '');
-}
+// POS Filter logic moved to main.js
 
 window.showView = function(target) {
     // Show target view
@@ -1985,34 +1978,8 @@ $(document).on('_disabled_keydown', function (e) {
     }
 });
 
-window.toggleCartDetails = function() {
-    const curtain = document.getElementById('cart-details-curtain');
-    const icon = document.getElementById('curtain-icon');
-    if (curtain) {
-        curtain.classList.toggle('collapsed');
-        if (curtain.classList.contains('collapsed')) {
-            icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
-        } else {
-            icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-        }
-    }
-}
+// Cart toggle moved to main.js
 
-window.toggleTablesCurtain = function() {
-    const container = document.getElementById('pos-tables-container');
-    const curtain = document.getElementById('tables-curtain');
-    const icon = document.getElementById('tables-curtain-icon');
-    
-    if (curtain && container) {
-        curtain.classList.toggle('collapsed');
-        container.classList.toggle('collapsed');
-        
-        if (curtain.classList.contains('collapsed')) {
-            icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
-        } else {
-            icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-        }
-    }
-}
+// Tables curtain toggle moved to main.js
 
 

@@ -97,7 +97,7 @@ window.toggleCartDetails = () => {
 window.refreshUI = () => {
     const gridContainer = document.getElementById('pos-item-grid');
     const searchVal = document.getElementById('pos-search')?.value || '';
-    if (gridContainer) renderPOSGrid(gridContainer, searchVal, currentFilter);
+    if (gridContainer) renderPOSGrid(gridContainer, searchVal, filterState.current);
     
     // Refresh the table selection highlight if legacy exists
     if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
