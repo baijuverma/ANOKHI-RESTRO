@@ -3,12 +3,24 @@ import { syncTables } from './entities/table/model.js';
 import { addToCart, updateCartQty, reduceLastItemQty, cart } from './features/cart/model.js';
 import { renderPOSGrid } from './widgets/pos-grid/ui.js';
 import { renderCartWidget } from './widgets/cart/ui.js';
+import { renderTableGrid as renderTableWidget } from './widgets/table-grid/ui.js';
 import { logout } from './features/auth/model.js';
 
 // Global exports for HTML compatibility (Legacy support)
 window.addToCart = addToCart;
 window.updateCartQty = updateCartQty;
 window.logout = logout;
+
+window.renderTableGrid = () => {
+    renderTableWidget('pos-tables-container', window.currentSelectedTable, (id) => {
+        window.currentSelectedTable = id;
+        if (typeof window.selectTable === 'function') {
+            window.selectTable(id); // Call legacy to sync other UI parts
+        } else {
+            window.refreshUI();
+        }
+    });
+};
 
 window.renderPOSItems = (search = '') => {
     const gridContainer = document.getElementById('pos-item-grid');
