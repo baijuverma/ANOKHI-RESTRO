@@ -1382,8 +1382,21 @@ window.calculateDues = function() {
     if (duesRow) {
         if (dues > 0.01) {
             duesRow.style.display = 'flex';
+            duesRow.style.color = 'var(--danger-color)';
+            // Clear any error states
+            cashInput.style.borderColor = '';
+            upiInput.style.borderColor = '';
+        } else if (totalPaid > finalTotal + 0.01) {
+            // OVERPAYMENT CASE: Show warning
+            duesRow.style.display = 'flex';
+            duesRow.style.color = '#ff4d4d';
+            document.getElementById('cart-dues').innerText = 'Limit Exceeded!';
+            cashInput.style.borderColor = '#ff4d4d';
+            upiInput.style.borderColor = '#ff4d4d';
         } else {
             duesRow.style.display = 'none';
+            cashInput.style.borderColor = '';
+            upiInput.style.borderColor = '';
         }
     }
 }
