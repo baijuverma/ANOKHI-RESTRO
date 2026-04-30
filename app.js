@@ -1057,7 +1057,8 @@ window.selectTable = function(tableId) {
     }
     cart = tableCart;
     
-    document.getElementById('current-table-name').innerText = table.name;
+    const tableNameEl = document.getElementById('current-table-name');
+    if(tableNameEl) tableNameEl.innerText = table.name;
     const advAmtDisp = document.getElementById('advance-amount-display');
     if(advAmtDisp) advAmtDisp.innerText = formatCurrency(table.advance);
     
