@@ -1373,6 +1373,10 @@ window.calculateDues = function() {
     let totalPaid = previousPaidAmount + cashPaid + upiPaid;
     
     let dues = Math.max(0, finalTotal - totalPaid);
+    
+    // Update the UI element
+    const duesEl = document.getElementById('cart-dues');
+    if (duesEl) duesEl.innerText = formatCurrency(dues);
 }
 
 window.toggleSplitPayment = function() {

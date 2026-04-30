@@ -444,7 +444,31 @@
                                  <div id="cart-details-curtain" class="cart-details-curtain">
                                      <div class="summary-row">
                                          <span>Subtotal</span>
-                                         <span id="cart-subtotal">₹0</span>
+                                         <span id="cart-subtotal">₹0.00</span>
+                                     </div>
+                                     <div class="summary-row" style="margin-bottom: 5px;">
+                                         <span style="display: flex; align-items: center; gap: 8px;">
+                                             Discount
+                                             <div class="discount-type-toggle">
+                                                 <input type="radio" name="discount-type" id="disc-rupee" value="fixed" checked onchange="calculateDues()">
+                                                 <label for="disc-rupee">₹</label>
+                                                 <input type="radio" name="discount-type" id="disc-percent" value="percent" onchange="calculateDues()">
+                                                 <label for="disc-percent">%</label>
+                                             </div>
+                                         </span>
+                                         <input type="number" id="cart-discount" class="cart-input" value="0" min="0" oninput="calculateDues()">
+                                     </div>
+                                     <div class="summary-row">
+                                         <span>Round Off</span>
+                                         <span id="cart-roundoff">+₹0.00</span>
+                                     </div>
+                                     <div class="summary-row total-row">
+                                         <span>Total</span>
+                                         <span id="cart-total">₹0.00</span>
+                                     </div>
+                                     <div id="dues-row" class="summary-row" style="color: var(--danger-color); font-weight: 700; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 5px; margin-top: 5px;">
+                                         <span>Dues (Baki)</span>
+                                         <span id="cart-dues">₹0.00</span>
                                      </div>
                                      <div class="summary-row" style="margin-bottom: 10px;">
                                          <span style="display: flex; align-items: center; gap: 8px;">
