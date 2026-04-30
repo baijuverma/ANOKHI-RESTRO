@@ -122,15 +122,16 @@ const init = async () => {
     // Keyboard Shortcuts (ESC to reduce quantity)
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            let cart = window.cart || [];
-            if (cart.length > 0) {
-                const lastItem = cart[cart.length - 1];
+            if (window.cart && window.cart.length > 0) {
+                const lastItem = window.cart[window.cart.length - 1];
                 lastItem.quantity -= 1;
                 
-                // STRICT FILTER: Remove if 0 or less
-                window.cart = cart.filter(item => item.quantity > 0);
+                // Remove from state if qty becomes 0
+                if (lastItem.quantity <= 0) {
+                    window.cart = window.cart.filter(item => item.id !== lastItem.id);
+                }
                 
-                // Refresh all UI parts
+                // One call to refresh both Grid and Yellow Area
                 if (typeof window.refreshUI === 'function') window.refreshUI();
             }
         }
