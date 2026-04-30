@@ -2,6 +2,12 @@ export let currentOrderType = 'DINE_IN';
 
 export const setOrderType = (type) => {
     currentOrderType = type;
+    window.selectedOrderType = type; // Legacy support
+    
+    // Trigger Global UI Sync
+    if (typeof window.refreshUI === 'function') {
+        window.refreshUI();
+    }
     
     // UI Update: Buttons highlighting
     const container = document.getElementById('order-type-container');
