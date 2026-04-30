@@ -1278,25 +1278,23 @@ window.newBill = function() {
 
 window.calculateTotal = function() {
     let subtotal = cart.reduce((sum, item) => sum + (item.price * item.cartQty), 0);
-    let discountInput = document.getElementById('cart-discount');
-    let selectedTypeObj = document.querySelector('input[name="discount-type"]:checked');
-    let discountType = selectedTypeObj ? selectedTypeObj.value : 'amount';
-    let discountVal = discountInput ? (parseFloat(discountInput.value) || 0) : 0;
+    let discPercentInput = document.getElementById('cart-discount-percent');
+    let discFixedInput = document.getElementById('cart-discount-fixed');
     
-    let discountAmount = 0;
+    let discPercent = discPercentInput ? (parseFloat(discPercentInput.value) || 0) : 0;
+    let discFixed = discFixedInput ? (parseFloat(discFixedInput.value) || 0) : 0;
     
-    if (discountType === 'percent') {
-        if (discountVal > 100) {
-            discountVal = 100;
-            if(discountInput) discountInput.value = discountVal;
-        }
-        discountAmount = subtotal * (discountVal / 100);
-    } else {
-        if (discountVal > subtotal) {
-            discountVal = subtotal;
-            if(discountInput) discountInput.value = discountVal;
-        }
-        discountAmount = discountVal;
+    // Ensure % is not more than 100
+    if (discPercent > 100) {
+        discPercent = 100;
+        if(discPercentInput) discPercentInput.value = 100;
+    }
+
+    let discountAmount = (subtotal * (discPercent / 100)) + discFixed;
+
+    // Ensure total discount is not more than subtotal
+    if (discountAmount > subtotal) {
+        discountAmount = subtotal;
     }
     
     let advancePaid = 0;
@@ -1338,8 +1336,10 @@ window.calculateTotal = function() {
 
 window.clearCart = function() {
     cart = [];
-    const discountInput = document.getElementById('cart-discount');
-    if(discountInput) discountInput.value = '0';
+    const discPercentIn = document.getElementById('cart-discount-percent');
+    const discFixedIn = document.getElementById('cart-discount-fixed');
+    if(discPercentIn) discPercentIn.value = '';
+    if(discFixedIn) discFixedIn.value = '';
     
     // Reset payment fields
     const cashIn = document.getElementById('pay-cash-amount');
