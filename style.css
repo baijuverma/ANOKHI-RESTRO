@@ -1201,7 +1201,7 @@ input:focus, select:focus {
 
 .overlay-btn:hover {
     transform: scale(1.1);
-    color: #60a5fa; /* Light Blue instead of White */
+    color: #1e3a8a; /* Deep Dark Blue */
 }
 
 .overlay-qty-float {
