@@ -122,16 +122,30 @@ const init = async () => {
     // Keyboard Shortcuts (ESC to reduce quantity)
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            if (window.cart && window.cart.length > 0) {
-                const lastItem = window.cart[window.cart.length - 1];
-                lastItem.quantity -= 1;
+            // Access the global cart from app.js logic
+            let currentCart = window.cart || (typeof cart !== 'undefined' ? cart : []);
+            
+            if (currentCart && currentCart.length > 0) {
+                const lastItem = currentCart[currentCart.length - 1];
                 
-                // Remove from state if qty becomes 0
-                if (lastItem.quantity <= 0) {
-                    window.cart = window.cart.filter(item => item.id !== lastItem.id);
+                // Update both possible property names for safety
+                if (lastItem.cartQty !== undefined) lastItem.cartQty -= 1;
+                if (lastItem.quantity !== undefined) lastItem.quantity -= 1;
+                
+                // If quantity reaches 0, remove the item
+                const finalQty = lastItem.cartQty !== undefined ? lastItem.cartQty : lastItem.quantity;
+                if (finalQty <= 0) {
+                    if (typeof cart !== 'undefined') {
+                        cart = cart.filter(i => i.id !== lastItem.id);
+                        window.cart = cart;
+                    } else {
+                        window.cart = currentCart.filter(i => i.id !== lastItem.id);
+                    }
                 }
                 
-                // One call to refresh both Grid and Yellow Area
+                // Force legacy and new UI to refresh
+                if (typeof renderCart === 'function') renderCart();
+                if (typeof renderPOSItems === 'function') renderPOSItems();
                 if (typeof window.refreshUI === 'function') window.refreshUI();
             }
         }
