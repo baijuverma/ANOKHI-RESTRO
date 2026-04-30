@@ -1345,19 +1345,6 @@ window.calculateDues = function() {
     let totalPaid = previousPaidAmount + cashPaid + upiPaid;
     
     let dues = Math.max(0, finalTotal - totalPaid);
-
-    const duesEl = document.getElementById('cart-dues');
-    const duesRow = document.getElementById('dues-row');
-    
-    if (duesEl) {
-        duesEl.innerText = formatCurrency(dues);
-        if (dues > 0) {
-            if(duesRow) duesRow.style.color = '#f87171'; // Red
-        } else {
-            if(duesRow) duesRow.style.color = '#10b981'; // Green
-            duesEl.innerText = 'PAID';
-        }
-    }
 }
 
 window.toggleSplitPayment = function() {
