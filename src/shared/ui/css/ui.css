@@ -70,7 +70,7 @@ input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0
 }
 .pos-item-card .stock { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; }
 
-/* Table Cards (Matched with ItemCard) */
+/* Table Cards (Square Layout) */
 .table-card {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
@@ -80,7 +80,7 @@ input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-    min-height: 140px;
+    aspect-ratio: 1 / 1;
     text-align: center;
     position: relative;
     border: 2px solid transparent;
