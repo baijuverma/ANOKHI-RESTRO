@@ -1290,10 +1290,75 @@ input:focus, select:focus {
     }
 }
 
+/* Modern Global Logout Button */
+.global-header-actions {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    z-index: 100;
+}
+
+.modern-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 10px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 50px;
+    color: #ef4444;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    width: 42px;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+}
+
+.modern-logout-btn i {
+    font-size: 18px;
+    min-width: 22px;
+    display: flex;
+    justify-content: center;
+}
+
+.modern-logout-btn .btn-text {
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+}
+
+.modern-logout-btn:hover {
+    width: 110px;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #ef4444;
+    color: white;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+    border-color: #ef4444;
+}
+
+.modern-logout-btn:hover .btn-text {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.modern-logout-btn:active {
+    transform: scale(0.95);
+}
+
+/* Responsiveness */
 @media (max-width: 768px) {
+    .global-header-actions {
+        top: 15px;
+        right: 15px;
+    }
     .app-container {
         flex-direction: column;
         padding: 10px;
+        overflow-y: auto;
     }
 
     .sidebar {

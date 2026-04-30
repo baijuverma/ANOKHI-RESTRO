@@ -98,6 +98,14 @@
 
         <!-- Main Content -->
         <main class="main-content">
+            <!-- Global Header Actions (Top Right) -->
+            <div class="global-header-actions">
+                <button class="modern-logout-btn" onclick="logout()" title="Logout & Lock System">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span class="btn-text">Logout</span>
+                </button>
+            </div>
+
             <!-- Dashboard View -->
             <section id="dashboard" class="view-section active">
                 <header>
@@ -520,19 +528,16 @@
                         
                         <p class="settings-help mt-3">This password is required to access the system on startup.</p>
                     </div>
-                </div>
 
-                <div class="glass-panel mt-4 p-4">
-                    <h2 class="settings-title warning"><i class="fa-solid fa-database"></i> Data Management</h2>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button class="btn-primary" style="background: var(--warning-color); border: none;" onclick="importBiharMenu()">
-                            <i class="fa-solid fa-file-import"></i> Import Default Menu
-                        </button>
-                        <button class="btn-danger" onclick="logout()">
-                            <i class="fa-solid fa-right-from-bracket"></i> Logout & Lock System
-                        </button>
+                    <div class="glass-panel mt-4 p-4">
+                        <h2 class="settings-title warning"><i class="fa-solid fa-database"></i> Data Management</h2>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <button class="btn-primary" onclick="importItems()" style="background: var(--accent-color); padding: 12px 20px;">
+                                <i class="fa-solid fa-file-import"></i> Import Default Menu
+                            </button>
+                        </div>
+                        <p class="settings-help mt-2">Importing default menu will add Bihar Special items to your inventory.</p>
                     </div>
-                    <p class="settings-help mt-2">Importing default menu will add Bihar Special items to your inventory.</p>
                 </div>
             </section>
 
