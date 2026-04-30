@@ -1316,10 +1316,8 @@ window.clearCart = function() {
     // Reset payment fields
     const cashIn = document.getElementById('pay-cash-amount');
     const upiIn = document.getElementById('pay-upi-amount');
-    const duesDisp = document.getElementById('pay-dues-display');
     if(cashIn) cashIn.value = '';
     if(upiIn) upiIn.value = '';
-    if(duesDisp) duesDisp.value = '';
 
     // Reset editing state
     editingSaleId = null;
@@ -1339,7 +1337,6 @@ window.calculateDues = function() {
     
     const cashInput = document.getElementById('pay-cash-amount');
     const upiInput = document.getElementById('pay-upi-amount');
-    const duesDisplay = document.getElementById('pay-dues-display');
     
     let cashPaid = parseFloat(cashInput.value) || 0;
     let upiPaid = parseFloat(upiInput.value) || 0;
@@ -1348,11 +1345,6 @@ window.calculateDues = function() {
     let totalPaid = previousPaidAmount + cashPaid + upiPaid;
     
     let dues = Math.max(0, finalTotal - totalPaid);
-    
-    // Update the new horizontal Baki field
-    if (duesDisplay) {
-        duesDisplay.value = dues > 0 ? formatCurrency(dues) : 'PAID';
-    }
 
     const duesEl = document.getElementById('cart-dues');
     const duesRow = document.getElementById('dues-row');

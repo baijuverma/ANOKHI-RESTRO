@@ -602,7 +602,7 @@ button, button * {
     font-size: 12px;
     color: var(--accent-color);
     font-weight: bold;
-    background-color: #1e1b4b; /* Matching the dark theme background */
+    background-color: #0f172a; /* Match the sidebar/background color */
     padding: 0 5px; 
 }
 
