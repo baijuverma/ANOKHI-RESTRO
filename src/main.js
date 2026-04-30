@@ -38,9 +38,35 @@ window.toggleTablesCurtain = () => {
     }
 };
 
+let currentFilter = 'all';
+
+window.setPOSFilter = (type) => {
+    currentFilter = type;
+    
+    // Update button styles (Legacy sync)
+    const btns = { 
+        all: document.getElementById('pos-filter-all'), 
+        veg: document.getElementById('pos-filter-veg'), 
+        nonveg: document.getElementById('pos-filter-nonveg') 
+    };
+    
+    Object.keys(btns).forEach(key => {
+        if (!btns[key]) return;
+        if (key === type) {
+            btns[key].style.background = (key === 'veg') ? '#22c55e' : (key === 'nonveg' ? '#ef4444' : 'var(--accent-color)');
+            btns[key].style.color = 'white';
+        } else {
+            btns[key].style.background = 'transparent';
+            btns[key].style.color = (key === 'veg') ? '#22c55e' : (key === 'nonveg' ? '#ef4444' : 'var(--accent-color)');
+        }
+    });
+
+    window.refreshUI();
+};
+
 window.renderPOSItems = (search = '') => {
     const gridContainer = document.getElementById('pos-item-grid');
-    if (gridContainer) renderPOSGrid(gridContainer, search);
+    if (gridContainer) renderPOSGrid(gridContainer, search, currentFilter);
 };
 
 window.renderCart = () => {
@@ -49,7 +75,8 @@ window.renderCart = () => {
 
 window.refreshUI = () => {
     const gridContainer = document.getElementById('pos-item-grid');
-    if (gridContainer) renderPOSGrid(gridContainer);
+    const searchVal = document.getElementById('pos-search')?.value || '';
+    if (gridContainer) renderPOSGrid(gridContainer, searchVal, currentFilter);
     
     // Refresh the table selection highlight if legacy exists
     if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
