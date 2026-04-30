@@ -252,7 +252,96 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Keyboard Shortcuts are now handled in src/features/keyboard/model.js (FSD)
+    // Global Keyboard Shortcuts & Search Redirection
+    document.addEventListener('keydown', (e) => {
+        const searchInput = document.getElementById('pos-search');
+        const posView = document.getElementById('pos');
+        const loginScreen = document.getElementById('login-screen');
+        const activeModal = document.querySelector('.modal.active');
+        const active = document.activeElement;
+
+        // 1. Skip if system locked/login screen visible
+        if (loginScreen && loginScreen.style.display !== 'none' && !loginScreen.classList.contains('hide')) return;
+
+        // 2. Handle Modals (Highest Priority)
+        if (activeModal) {
+            if (e.key === 'Escape') {
+                if (typeof closeModal === 'function') closeModal(activeModal.id);
+                return;
+            }
+            if (e.key === 'Enter') {
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName)) return;
+                if (typeof closeModal === 'function') closeModal(activeModal.id);
+                return;
+            }
+            return; 
+        }
+
+        // 3. Ignore if user is inside another real input/textarea/select
+        const isOtherInput = active && 
+            ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName) && 
+            active !== searchInput;
+        
+        if (isOtherInput) {
+            if (e.key === 'Enter' && (typeof cart !== 'undefined' && cart.length > 0) && (active.id === 'pay-cash-amount' || active.id === 'pay-upi-amount')) {
+                if (typeof processSale === 'function') processSale();
+            }
+            return;
+        }
+
+        // 4. Ignore system shortcuts
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+        // 5. ESC Logic
+        if (e.key === 'Escape') {
+            if (active === searchInput) {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                searchInput.blur();
+                return;
+            }
+            if (typeof newBill === 'function') newBill();
+        }
+
+        // 6. ENTER Logic
+        if (e.key === 'Enter') {
+            if (typeof cart !== 'undefined' && cart.length > 0) {
+                if (typeof processSale === 'function') processSale();
+            }
+        }
+
+        // 7. Type to Search Logic
+        if (!searchInput) return;
+
+        if (e.key.length === 1) {
+            // Switch to POS if not active
+            if (posView && !posView.classList.contains('active')) {
+                if (typeof showView === 'function') showView('pos');
+            }
+            
+            if (active !== searchInput) {
+                e.preventDefault();
+                searchInput.focus();
+                searchInput.value += e.key;
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        } else if (e.key === 'Backspace' && active !== searchInput) {
+            if (posView && posView.classList.contains('active')) {
+                e.preventDefault();
+                searchInput.focus();
+                if (searchInput.value.length > 0) {
+                    searchInput.value = searchInput.value.slice(0, -1);
+                    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }
+        } else if (e.key === 'F4') {
+            e.preventDefault();
+            if (typeof openAdvanceModal === 'function') openAdvanceModal();
+        } else if (e.key === 'F8') {
+            e.preventDefault();
+            if (typeof holdOrder === 'function') holdOrder();
+        }
+    });
 
     // Navigation Logic
     const navItems = document.querySelectorAll('.nav-item');
@@ -260,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             const target = item.getAttribute('data-target');
-            showView(target);
+            if (typeof showView === 'function') showView(target);
         });
     });
 
@@ -272,23 +361,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (restockForm) restockForm.addEventListener('submit', handleRestockSubmit);
     
     const posSearchInput = document.getElementById('pos-search');
-    if (posSearchInput) posSearchInput.addEventListener('input', (e) => renderPOSItems(e.target.value));
+    if (posSearchInput) posSearchInput.addEventListener('input', (e) => {
+        if (typeof renderPOSItems === 'function') renderPOSItems(e.target.value);
+    });
 
     // Initial Renders (Show local cache first)
-    updateDashboard();
-    renderInventory();
-    renderPOSItems();
-    renderHistory();
-    renderTableGrid();
-    renderExpenses();
-    updateExpenseStats();
+    if (typeof updateDashboard === 'function') updateDashboard();
+    if (typeof renderInventory === 'function') renderInventory();
+    if (typeof renderPOSItems === 'function') renderPOSItems();
+    if (typeof renderHistory === 'function') renderHistory();
+    if (typeof renderTableGrid === 'function') renderTableGrid();
+    if (typeof renderExpenses === 'function') renderExpenses();
+    if (typeof updateExpenseStats === 'function') updateExpenseStats();
 
     // Sync from Supabase in background
-    syncFromSupabase();
+    if (typeof syncFromSupabase === 'function') syncFromSupabase();
 
-    // Default to Dine-In on Load
+    // Default to Dine-In on Load (Defensive check)
     const dineInBtn = document.querySelector('.order-type-btn[onclick*="DINE_IN"]');
-    if (dineInBtn) setOrderType('DINE_IN', dineInBtn);
+    if (dineInBtn && typeof setOrderType === 'function') {
+        setOrderType('DINE_IN', dineInBtn);
+    }
 });
 
 // Utility: Save to LocalStorage
@@ -1290,6 +1383,9 @@ function renderHistory() {
     if (mSaleEl) mSaleEl.innerText = formatCurrency(mTotal);
     if (mCashEl) mCashEl.innerText = formatCurrency(mCash);
     if (mUpiEl) mUpiEl.innerText = formatCurrency(mUpi);
+    
+    const mExpEl = document.getElementById("monthly-expense-total");
+    if (mExpEl) mExpEl.innerText = formatCurrency(mExpTotal);
     
     // Calculate Total Dues from all time
     const totalDuesHistory = salesHistory.reduce((sum, s) => sum + (parseFloat(s.dues) || 0), 0);
