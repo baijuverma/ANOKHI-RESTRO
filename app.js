@@ -668,6 +668,12 @@ function handleItemSubmit(e) {
         }
     } else {
         // Add
+        const isDuplicate = inventory.some(i => i.name.trim().toLowerCase() === name.trim().toLowerCase());
+        if (isDuplicate) {
+            alert(`Duplicate Entry: An item named "${name}" already exists in the inventory. Please use a unique name.`);
+            return;
+        }
+
         const newItem = {
             id: Date.now().toString(),
             name, category, itemType, price, quantity, lowStockThreshold
