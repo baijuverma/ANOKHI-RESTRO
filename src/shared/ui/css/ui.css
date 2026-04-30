@@ -1,3 +1,10 @@
+.pos-grid-shared {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    padding: 10px;
+}
+
 /* Atoms: Smallest Units */
 button { cursor: pointer; border: none; border-radius: 10px; transition: all 0.3s ease; }
 .btn-primary { background: var(--accent-color); color: white; padding: 10px 20px; }
