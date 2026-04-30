@@ -64,12 +64,19 @@ window.renderCart = () => {
 window.toggleCartDetails = () => {
     const cartContainer = document.querySelector('.cart-items-container');
     const detailsCurtain = document.getElementById('cart-details-curtain');
+    const roundOffRow = document.getElementById('round-off-row');
     const toggleBtn = document.querySelector('.curtain-toggle');
     const icon = document.getElementById('curtain-icon');
 
     if (cartContainer && detailsCurtain) {
         cartContainer.classList.toggle('expanded');
         detailsCurtain.classList.toggle('hidden-details');
+        
+        // Also hide Round Off row
+        if (roundOffRow) {
+            roundOffRow.style.display = cartContainer.classList.contains('expanded') ? 'none' : 'flex';
+        }
+
         if (toggleBtn) toggleBtn.classList.toggle('active');
         
         // Toggle icon class for rotation
