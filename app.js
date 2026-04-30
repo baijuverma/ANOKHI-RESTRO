@@ -289,8 +289,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const dineInBtn = document.querySelector('.order-type-btn[onclick*="DINE_IN"]');
     if (dineInBtn) setOrderType('DINE_IN', dineInBtn);
 
-    // Global Keyboard Search Listener â”œÃ³Î“Ã©Â¼Î“Ã‡Â¥ routes ALL keystrokes to the search bar
-    document.addEventListener('keydown', (e) => {
+    // Global Keyboard Search Listener (Disabled for FSD)
+    document.addEventListener('_disabled_keydown', (e) => {
         const searchInput = document.getElementById('pos-search');
         const posView = document.getElementById('pos');
 
@@ -1847,7 +1847,7 @@ window.editSale = function(id) {
 }
 
 // Global Keyboard Shortcuts
-window.addEventListener('keydown', (e) => {
+$(document).on('_disabled_keydown', function (e) {
     // Close Receipt Modal with Enter or Escape
     const receiptModal = document.getElementById('receiptModal');
     if (receiptModal && receiptModal.classList.contains('active')) {
