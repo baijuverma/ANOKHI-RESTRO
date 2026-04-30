@@ -417,12 +417,7 @@
                             </div>
 
                         <div class="pos-cart glass-panel">
-                            <div id="dine-in-table-info" style="display: none; margin-bottom: 15px; background: rgba(99, 102, 241, 0.1); padding: 12px; border-radius: 12px; border: 1px solid var(--accent-color); display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <span style="font-size: 11px; color: var(--text-secondary); display: block;">Active Table</span>
-                                    <span id="current-table-name" style="font-size: 16px; font-weight: 700; color: var(--accent-color);">No Table Selected</span>
-                                </div>
-                            </div>
+                            <div id="dine-in-table-info" style="display: none;"></div>
 
 
                             <div class="cart-items-container" style="position: relative; flex: 2.5; display: flex; flex-direction: column; min-height: 0;">
@@ -786,7 +781,7 @@
     <!-- Table Grid Modal -->
     <div id="tableGridModal" class="modal">
         <div class="modal-content glass-panel" style="max-width: 800px;">
-            <span class="close-btn" onclick="closeModal('tableGridModal')">&times;</span>
+            <span class="close-btn" onclick="closeModal('tableGridModal'); renderCart(); renderTableGrid();">&times;</span>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2>Select Table (Dine-In)</h2>
                 <div style="display: flex; gap: 15px; font-size: 12px;">

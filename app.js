@@ -1070,9 +1070,6 @@ window.selectTable = function(tableId) {
     closeModal('tableGridModal');
     renderCart();
     renderTableGrid();
-    
-    // Alert for debugging
-    alert('Table ' + table.name + ' selected!');
 }
 
 window.holdOrder = function() {
@@ -1321,22 +1318,13 @@ window.calculateTotal = function() {
 
     const refundInfo = document.getElementById('refund-info');
     const totalLabel = document.getElementById('cart-total-label');
+    let labelText = (refundAmount > 0) ? 'Payable' : 'Total';
     
-    if (refundAmount > 0) {
-        if(refundInfo) refundInfo.style.display = 'block';
-        document.getElementById('refund-amount-display').innerText = formatCurrency(refundAmount);
-        if(totalLabel) totalLabel.innerText = 'Payable';
-    } else {
-        if(refundInfo) refundInfo.style.display = 'none';
-        if(totalLabel) totalLabel.innerText = 'Total';
+    if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
+        const table = tables.find(t => t.id === currentSelectedTable);
+        if (table) labelText += ` (${table.name})`;
     }
-
-    let roundOff = finalTotal - (subtotal - discountAmount - advancePaid);
-    
-    const roundOffEl = document.getElementById('cart-roundoff');
-    if(roundOffEl) {
-        roundOffEl.innerText = (roundOff >= 0 ? '+' : '') + formatCurrency(roundOff).replace('Î“Ã©â•£-', '-Î“Ã©â•£');
-    }
+    if(totalLabel) totalLabel.innerText = labelText;
 
     document.getElementById('cart-total').innerText = formatCurrency(finalTotal);
     
