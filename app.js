@@ -1010,25 +1010,27 @@ window.openTableGrid = function() {
 
 function renderTableGrid() {
     const container = document.getElementById('table-grid-container');
+    if(!container) return;
     container.innerHTML = '';
 
     tables.forEach(table => {
         const div = document.createElement('div');
-        const isOccupied = table.cart.length > 0 || table.advance > 0;
+        const isOccupied = (table.cart && table.cart.length > 0) || (table.advance > 0);
         const isSelected = table.id === currentSelectedTable;
         div.className = `table-card ${isOccupied ? 'occupied' : ''} ${isSelected ? 'selected' : ''}`;
+        div.style.cursor = 'pointer';
         div.onclick = () => selectTable(table.id);
 
         let total = 0;
-        if (isOccupied) {
+        if (isOccupied && table.cart) {
             total = table.cart.reduce((sum, item) => sum + (item.price * item.cartQty), 0);
         }
 
         div.innerHTML = `
             <i class="fa-solid fa-chair"></i>
             <h3>${table.name}</h3>
-            ${isOccupied ? `<div class="table-total">â”œÃ³Î“Ã‡Ãœâ”¬â•£${total}</div>` : '<div class="table-total" style="color:var(--text-secondary)">Available</div>'}
-            ${table.advance > 0 ? `<div class="table-advance">Adv: â”œÃ³Î“Ã‡Ãœâ”¬â•£${table.advance}</div>` : ''}
+            ${isOccupied ? `<div class="table-total">${formatCurrency(total)}</div>` : '<div class="table-total" style="color:var(--text-secondary)">Available</div>'}
+            ${table.advance > 0 ? `<div class="table-advance">Adv: ${formatCurrency(table.advance)}</div>` : ''}
         `;
         container.appendChild(div);
     });
