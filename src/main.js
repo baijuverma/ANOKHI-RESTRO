@@ -181,14 +181,7 @@ const init = async () => {
     // Initialize Keyboard Shortcuts (FSD)
     initKeyboardShortcuts();
 
-    // Event Listeners for Search
-    const searchInput = document.getElementById('pos-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const gridContainer = document.getElementById('pos-item-grid');
-            renderPOSGrid(gridContainer, e.target.value);
-        });
-    }
+    // Event Listeners for Search moved to app.js or handled via input event
 };
 
 document.addEventListener('DOMContentLoaded', init);
