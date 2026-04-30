@@ -8,6 +8,7 @@ import { renderOrderTypeWidget } from './widgets/order-type/ui.js';
 import { setFilter, currentFilter } from './features/filter/model.js';
 import { setOrderType, currentOrderType } from './features/order-type/model.js';
 import { initKeyboardShortcuts } from './features/keyboard/model.js';
+import { syncLayoutVisibility } from './features/layout/model.js';
 
 // Global exports for HTML compatibility (Legacy support)
 window.addToCart = addToCart;
@@ -89,31 +90,8 @@ window.refreshUI = () => {
     // Refresh Order Type Widget
     window.renderOrderType();
 
-    // Update Table Indicator next to Total
-    const tableIndicator = document.getElementById('total-table-indicator');
-    const curtainArea = document.getElementById('tables-curtain-area');
-    const curtainBtn = document.getElementById('tables-curtain-toggle-btn');
-    
-    // Normalize type for comparison
-    const rawType = window.selectedOrderType || 'DINE_IN';
-    const normalizedType = String(rawType).toUpperCase();
-    const isDineIn = normalizedType === 'DINE_IN';
-
-    console.log('FSD Refresh: Mode is', normalizedType, 'IsDineIn:', isDineIn);
-
-    // Show/Hide Curtain Elements based on Order Type
-    if (curtainArea) curtainArea.style.display = isDineIn ? 'block' : 'none';
-    if (curtainBtn) curtainBtn.style.display = isDineIn ? 'block' : 'none';
-
-    if (tableIndicator) {
-        if (isDineIn && window.currentSelectedTable) {
-            const found = (window.tables || []).find(t => String(t.id) === String(window.currentSelectedTable));
-            const name = found ? found.name : `Table ${window.currentSelectedTable}`;
-            tableIndicator.textContent = `(${name})`;
-        } else {
-            tableIndicator.textContent = '';
-        }
-    }
+    // FSD Layout Sync: Handle visibility of Tables, Arrow, and Table Name
+    syncLayoutVisibility(window.selectedOrderType, window.currentSelectedTable);
 
     // Refresh the Cart Widget
     window.renderCart();
