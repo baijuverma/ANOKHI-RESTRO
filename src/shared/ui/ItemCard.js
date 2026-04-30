@@ -18,7 +18,6 @@ export const createItemCard = (item, cartQty, onAdd, onUpdateQty) => {
         ` : ''}
         <div onclick="window.addToCart(${JSON.stringify(item).replace(/"/g, '&quot;')})">
             <div class="stock-badge-top">${item.quantity} in stock</div>
-            <span class="category">${item.category}</span>
             <h4>${item.name}</h4>
             <div class="price">${formatCurrency(item.price)}</div>
         </div>
