@@ -3,9 +3,22 @@ export const initKeyboardShortcuts = () => {
         // 1. ESC Logic (Reduce Quantity)
         if (e.key === 'Escape') {
             e.preventDefault();
-            const currentCart = window.cart || (typeof cart !== 'undefined' ? cart : []);
-            if (currentCart && currentCart.length > 0) {
-                const lastItem = currentCart[currentCart.length - 1];
+            
+            // Determine which cart to target
+            let targetCart = [];
+            const orderType = window.selectedOrderType || 'DINE_IN';
+            
+            if (orderType === 'DINE_IN') {
+                const tableId = window.currentSelectedTable;
+                if (!tableId) return;
+                const table = (window.tables || []).find(t => String(t.id) === String(tableId));
+                if (table && table.cart) targetCart = table.cart;
+            } else {
+                targetCart = window.cart || (typeof cart !== 'undefined' ? cart : []);
+            }
+
+            if (targetCart && targetCart.length > 0) {
+                const lastItem = targetCart[targetCart.length - 1];
                 
                 // Decrement qty
                 if (lastItem.cartQty !== undefined) lastItem.cartQty -= 1;
@@ -13,22 +26,28 @@ export const initKeyboardShortcuts = () => {
 
                 const finalQty = (lastItem.cartQty !== undefined) ? lastItem.cartQty : lastItem.quantity;
                 
-                // If 0, remove from cart
+                // If 0, remove from target cart
                 if (finalQty <= 0) {
-                    if (typeof cart !== 'undefined') {
-                        window.cart = cart.filter(i => i.id !== lastItem.id);
-                        // Update the global reference in app.js if it exists
-                        window.cart.forEach((v, i) => { if(i < cart.length) cart[i] = v; });
-                        if(cart.length > window.cart.length) cart.length = window.cart.length;
+                    const newCart = targetCart.filter(i => i.id !== lastItem.id);
+                    
+                    if (orderType === 'DINE_IN') {
+                        const table = (window.tables || []).find(t => String(t.id) === String(window.currentSelectedTable));
+                        if (table) table.cart = newCart;
                     } else {
-                        window.cart = currentCart.filter(i => i.id !== lastItem.id);
+                        // Update global cart
+                        if (typeof cart !== 'undefined') {
+                            cart.length = 0;
+                            newCart.forEach(i => cart.push(i));
+                        }
+                        window.cart = newCart;
                     }
                 }
 
-                // Force Refresh UI
+                // Force Refresh All UI Widgets
                 if (typeof window.refreshUI === 'function') window.refreshUI();
                 if (typeof renderCart === 'function') renderCart();
                 if (typeof renderPOSItems === 'function') renderPOSItems();
+                if (typeof renderTableGrid === 'function') renderTableGrid();
             }
         }
 
