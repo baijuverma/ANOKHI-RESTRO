@@ -1969,3 +1969,14 @@ input[type=number] {
     color: #991b1b !important; /* FORCE ICON COLOR */
 }
 
+
+ / *   N U C L E A R   O V E R R I D E   F O R   D E L E T E   B U T T O N   * / 
+ . c a r t - i t e m - m o d e r n   . c a r t - c o l - a c t i o n   . c a r t - d e l e t e - b t n ,   
+ . c a r t - i t e m - m o d e r n   . c a r t - c o l - a c t i o n   . c a r t - d e l e t e - b t n   i , 
+ . c a r t - i t e m   . c a r t - c o l - a c t i o n   . c a r t - d e l e t e - b t n ,   
+ . c a r t - i t e m   . c a r t - c o l - a c t i o n   . c a r t - d e l e t e - b t n   i   { 
+         c o l o r :   # 9 9 1 b 1 b   ! i m p o r t a n t ; 
+         o p a c i t y :   1   ! i m p o r t a n t ; 
+         f i l l :   # 9 9 1 b 1 b   ! i m p o r t a n t ; 
+ }  
+ 
