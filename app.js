@@ -528,7 +528,7 @@ window.showStockList = function(type) {
             
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${item.name}</td>
+                <td>${item.name.length > 10 ? item.name.substring(0, 8) + '..' : item.name}</td>
                 <td>${item.category}</td>
                 <td style="color: ${statusColor}; font-weight: bold;">${item.quantity}</td>
             `;
@@ -566,7 +566,7 @@ window.showTodaySalesList = function() {
             const data = itemsSold[id];
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${data.name}</td>
+                <td>${data.name.length > 10 ? data.name.substring(0, 8) + '..' : data.name}</td>
                 <td style="font-weight:bold; color:var(--accent-color);">${data.qty}</td>
                 <td>${formatCurrency(data.total)}</td>
             `;
@@ -701,7 +701,7 @@ function renderInventory() {
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><strong>${item.name}</strong></td>
+            <td><strong>${item.name.length > 10 ? item.name.substring(0, 8) + '..' : item.name}</strong></td>
             <td>${item.category}</td>
             <td>${formatCurrency(item.price)}</td>
             <td>${item.quantity}</td>
@@ -800,7 +800,7 @@ function renderCart() {
         div.innerHTML = `
             <div class="cart-col-sr">${index + 1}</div>
             <div class="cart-col-info">
-                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-name">${item.name.length > 10 ? item.name.substring(0, 8) + '..' : item.name}</div>
                 <div class="cart-item-unit-price">${formatCurrency(item.price)} / itm</div>
             </div>
             <div class="cart-col-qty">
@@ -1129,7 +1129,7 @@ function showReceipt(sale) {
     const details = document.getElementById('receipt-details');
     let itemsHtml = sale.items.map(i => `
         <div class="receipt-item">
-            <span>${i.name} (x${i.cartQty})</span>
+            <span>${i.name.length > 10 ? i.name.substring(0, 8) + '..' : i.name} (x${i.cartQty})</span>
             <span>${formatCurrency(i.price * i.cartQty)}</span>
         </div>
     `).join('');
