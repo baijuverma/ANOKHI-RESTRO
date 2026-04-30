@@ -252,20 +252,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Close any active modal on Escape or Enter key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' || e.key === 'Enter') {
-            const activeModal = document.querySelector('.modal.active');
-            if (activeModal) {
-                // Don't close on Enter if user is typing in an input/textarea inside the modal
-                if (e.key === 'Enter' && ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
-                closeModal(activeModal.id);
-            }
-        }
-    });
-
+    // Keyboard Shortcuts are now handled in src/features/keyboard/model.js (FSD)
 
     // Navigation Logic
+    const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
@@ -275,9 +265,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Form Submissions
-    document.getElementById('item-form').addEventListener('submit', handleItemSubmit);
-    document.getElementById('restock-form').addEventListener('submit', handleRestockSubmit);
-    document.getElementById('pos-search').addEventListener('input', (e) => renderPOSItems(e.target.value));
+    const itemForm = document.getElementById('item-form');
+    if (itemForm) itemForm.addEventListener('submit', handleItemSubmit);
+    
+    const restockForm = document.getElementById('restock-form');
+    if (restockForm) restockForm.addEventListener('submit', handleRestockSubmit);
+    
+    const posSearchInput = document.getElementById('pos-search');
+    if (posSearchInput) posSearchInput.addEventListener('input', (e) => renderPOSItems(e.target.value));
 
     // Initial Renders (Show local cache first)
     updateDashboard();
@@ -294,101 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Default to Dine-In on Load
     const dineInBtn = document.querySelector('.order-type-btn[onclick*="DINE_IN"]');
     if (dineInBtn) setOrderType('DINE_IN', dineInBtn);
-
-    // Global Keyboard Search Listener (Disabled for FSD)
-    document.addEventListener('_disabled_keydown', (e) => {
-        const searchInput = document.getElementById('pos-search');
-        const posView = document.getElementById('pos');
-
-        // Only active in POS view
-        if (!searchInput || !posView || !posView.classList.contains('active')) return;
-
-        // Don't intercept if user is inside another real input/textarea/select
-        const active = document.activeElement;
-        const isOtherInput = active &&
-            ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName) &&
-            active !== searchInput;
-        if (isOtherInput) return;
-
-        // Ignore system shortcuts
-        if (e.ctrlKey || e.altKey || e.metaKey) return;
-
-        if (e.key.length === 1) {
-            // Route any printable character to the search bar
-            if (active !== searchInput) {
-                e.preventDefault();
-                searchInput.focus();
-                searchInput.value += e.key;
-                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-            // If already focused in searchInput, browser handles it naturally
-        } else if (e.key === 'Backspace' && active !== searchInput) {
-            // Backspace when search bar not focused â”œÃ³Î“Ã©Â¼Î“Ã‡Â¥ focus it and let user delete
-            e.preventDefault();
-            searchInput.focus();
-            if (searchInput.value.length > 0) {
-                searchInput.value = searchInput.value.slice(0, -1);
-                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-        } else if (false && e.key === 'Escape') {
-            e.preventDefault();
-            if (active === searchInput) {
-                searchInput.value = '';
-                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-                searchInput.blur();
-            } else if (cart.length > 0) {
-                // Reduce last cart item qty by 1; remove if 0
-                const lastItem = cart[cart.length - 1];
-                lastItem.cartQty -= 1;
-                if (lastItem.cartQty <= 0) {
-                    cart = cart.filter(c => c.id !== lastItem.id);
-                    if (cart.length === 0) {
-                        renderCart();
-                        renderPOSItems(searchInput.value);
-                        setTimeout(() => {
-                            if (confirm('Kya aap bill cancel karna chahte hain?')) {
-                                newBill();
-                            }
-                        }, 50);
-                        return;
-                    }
-                }
-                renderCart();
-                renderPOSItems(searchInput.value);
-            } else if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
-                currentSelectedTable = null;
-                cart = [];
-                document.getElementById('current-table-name').innerText = 'No Table Selected';
-                document.getElementById('advance-paid-info').style.display = 'none';
-                document.getElementById('dine-in-table-info').style.display = 'none';
-                renderCart();
-                renderTableGrid();
-                if(typeof renderPOSItems === 'function') renderPOSItems(); 
-            } else {
-                newBill();
-            }
-        } else if (e.key === 'Enter') {
-            const activeModal = document.querySelector('.modal.active');
-            if (activeModal) {
-                // If it's a form modal and we are typing in an input, let the form submit
-                // Otherwise, close the modal as requested
-                if (active !== searchInput && active.tagName !== 'INPUT' && active.tagName !== 'SELECT' && active.tagName !== 'TEXTAREA') {
-                    closeModal(activeModal.id);
-                } else if (!activeModal.querySelector('form')) {
-                    // If modal has no form (like receipt), close it anyway
-                    closeModal(activeModal.id);
-                }
-            } else if (cart.length > 0) {
-                processSale();
-            }
-        } else if (e.key === 'F4') {
-            e.preventDefault();
-            if (selectedOrderType === 'DINE_IN') openAdvanceModal();
-        } else if (e.key === 'F8') {
-            e.preventDefault();
-            if (selectedOrderType === 'DINE_IN') holdOrder();
-        }
-    });
 });
 
 // Utility: Save to LocalStorage
