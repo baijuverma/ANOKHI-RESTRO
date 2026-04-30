@@ -72,9 +72,13 @@ window.toggleCartDetails = () => {
         cartContainer.classList.toggle('expanded');
         detailsCurtain.classList.toggle('hidden-details');
         
-        // Also hide Round Off row
+        // Forcefully hide Round Off row using master class
         if (roundOffRow) {
-            roundOffRow.style.display = cartContainer.classList.contains('expanded') ? 'none' : 'flex';
+            if (cartContainer.classList.contains('expanded')) {
+                roundOffRow.classList.add('hide-completely');
+            } else {
+                roundOffRow.classList.remove('hide-completely');
+            }
         }
 
         if (toggleBtn) toggleBtn.classList.toggle('active');
