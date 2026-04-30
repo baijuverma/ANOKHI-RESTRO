@@ -466,20 +466,8 @@
                 </header>
                 
                 <div class="settings-grid mt-4">
-                    <!-- Table Configuration -->
-                    <div class="glass-panel p-4">
-                        <h2 class="settings-title"><i class="fa-solid fa-chair"></i> Table Configuration</h2>
-                        <div class="form-group">
-                            <label>Total Number of Tables</label>
-                            <div style="display: flex; gap: 15px; align-items: center;">
-                                <button class="qty-btn" style="width: 40px; height: 40px; font-size: 18px;" onclick="adjustTableCount(-1)"><i class="fa-solid fa-minus"></i></button>
-                                <input type="number" id="setting-table-count" readonly style="width: 100px; text-align: center; font-size: 24px; font-weight: 700; background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border);" value="12">
-                                <button class="qty-btn" style="width: 40px; height: 40px; font-size: 18px;" onclick="adjustTableCount(1)"><i class="fa-solid fa-plus"></i></button>
-                            </div>
-                            <p class="settings-help">Updating tables will refresh the Dine-In grid immediately.</p>
-                        </div>
-                        <button class="btn-primary" onclick="saveSettings()">Save Configuration</button>
-                    </div>
+                    <!-- Table Configuration Widget -->
+                    <div id="table-config-widget"></div>
 
                     <!-- Security Configuration -->
                     <div class="glass-panel p-4">
@@ -510,15 +498,8 @@
                         <p class="settings-help mt-3">This password is required to access the system on startup.</p>
                     </div>
 
-                    <div class="glass-panel mt-4 p-4">
-                        <h2 class="settings-title warning"><i class="fa-solid fa-database"></i> Data Management</h2>
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <button class="btn-primary" onclick="importItems()" style="background: var(--accent-color); padding: 12px 20px;">
-                                <i class="fa-solid fa-file-import"></i> Import Default Menu
-                            </button>
-                        </div>
-                        <p class="settings-help mt-2">Importing default menu will add Bihar Special items to your inventory.</p>
-                    </div>
+                    <!-- Data Management Widget -->
+                    <div id="data-management-widget"></div>
                 </div>
             </section>
 

@@ -13,6 +13,8 @@ import { renderInventoryTable } from './widgets/inventory-table/ui.js';
 import { renderSalesHistory } from './widgets/sales-history/ui.js';
 import { renderExpenseTable } from './widgets/expense-table/ui.js';
 import { renderDashboardStats } from './widgets/dashboard-stats/ui.js';
+import { initSettingsWidgets } from './widgets/settings-cards/ui.js';
+
 
 // Global exports for HTML compatibility (Legacy support)
 window.addToCart = addToCart;
@@ -180,6 +182,9 @@ const init = async () => {
 
     // Initialize Keyboard Shortcuts (FSD)
     initKeyboardShortcuts();
+
+    // Initialize Settings Widgets (Table count, Data import)
+    initSettingsWidgets();
 
     // Event Listeners for Search moved to app.js or handled via input event
 };
