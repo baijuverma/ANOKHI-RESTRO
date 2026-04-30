@@ -773,13 +773,13 @@ window.deleteItem = async function(id) {
 
 // POS Logic
 function renderCart() {
-    const cartContainer = document.getElementById('cart-items');
+    const cartContainer = document.getElementById('cart-items-modern');
     if (!cartContainer) return;
     cartContainer.innerHTML = '';
     
     if (cart.length > 0) {
         const header = document.createElement('div');
-        header.className = 'cart-header';
+        header.className = 'cart-header-modern';
         header.innerHTML = `
             <div class="cart-col-sr">SR</div>
             <div class="cart-col-info">ITEMS</div>
@@ -796,7 +796,7 @@ function renderCart() {
         subtotal += itemTotal;
 
         const div = document.createElement('div');
-        div.className = 'cart-item';
+        div.className = 'cart-item-modern';
         div.innerHTML = `
             <div class="cart-col-sr">${index + 1}</div>
             <div class="cart-col-info">
@@ -819,6 +819,7 @@ function renderCart() {
         `;
         cartContainer.appendChild(div);
     });
+
 
     const subtotalEl = document.getElementById('cart-subtotal');
     if (subtotalEl) subtotalEl.innerText = formatCurrency(subtotal);
