@@ -70,8 +70,8 @@ window.refreshUI = () => {
     // Update Table Indicator next to Total
     const tableIndicator = document.getElementById('total-table-indicator');
     if (tableIndicator) {
-        if (window.currentSelectedTable) {
-            // Find in global tables or fallback to ID
+        const isDineIn = (window.selectedOrderType || 'DINE_IN') === 'DINE_IN';
+        if (isDineIn && window.currentSelectedTable) {
             const found = (window.tables || []).find(t => String(t.id) === String(window.currentSelectedTable));
             const name = found ? found.name : `Table ${window.currentSelectedTable}`;
             tableIndicator.textContent = `(${name})`;
