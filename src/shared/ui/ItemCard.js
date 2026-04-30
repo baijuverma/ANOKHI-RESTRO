@@ -11,17 +11,26 @@ export const createItemCard = (item, cartQty, onAdd, onUpdateQty) => {
         <span class="bullet" style="position:absolute; top:8px; right:8px; background:${bulletColor};"></span>
         ${inCart ? `
             <div class="pos-item-overlay">
-                <button class="overlay-btn minus" onclick="event.stopPropagation(); window.updateCartQty('${item.id}', -1)">-</button>
+                <button class="overlay-btn minus" data-id="${item.id}">-</button>
                 <div class="overlay-qty-float">${cartQty}</div>
-                <button class="overlay-btn plus" onclick="event.stopPropagation(); window.updateCartQty('${item.id}', 1)">+</button>
+                <button class="overlay-btn plus" data-id="${item.id}">+</button>
             </div>
         ` : ''}
-        <div onclick="window.addToCart(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+        <div class="card-content">
             <div class="stock-badge-top">${item.quantity} in stock</div>
             <h4>${item.name}</h4>
             <div class="price">${formatCurrency(item.price)}</div>
         </div>
     `;
-    
+
+    // Direct Event Listeners
+    if (inCart) {
+        div.querySelector('.minus').onclick = (e) => { e.stopPropagation(); onUpdateQty(item.id, -1); };
+        div.querySelector('.plus').onclick = (e) => { e.stopPropagation(); onUpdateQty(item.id, 1); };
+    }
+
+    // Main Card Click
+    div.onclick = () => onAdd(item);
+
     return div;
 };
