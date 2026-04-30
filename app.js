@@ -60,7 +60,7 @@ let editingSaleId = null;
 let previousPaidAmount = 0;
 
 // Initial Data Sync from Supabase
-async function syncFromSupabase() {
+window.syncFromSupabase = async function() {
     if (!db) { console.warn('Supabase unavailable, skipping sync.'); return; }
     try {
         const { data: invData } = await db.from('inventory').select('*');
