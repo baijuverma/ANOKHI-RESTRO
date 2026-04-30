@@ -119,6 +119,19 @@ const init = async () => {
         });
     }, 1000);
 
+    // Keyboard Shortcuts (ESC to reduce quantity)
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const cart = window.cart || [];
+            if (cart.length > 0) {
+                const lastItem = cart[cart.length - 1];
+                if (typeof window.updateCartQty === 'function') {
+                    window.updateCartQty(lastItem.id, lastItem.quantity - 1);
+                }
+            }
+        }
+    });
+
     // Event Listeners for Search
     const searchInput = document.getElementById('pos-search');
     if (searchInput) {
