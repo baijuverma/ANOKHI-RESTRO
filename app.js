@@ -1405,9 +1405,16 @@ window.processSale = function() {
     const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
     const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
     
-    let totalPaid = payCash + payUpi;
+    let currentPaid = payCash + payUpi;
+    let totalPaidCombined = (typeof previousPaidAmount !== 'undefined' ? previousPaidAmount : 0) + currentPaid;
 
-    const dues = total - totalPaid;
+    // VALIDATION: Prevent overpayment
+    if (totalPaidCombined > total + 0.01) {
+        alert('Invalid Payment! Total paid amount (₹' + totalPaidCombined.toFixed(2) + ') cannot exceed the Bill Total (₹' + total.toFixed(2) + '). Please correct the amount.');
+        return;
+    }
+
+    const dues = total - totalPaidCombined;
 
     if (dues > 0.01) {
         // CREDIT SALE: Require customer details
