@@ -561,9 +561,9 @@ button, button * {
 /* Floating Label Input Group */
 .payment-input-container {
     display: flex;
-    gap: 10px;
-    margin-bottom: 5px;
-    padding: 5px 10px;
+    gap: 8px;
+    margin-bottom: 0px;
+    padding: 2px 8px;
 }
 
 .input-group-floating {
@@ -935,7 +935,7 @@ input:focus, select:focus {
 
 .pos-cart {
     flex: 1;
-    padding: 12px;
+    padding: 8px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1008,9 +1008,9 @@ input:focus, select:focus {
 }
 
 .cart-summary {
-    margin-top: 0; /* Removed margin */
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.02); /* Slight contrast */
+    margin-top: 0;
+    padding: 5px 8px;
+    background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--panel-border);
     border-top: none;
     border-radius: 0 0 12px 12px;
@@ -1019,15 +1019,15 @@ input:focus, select:focus {
 .summary-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     color: var(--text-secondary);
 }
 
 .summary-row.total {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 12px;
+    margin-bottom: 6px;
 }
 
 .cart-details-curtain {
