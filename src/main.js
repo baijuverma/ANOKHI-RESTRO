@@ -22,6 +22,22 @@ window.renderTableGrid = () => {
     });
 };
 
+window.toggleTablesCurtain = () => {
+    const wrapper = document.getElementById('tables-curtain-area');
+    const icon = document.getElementById('tables-curtain-icon');
+    if (!wrapper || !icon) return;
+
+    if (wrapper.classList.contains('tables-collapsed')) {
+        wrapper.classList.remove('tables-collapsed');
+        wrapper.classList.add('tables-expanded');
+        icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+    } else {
+        wrapper.classList.remove('tables-expanded');
+        wrapper.classList.add('tables-collapsed');
+        icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+    }
+};
+
 window.renderPOSItems = (search = '') => {
     const gridContainer = document.getElementById('pos-item-grid');
     if (gridContainer) renderPOSGrid(gridContainer, search);

@@ -328,19 +328,16 @@
                 <div class="pos-layout">
                     <!-- Left Pane: Tables + Items -->
                     <div class="pos-left-pane">
-                        <div class="tables-section glass-panel table-grid-compact" id="pos-tables-container">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <h2 style="font-size: 18px;"><i class="fa-solid fa-chair"></i> Tables</h2>
-                                <div style="display: flex; gap: 10px; font-size: 11px; color: var(--text-secondary);">
-                                    <span><i class="fa-solid fa-circle" style="color: rgba(255,255,255,0.1); font-size: 8px;"></i> Available</span>
-                                    <span><i class="fa-solid fa-circle" style="color: var(--success-color); font-size: 8px;"></i> Occupied</span>
+                        <div id="tables-curtain-area" class="tables-collapsed">
+                            <div class="tables-section glass-panel table-grid-compact" id="pos-tables-container">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                    <h2 style="font-size: 14px;"><i class="fa-solid fa-chair"></i> Tables</h2>
+                                    <div style="display: flex; gap: 10px; font-size: 10px; color: var(--text-secondary);">
+                                        <span><span class="bullet" style="background:#22c55e; width:8px; height:8px;"></span> Ready</span>
+                                        <span><span class="bullet" style="background:#ef4444; width:8px; height:8px;"></span> In Use</span>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <div id="tables-curtain" class="tables-curtain">
-                                <div class="table-grid" id="table-grid-container" style="margin-top: 10px;">
-                                    <!-- Dynamic tables -->
-                                </div>
+                                <!-- Table cards injected here -->
                             </div>
                         </div>
 

@@ -7,9 +7,21 @@
 
 .table-grid-compact {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 12px;
-    padding: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 8px;
+    padding: 8px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 200px; /* Default: 2 rows */
+    overflow: hidden;
+}
+
+/* Curtain States */
+.tables-collapsed .table-grid-compact {
+    max-height: 105px !important; /* Force Single row */
+}
+
+.tables-expanded .table-grid-compact {
+    max-height: 500px !important; /* Show more rows */
 }
 
 /* Atoms: Smallest Units */
@@ -77,12 +89,12 @@ input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0
 }
 .pos-item-card .stock { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; }
 
-/* Table Cards (Square Layout) */
+/* Table Cards (Micro Square Layout) */
 .table-card {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 10px;
+    border-radius: 10px;
+    padding: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -92,16 +104,16 @@ input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0
     position: relative;
     border: 2px solid transparent;
 }
-.table-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.07); }
+.table-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.07); }
 .table-card.selected { 
     border-color: var(--accent-color) !important; 
     background: rgba(99, 102, 241, 0.25) !important; 
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
 }
 .table-card.occupied { background: rgba(239, 68, 68, 0.15); border-color: var(--danger-color); }
 
-.table-card .table-name { font-size: 15px; font-weight: 700; color: white; margin: auto 0; }
-.table-card .table-status { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.4); }
+.table-card .table-name { font-size: 13px; font-weight: 700; color: white; margin: auto 0; }
+.table-card .table-status { font-size: 8px; text-transform: uppercase; letter-spacing: 0.3px; color: rgba(255,255,255,0.4); }
 
 /* Logout Button (Atomic UI) */
 .modern-logout-btn {
