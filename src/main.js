@@ -69,14 +69,14 @@ window.refreshUI = () => {
 
     // Update Table Indicator next to Total
     const tableIndicator = document.getElementById('total-table-indicator');
-    const curtainToggle = document.getElementById('tables-curtain-area');
+    const curtainArea = document.getElementById('tables-curtain-area');
+    const curtainBtn = document.getElementById('tables-curtain-toggle-btn');
     
     const isDineIn = (window.selectedOrderType || 'DINE_IN') === 'DINE_IN';
 
-    // Show/Hide Curtain Toggle based on Order Type
-    if (curtainToggle) {
-        curtainToggle.style.display = isDineIn ? 'block' : 'none';
-    }
+    // Show/Hide Curtain Elements based on Order Type
+    if (curtainArea) curtainArea.style.display = isDineIn ? 'block' : 'none';
+    if (curtainBtn) curtainBtn.style.display = isDineIn ? 'block' : 'none';
 
     if (tableIndicator) {
         if (isDineIn && window.currentSelectedTable) {
