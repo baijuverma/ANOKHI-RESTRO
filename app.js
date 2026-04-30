@@ -1225,10 +1225,11 @@ function addToCart(item) {
 }
 
 window.updateCartQty = function(id, delta) {
-    const itemIndex = cart.findIndex(c => c.id === id);
+    // Use == to match even if types (string vs number) differ
+    const itemIndex = cart.findIndex(c => c.id == id); 
     if(itemIndex > -1) {
         const item = cart[itemIndex];
-        const invItem = inventory.find(i => i.id === id);
+        const invItem = inventory.find(i => i.id == id);
         
         item.cartQty += delta;
         if(item.cartQty <= 0) {
@@ -1239,7 +1240,7 @@ window.updateCartQty = function(id, delta) {
         }
     }
     renderCart();
-    renderPOSItems(); // Ensure menu overlay updates instantly
+    if(typeof renderPOSItems === 'function') renderPOSItems(); 
 }
 
 function renderCart() {
