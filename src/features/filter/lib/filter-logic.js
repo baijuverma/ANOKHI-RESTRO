@@ -22,10 +22,14 @@ export const matchesFilterType = (item, filterType) => {
     const filter = normalizeType(filterType);
     if (filter === 'all') return true;
 
-    const itemType = normalizeType(item.itemType || 'Veg');
+    // Check both itemType and item_type for maximum compatibility
+    const rawType = item.itemType || item.item_type || 'Veg';
+    const itemType = normalizeType(rawType);
     
-    // Strict match to prevent 'nonveg' from matching 'veg'
-    return itemType === filter;
+    const isMatch = itemType === filter;
+    console.log(`Filtering: ${item.name} | ItemType: ${itemType} | Filter: ${filter} | Match: ${isMatch}`);
+    
+    return isMatch;
 };
 
 /**

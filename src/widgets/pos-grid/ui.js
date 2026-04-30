@@ -9,6 +9,7 @@ export const renderPOSGrid = (container, search = '', filterType = 'all') => {
 
     // Use centralized robust filter logic
     const filtered = filterItems(inventory, search, filterType).filter(item => item.quantity > 0);
+    console.log(`Grid Rendered: Filter=${filterType}, Search="${search}", TotalItems=${inventory.length}, FilteredItems=${filtered.length}`);
 
     filtered.forEach(item => {
         const cartItem = cart.find(c => String(c.id) === String(item.id));

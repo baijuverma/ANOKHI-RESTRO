@@ -26,9 +26,14 @@ export const updateFilterUI = (activeType) => {
 };
 
 export const setFilter = (type) => {
+    console.log(`Filter Button Clicked: ${type}`);
     filterState.current = type;
     updateFilterUI(type);
     
-    if (typeof window.refreshUI === 'function') window.refreshUI();
+    if (typeof window.refreshUI === 'function') {
+        window.refreshUI();
+    } else {
+        console.warn('window.refreshUI is not defined!');
+    }
 };
 
