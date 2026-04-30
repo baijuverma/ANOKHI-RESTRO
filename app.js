@@ -1220,7 +1220,7 @@ function addToCart(item) {
         inventory.unshift(selectedItem);
     }
 
-    renderInventory(); // Refresh menu to show reordered items
+    renderPOSItems(); // Refresh POS menu immediately to show +/- overlay
     renderCart();
 }
 
