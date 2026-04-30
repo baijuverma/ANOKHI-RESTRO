@@ -61,5 +61,36 @@ export const initKeyboardShortcuts = () => {
                 if (typeof processSale === 'function') processSale();
             }
         }
+
+        // 3. Type to Search Logic
+        const searchInput = document.getElementById('pos-search');
+        if (!searchInput) return;
+
+        // Don't intercept if user is inside another real input/textarea/select
+        const active = document.activeElement;
+        const isOtherInput = active && 
+            ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName) && 
+            active !== searchInput;
+        if (isOtherInput) return;
+
+        // Ignore system shortcuts
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+        if (e.key.length === 1) {
+            // Route any printable character to the search bar
+            if (active !== searchInput) {
+                e.preventDefault();
+                searchInput.focus();
+                searchInput.value += e.key;
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        } else if (e.key === 'Backspace' && active !== searchInput) {
+            e.preventDefault();
+            searchInput.focus();
+            if (searchInput.value.length > 0) {
+                searchInput.value = searchInput.value.slice(0, -1);
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
     });
 };

@@ -1,6 +1,6 @@
 import { normalizeType } from './lib/filter-logic.js';
 
-export let currentFilter = 'all';
+export const filterState = { current: 'all' };
 
 /**
  * Updates the visual state of filter buttons in the UI.
@@ -26,7 +26,7 @@ export const updateFilterUI = (activeType) => {
 };
 
 export const setFilter = (type) => {
-    currentFilter = type;
+    filterState.current = type;
     updateFilterUI(type);
     
     if (typeof window.refreshUI === 'function') window.refreshUI();

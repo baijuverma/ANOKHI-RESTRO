@@ -5,7 +5,7 @@ import { renderPOSGrid } from './widgets/pos-grid/ui.js';
 import { renderCartWidget } from './widgets/cart/ui.js';
 import { renderTableGrid as renderTableWidget } from './widgets/table-grid/ui.js';
 import { renderOrderTypeWidget } from './widgets/order-type/ui.js';
-import { setFilter, currentFilter } from './features/filter/model.js';
+import { setFilter, filterState } from './features/filter/model.js';
 import { setOrderType, currentOrderType } from './features/order-type/model.js';
 import { initKeyboardShortcuts } from './features/keyboard/model.js';
 import { syncLayoutVisibility } from './features/layout/model.js';
@@ -54,7 +54,7 @@ window.toggleTablesCurtain = () => {
 
 window.renderPOSItems = (search = '') => {
     const gridContainer = document.getElementById('pos-item-grid');
-    if (gridContainer) renderPOSGrid(gridContainer, search, currentFilter);
+    if (gridContainer) renderPOSGrid(gridContainer, search, filterState.current);
 };
 
 window.renderCart = () => {
