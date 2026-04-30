@@ -60,8 +60,10 @@ window.refreshUI = () => {
     const tableIndicator = document.getElementById('total-table-indicator');
     if (tableIndicator) {
         if (window.currentSelectedTable) {
-            const tableName = window.tables?.find(t => String(t.id) === String(window.currentSelectedTable))?.name || window.currentSelectedTable;
-            tableIndicator.textContent = `(${tableName})`;
+            // Find in global tables or fallback to ID
+            const found = (window.tables || []).find(t => String(t.id) === String(window.currentSelectedTable));
+            const name = found ? found.name : `Table ${window.currentSelectedTable}`;
+            tableIndicator.textContent = `(${name})`;
         } else {
             tableIndicator.textContent = '';
         }
