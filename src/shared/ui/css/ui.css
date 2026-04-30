@@ -5,6 +5,13 @@
     padding: 10px;
 }
 
+.table-grid-compact {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+    padding: 10px;
+}
+
 /* Atoms: Smallest Units */
 button { cursor: pointer; border: none; border-radius: 10px; transition: all 0.3s ease; }
 .btn-primary { background: var(--accent-color); color: white; padding: 10px 20px; }
@@ -74,8 +81,8 @@ input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0
 .table-card {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 16px;
+    border-radius: 12px;
+    padding: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -89,12 +96,12 @@ input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0
 .table-card.selected { 
     border-color: var(--accent-color) !important; 
     background: rgba(99, 102, 241, 0.25) !important; 
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
 }
 .table-card.occupied { background: rgba(239, 68, 68, 0.15); border-color: var(--danger-color); }
 
-.table-card .table-name { font-size: 18px; font-weight: 700; color: white; margin: auto 0; }
-.table-card .table-status { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5); }
+.table-card .table-name { font-size: 15px; font-weight: 700; color: white; margin: auto 0; }
+.table-card .table-status { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.4); }
 
 /* Logout Button (Atomic UI) */
 .modern-logout-btn {
