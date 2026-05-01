@@ -45,7 +45,7 @@ window.activeOrders = getLocalData('anokhi_active_orders', []);
 window.expensesHistory = getLocalData('anokhi_expenses', []);
 window.cart = window.cart || []; 
 window.selectedOrderType = 'DINE_IN';
-window.currentSelectedTable = null;
+window.currentSelectedTable = localStorage.getItem('anokhi_selected_table') || null;
 let inventoryTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
 let posTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
 window.tables = getLocalData('anokhi_tables', Array.from({length: 12}, (_, i) => ({
@@ -112,6 +112,7 @@ window.syncFromSupabase = async function() {
                 roundOff: o.round_off || 0,
                 customerName: o.customer_name,
                 customerMobile: o.customer_mobile,
+                tableName: o.table_name,
                 createdAt: o.created_at
             }));
             localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders));
@@ -636,6 +637,7 @@ async function saveData() {
                 round_off: o.roundOff,
                 customer_name: o.customerName,
                 customer_mobile: o.customer_mobile,
+                table_name: o.tableName,
                 created_at: o.createdAt
             })));
         }
@@ -2447,6 +2449,11 @@ window.importItems = function() {
 
 window.selectTable = function(id) {
     window.currentSelectedTable = id;
+    if (id) {
+        localStorage.setItem('anokhi_selected_table', id);
+    } else {
+        localStorage.removeItem('anokhi_selected_table');
+    }
     const table = (window.tables || []).find(t => String(t.id) === String(id));
     if (table) {
         // Sync cart with table's cart
