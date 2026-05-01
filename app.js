@@ -2434,23 +2434,23 @@ window.importItems = function() {
 
 
 /* Utility: Toast Notification */
-window.showToast = function(message, type = " success\) {
- let container = document.querySelector(.toast-container);
- if (!container) {
- container = document.createElement(\div\);
- container.className = \toast-container\;
- document.body.appendChild(container);
- }
+window.showToast = function(message, type = "success") {
+    let container = document.querySelector(".toast-container");
+    if (!container) {
+        container = document.createElement("div");
+        container.className = "toast-container";
+        document.body.appendChild(container);
+    }
 
- const toast = document.createElement(\div\);
- toast.className = `toast `;
- const icon = type === \success\ ? \fa-circle-check\ : \fa-circle-exclamation\;
- 
- toast.innerHTML = `<i class=\fa-solid \></i><span></span>`;
- container.appendChild(toast);
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+    const icon = type === "success" ? "fa-circle-check" : "fa-circle-exclamation";
+    
+    toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+    container.appendChild(toast);
 
- setTimeout(() => {
- toast.classList.add(\fade-out\);
- setTimeout(() => toast.remove(), 300);
- }, 3000);
+    setTimeout(() => {
+        toast.classList.add("fade-out");
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
