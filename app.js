@@ -1414,6 +1414,7 @@ window.renderActiveOrders = function() {
                 </div>
                 <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
                     ${order.items.length} items • <strong>${formatCurrency(order.total)}</strong>
+                    ${order.tableName ? `<span style="margin-left:8px; color:var(--accent-color); font-weight:700;">[${order.tableName}]</span>` : ''}
                 </div>
             </div>
             <div style="display:flex; gap:8px;">
@@ -2443,7 +2444,44 @@ window.importItems = function() {
 
 
 /* Utility: Toast Notification */
+
+window.selectTable = function(id) {
+    window.currentSelectedTable = id;
+    const table = (window.tables || []).find(t => String(t.id) === String(id));
+    if (table) {
+        // Sync cart with table's cart
+        if (typeof window.setCart === 'function') {
+            window.setCart(table.cart || []);
+        } else {
+            window.cart = table.cart || [];
+        }
+        
+        const tableNameEl = document.getElementById('current-table-name');
+        if (tableNameEl) tableNameEl.innerText = table.name;
+        
+        // Show advance if any
+        const advEl = document.getElementById('advance-paid-info');
+        const advVal = document.getElementById('cart-advance-paid');
+        if (advEl && advVal) {
+            if (table.advance > 0) {
+                advEl.style.display = 'flex';
+                advVal.innerText = formatCurrency(table.advance);
+            } else {
+                advEl.style.display = 'none';
+            }
+        }
+    }
+    
+    if (typeof window.refreshUI === 'function') {
+        window.refreshUI();
+    } else {
+        if (typeof renderTableGrid === 'function') renderTableGrid();
+        if (typeof renderCart === 'function') renderCart();
+    }
+};
+
 window.showToast = function(message, type = "success") {
+
     let container = document.querySelector(".toast-container");
     if (!container) {
         container = document.createElement("div");
