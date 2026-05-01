@@ -119,6 +119,9 @@ window.refreshUI = () => {
     // Refresh the Cart Widget
     window.renderCart();
 
+    // Refresh Active Takeaway Orders List
+    if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
+
     // -------------------------------------------------------------------------
     // SECTION-WISE MODULAR REFRESH (FSD WIDGETS)
     // -------------------------------------------------------------------------
@@ -202,6 +205,10 @@ const init = async () => {
 
     // Refresh UI initially
     window.refreshUI();
+
+    // Explicitly render active orders & update table indicator on page load
+    if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
+    if (typeof window.calculateTotal === 'function') window.calculateTotal();
 
     // Global Timer Tick (Updates all visible table timers every second)
     setInterval(() => {

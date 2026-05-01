@@ -1142,6 +1142,18 @@ window.calculateTotal = function() {
         
         if (typeof calculateDues === 'function') calculateDues();
         
+        // Update table indicator in total row
+        const tableIndicator = document.getElementById('total-table-indicator');
+        if (tableIndicator) {
+            if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
+                const tbl = (window.tables || []).find(t => t.id === window.currentSelectedTable);
+                const tblName = tbl ? tbl.name : window.currentSelectedTable;
+                tableIndicator.textContent = `(${tblName})`;
+            } else {
+                tableIndicator.textContent = '';
+            }
+        }
+
         return { subtotal, discount: discountAmount, advance: advancePaid, roundOff: roundOffVal, total: finalTotal };
     } catch (e) {
         console.error("Calculation Error:", e);
@@ -1169,6 +1181,12 @@ window.clearCart = function() {
     const upiIn = document.getElementById('pay-upi-amount');
     if(cashIn) cashIn.value = '';
     if(upiIn) upiIn.value = '';
+
+    // Refresh the Cart Widget
+    window.renderCart();
+
+    // Refresh Active Takeaway Orders List
+    if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
 
     // Reset editing state
     window.editingSaleId = null;
@@ -1293,6 +1311,13 @@ window.holdOrder = async function() {
         }
 
         const totals = window.calculateTotal();
+        // Get table name if DINE_IN
+        let tableName = null;
+        if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
+            const tbl = (window.tables || []).find(t => t.id === window.currentSelectedTable);
+            tableName = tbl ? tbl.name : window.currentSelectedTable;
+        }
+
         const newActiveOrder = {
             id: `ACT-${Date.now()}`,
             orderType: window.selectedOrderType,
@@ -1302,6 +1327,8 @@ window.holdOrder = async function() {
             roundOff: totals.roundOff || 0,
             customerName: document.getElementById('cust-name')?.value || null,
             customerMobile: document.getElementById('cust-mobile')?.value || null,
+            tableName: tableName,
+            tableId: window.currentSelectedTable || null,
             createdAt: new Date().toISOString()
         };
 
