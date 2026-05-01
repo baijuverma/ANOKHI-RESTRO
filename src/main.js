@@ -10,6 +10,10 @@ import { setFilter, filterState } from './features/filter/model.js';
 import { setOrderType, currentOrderType } from './features/order-type/model.js';
 import { initKeyboardShortcuts } from './features/keyboard/model.js';
 import { syncLayoutVisibility } from './features/layout/model.js';
+import { initExpensesLogic } from './features/expenses/model.js';
+
+// Initialize extracted legacy modules
+initExpensesLogic();
 import { renderInventoryTable } from './widgets/inventory-table/ui.js';
 import { renderSalesHistory } from './widgets/sales-history/ui.js';
 import { renderExpenseTable } from './widgets/expense-table/ui.js';
