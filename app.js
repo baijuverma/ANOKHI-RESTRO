@@ -1264,45 +1264,59 @@ window.completeCreditSale = function() {
 
 // Active Orders (Hold/Takeaway) Logic
 window.holdOrder = async function() {
-    if (cart.length === 0) return alert('Cart is empty!');
+    console.log("Hold Order Triggered. Cart Length:", cart.length);
     
-    // For Dine-In, we already have table-based persistence, but we can allow holding too
+    if (!cart || cart.length === 0) {
+        return alert('Cart is empty! Please add some items first.');
+    }
+    
+    // For Dine-In, we already have table-based persistence
     if (selectedOrderType === 'DINE_IN' && !currentSelectedTable) {
-        return alert('Please select a table to hold a Dine-In order.');
+        return alert('Please select a Table first or switch to Takeaway mode to hold this order.');
     }
 
-    const totals = calculateTotal();
-    const newActiveOrder = {
-        id: `ACT-${Date.now()}`,
-        orderType: selectedOrderType,
-        items: [...cart],
-        total: totals.total,
-        discount: totals.discount,
-        roundOff: totals.roundOff,
-        customerName: document.getElementById('cust-name')?.value || null,
-        customerMobile: document.getElementById('cust-mobile')?.value || null,
-        createdAt: new Date().toISOString()
-    };
+    try {
+        const totals = calculateTotal();
+        const newActiveOrder = {
+            id: `ACT-${Date.now()}`,
+            orderType: selectedOrderType,
+            items: JSON.parse(JSON.stringify(cart)), // Deep copy
+            total: totals.total,
+            discount: totals.discount || 0,
+            roundOff: totals.roundOff || 0,
+            customerName: document.getElementById('cust-name')?.value || null,
+            customerMobile: document.getElementById('cust-mobile')?.value || null,
+            createdAt: new Date().toISOString()
+        };
 
-    activeOrders.unshift(newActiveOrder);
-    
-    // If it was a Dine-In table, clear that table's cart
-    if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
-        const tIdx = tables.findIndex(t => t.id === currentSelectedTable);
-        if (tIdx > -1) {
-            tables[tIdx].cart = [];
-            tables[tIdx].advance = 0;
+        console.log("Saving Active Order:", newActiveOrder);
+        activeOrders.unshift(newActiveOrder);
+        
+        // If it was a Dine-In table, clear that table's cart
+        if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
+            const tIdx = tables.findIndex(t => t.id === currentSelectedTable);
+            if (tIdx > -1) {
+                tables[tIdx].cart = [];
+                tables[tIdx].advance = 0;
+            }
         }
-    }
 
-    await saveData();
-    clearCart();
-    currentSelectedTable = null;
-    document.getElementById('current-table-name').innerText = 'No Table Selected';
-    
-    if (typeof renderActiveOrders === 'function') renderActiveOrders();
-    if (typeof renderTableGrid === 'function') renderTableGrid();
-    alert('Order placed on Hold (Active Orders).');
+        await saveData();
+        clearCart();
+        
+        // Reset state
+        currentSelectedTable = null;
+        const tableNameEl = document.getElementById('current-table-name');
+        if (tableNameEl) tableNameEl.innerText = 'No Table Selected';
+        
+        if (typeof renderActiveOrders === 'function') renderActiveOrders();
+        if (typeof renderTableGrid === 'function') renderTableGrid();
+        
+        alert('Order Success: Order is now on Hold.');
+    } catch (error) {
+        console.error("Hold Order Error:", error);
+        alert('Error: Could not hold order. Check console for details.');
+    }
 };
 
 window.loadActiveOrder = async function(id) {
