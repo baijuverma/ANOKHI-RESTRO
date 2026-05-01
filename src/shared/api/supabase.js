@@ -17,3 +17,16 @@ export const getSupabase = () => {
     }
     return null;
 };
+export const subscribeToTable = (tableName, callback) => {
+    const db = getSupabase();
+    if (!db) return null;
+
+    const channel = db.channel(`public:${tableName}-changes`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: tableName }, (payload) => {
+            console.log(`Realtime change in ${tableName}:`, payload);
+            callback(payload);
+        })
+        .subscribe();
+
+    return channel;
+};

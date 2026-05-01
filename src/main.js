@@ -1,5 +1,6 @@
 import { syncInventory } from './entities/inventory/model.js';
 import { syncTables } from './entities/table/model.js';
+import { getSupabase, subscribeToTable } from './shared/api/supabase.js';
 import { addToCart, updateCartQty, reduceLastItemQty, cart } from './features/cart/model.js';
 import { renderPOSGrid } from './widgets/pos-grid/ui.js';
 import { renderCartWidget } from './widgets/cart/ui.js';
@@ -13,14 +14,15 @@ import { renderInventoryTable } from './widgets/inventory-table/ui.js';
 import { renderSalesHistory } from './widgets/sales-history/ui.js';
 import { renderExpenseTable } from './widgets/expense-table/ui.js';
 import { renderDashboardStats } from './widgets/dashboard-stats/ui.js';
+import { initSettingsWidgets } from './widgets/settings-cards/ui.js';
 
 
 // Global exports for HTML compatibility (Legacy support)
 window.addToCart = addToCart;
 window.updateCartQty = updateCartQty;
-window.logout = logout;
 window.setPOSFilter = setFilter;
 window.setOrderType = setOrderType;
+window.initSettingsView = initSettingsWidgets;
 
 window.renderTableGrid = () => {
     renderTableWidget('pos-tables-container', window.currentSelectedTable, (id) => {
@@ -143,6 +145,35 @@ window.refreshUI = () => {
     });
 };
 
+const initRealtime = () => {
+    console.log('Initializing Supabase Realtime (WebSockets)...');
+    
+    // 1. Sync Inventory on changes
+    subscribeToTable('inventory', async () => {
+        console.log('Realtime Update: Inventory');
+        await syncInventory();
+        window.refreshUI();
+    });
+
+    // 2. Sync Tables on changes
+    subscribeToTable('tables', async () => {
+        console.log('Realtime Update: Tables');
+        await syncTables();
+        window.refreshUI();
+    });
+
+    // 3. Sync Sales History & Expenses on changes
+    ['sales_history', 'expenses'].forEach(table => {
+        subscribeToTable(table, async () => {
+            console.log(`Realtime Update: ${table}`);
+            if (typeof window.syncFromSupabase === 'function') {
+                await window.syncFromSupabase();
+                window.refreshUI();
+            }
+        });
+    });
+};
+
 const init = async () => {
     console.log('Anokhi Restro: Hybrid FSD + Atomic Refactor Active');
     
@@ -181,6 +212,12 @@ const init = async () => {
 
     // Initialize Keyboard Shortcuts (FSD)
     initKeyboardShortcuts();
+
+    // Initialize Settings Widgets (FSD)
+    initSettingsWidgets();
+
+    // Initialize Realtime Sync (WebSockets)
+    initRealtime();
 
     // Event Listeners for Search moved to app.js or handled via input event
 };
