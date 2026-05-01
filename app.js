@@ -1382,6 +1382,23 @@ window.loadActiveOrder = async function(id) {
     }
     window.selectedOrderType = order.orderType;
     
+    // Restore Table Selection if applicable
+    if (order.tableId) {
+        window.currentSelectedTable = order.tableId;
+        localStorage.setItem('anokhi_selected_table', order.tableId);
+        
+        // Update table's own cart so it doesn't stay empty
+        const allTables = window.tables || [];
+        const tIdx = allTables.findIndex(t => t.id === order.tableId);
+        if (tIdx > -1) {
+            allTables[tIdx].cart = JSON.parse(JSON.stringify(newCart));
+            localStorage.setItem('anokhi_tables', JSON.stringify(allTables));
+        }
+    } else {
+        window.currentSelectedTable = null;
+        localStorage.removeItem('anokhi_selected_table');
+    }
+    
     // Update UI for order type
     const btnClass = order.orderType === 'DINE_IN' ? 'DINE_IN' : (order.orderType === 'TAKEAWAY' ? 'TAKEAWAY' : 'QUICK');
     const targetBtn = document.querySelector(`.order-type-btn[onclick*="${btnClass}"]`);
@@ -1396,8 +1413,14 @@ window.loadActiveOrder = async function(id) {
     // Explicitly delete from Supabase to ensure clean removal
     if (db) await db.from('active_orders').delete().eq('id', id);
 
-    if (typeof renderCart === 'function') renderCart();
-    if (typeof renderActiveOrders === 'function') renderActiveOrders();
+    if (typeof window.refreshUI === 'function') {
+        window.refreshUI();
+    } else {
+        if (typeof renderCart === 'function') renderCart();
+        if (typeof renderActiveOrders === 'function') renderActiveOrders();
+    }
+    
+    if (typeof window.calculateTotal === 'function') window.calculateTotal();
     console.log('Order loaded from Hold.');
 };
 
