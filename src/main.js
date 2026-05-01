@@ -1,3 +1,12 @@
+import { initCoreLogic } from './shared/lib/core/legacy.model.js';
+import { initSupabaseLogic } from './shared/lib/supabase/legacy.model.js';
+import { initAuthLogic } from './features/auth/legacy.model.js';
+import { initInventoryLogic } from './features/inventory/legacy.model.js';
+import { initPosLogic } from './features/pos/legacy.model.js';
+import { initHistoryLogic } from './features/history/legacy.model.js';
+import { initSettingsLogic } from './features/settings/legacy.model.js';
+import { initReceiptLogic } from './features/receipt/legacy.model.js';
+
 import { syncInventory } from './entities/inventory/model.js';
 import { syncTables } from './entities/table/model.js';
 import { getSupabase, subscribeToTable } from './shared/api/supabase.js';
@@ -13,6 +22,15 @@ import { syncLayoutVisibility } from './features/layout/model.js';
 import { initExpensesLogic } from './features/expenses/model.js';
 
 // Initialize extracted legacy modules
+initCoreLogic();
+initSupabaseLogic();
+initAuthLogic();
+initInventoryLogic();
+initPosLogic();
+initHistoryLogic();
+initSettingsLogic();
+initReceiptLogic();
+
 initExpensesLogic();
 import { renderInventoryTable } from './widgets/inventory-table/ui.js';
 import { renderSalesHistory } from './widgets/sales-history/ui.js';
