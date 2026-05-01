@@ -27,6 +27,9 @@ import { setFilter, filterState } from './features/filter/model.js';
 import { setOrderType }      from './features/order-type/model.js';
 import { syncLayoutVisibility } from './features/layout/model.js';
 import { addToCart, updateCartQty, reduceLastItemQty, cart, setCart } from './features/cart/model.js';
+import { initDashboardLogic } from './features/dashboard/model.js';
+import { initTablesLogic } from './features/tables/model.js';
+import { initNotificationsLogic } from './features/notifications/model.js';
 
 // ── Layer 4: Widgets (UI renderers) ─────────────────────────
 import { renderPOSGrid }         from './widgets/pos-grid/ui.js';
@@ -38,6 +41,7 @@ import { renderSalesHistory }    from './widgets/sales-history/ui.js';
 import { renderExpenseTable }    from './widgets/expense-table/ui.js';
 import { renderDashboardStats }  from './widgets/dashboard-stats/ui.js';
 import { initSettingsWidgets }   from './widgets/settings-cards/ui.js';
+import { initSidebar } from './widgets/sidebar/ui.js';
 
 // ── Shared API ───────────────────────────────────────────────
 import { getSupabase, subscribeToTable } from './shared/api/supabase.js';
@@ -60,6 +64,12 @@ initHistoryLogic();
 initExpensesLogic();
 initSettingsLogic();
 initReceiptLogic();
+initDashboardLogic();
+initTablesLogic();
+initNotificationsLogic();
+
+// 4. Widget Logic
+initSidebar();
 
 // 4. Boot logic (depends on all features being ready)
 initBoot();

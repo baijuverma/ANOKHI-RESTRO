@@ -1,0 +1,25 @@
+/* Widget: Order Type Selector */
+.order-type-container {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.order-type-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+.order-type-btn.active,
+.order-type-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: rgba(99, 102, 241, 0.1);
+}

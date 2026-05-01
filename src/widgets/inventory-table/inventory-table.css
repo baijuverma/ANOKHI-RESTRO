@@ -1,0 +1,21 @@
+/* Widget: Inventory Table */
+#inventory-tbody tr {
+    transition: background 0.2s ease;
+}
+#inventory-tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+#inventory-tbody td {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.stock-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.stock-badge.in-stock { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.stock-badge.low-stock { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.stock-badge.out-of-stock { background: rgba(239, 68, 68, 0.15); color: #ef4444; }

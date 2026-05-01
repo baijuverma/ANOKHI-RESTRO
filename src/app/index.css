@@ -11,17 +11,34 @@
 @import '../shared/ui/css/forms.css';
 @import '../shared/ui/css/tables.css';
 @import '../shared/ui/css/utilities.css';
+@import '../shared/ui/css/ui.css';
 
 /* Layer 2: Widgets */
 @import '../widgets/sidebar/sidebar.css';
 @import '../widgets/dashboard-stats/stats.css';
 @import '../widgets/table-grid/tables.css';
 @import '../widgets/cart/cart.css';
+@import '../widgets/expense-table/expense-table.css';
+@import '../widgets/inventory-table/inventory-table.css';
+@import '../widgets/order-type/order-type.css';
+@import '../widgets/pos-grid/pos-grid.css';
+@import '../widgets/sales-history/sales-history.css';
+@import '../widgets/settings-cards/settings-cards.css';
 
 /* Layer 3: Features */
+@import '../features/auth/login.css';
 @import '../features/pos/pos.css';
 @import '../features/history/calendar.css';
+@import '../features/history/history.css';
+@import '../features/dashboard/dashboard.css';
+@import '../features/expenses/expenses.css';
+@import '../features/inventory/inventory.css';
+@import '../features/receipt/receipt.css';
+@import '../features/settings/settings.css';
 @import '../features/notifications/toast.css';
+@import '../features/product-grid/grid.css';
+@import '../features/billing-panel/billing.css';
+@import '../features/tables/tables.css';
 
 /* Layer 4: Responsive (must be last to override) */
 @import '../shared/ui/css/responsive.css';

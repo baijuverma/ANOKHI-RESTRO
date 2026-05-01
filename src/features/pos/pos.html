@@ -1,0 +1,29 @@
+<!-- Feature: POS Billing Panel -->
+<section id="pos" class="view-section hidden">
+    <div class="pos-container">
+        <!-- Left: Product Grid -->
+        <div class="pos-left-panel">
+            <div id="order-type-container"></div>
+            <div id="tables-curtain-area">
+                <div id="pos-tables-container"></div>
+                <button class="curtain-toggle" onclick="toggleTablesCurtain()">
+                    <i id="tables-curtain-icon" class="fa-solid fa-chevron-up"></i>
+                </button>
+            </div>
+            <div class="pos-search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="pos-search" placeholder="Search items (type anywhere)..." autocomplete="off">
+            </div>
+            <div class="pos-filter-row">
+                <button class="filter-chip active" onclick="setFilter('all', this)">All</button>
+                <button class="filter-chip" onclick="setFilter('veg', this)">&#9632; Veg</button>
+                <button class="filter-chip" onclick="setFilter('nonveg', this)">&#9632; Non-Veg</button>
+            </div>
+            <div id="pos-item-grid" class="pos-item-grid"></div>
+        </div>
+        <!-- Right: Cart -->
+        <div class="pos-right-panel">
+            <!-- Cart content rendered by cart widget -->
+        </div>
+    </div>
+</section>
