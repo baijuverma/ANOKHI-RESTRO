@@ -1,11 +1,11 @@
 import { adjustTableCount, saveTableSettings, importDefaultMenu } from '../../features/settings/model.js';
-import { tables } from '../../entities/table/model.js';
 
 export const renderTableConfig = (containerId) => {
     const container = document.getElementById(containerId);
     if (!container) return;
     
     const count = (window.tables && window.tables.length) || 12;
+    console.log('Rendering Table Config with count:', count);
 
     container.innerHTML = `
         <h2 class="settings-title"><i class="fa-solid fa-chair"></i> Table Configuration</h2>
@@ -39,16 +39,15 @@ export const renderDataManagement = (containerId) => {
 
 export const initSettingsWidgets = () => {
     try {
-        console.log('Initializing Settings Widgets...');
-        // Global exports for legacy onclick support
+        console.log('initSettingsWidgets() — Rendering cards...');
+        // Ensure functions are global
         window.adjustTableCount = adjustTableCount;
         window.saveSettings = saveTableSettings;
         window.importItems = importDefaultMenu;
         
-        // Render widgets if containers exist
         renderTableConfig('table-config-widget');
         renderDataManagement('data-management-widget');
     } catch (error) {
-        console.error('Error initializing settings widgets:', error);
+        console.error('Error in initSettingsWidgets:', error);
     }
 };

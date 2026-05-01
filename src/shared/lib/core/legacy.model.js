@@ -12,7 +12,6 @@ window.renderTableGrid = window.renderTableGrid || function() {};
 window.renderExpenses = window.renderExpenses || function() {};
 window.updateDashboard = window.updateDashboard || function() {};
 window.updateExpenseStats = window.updateExpenseStats || function() {};
-window.initSettingsView = window.initSettingsView || function() {};
 
 // Safe Storage Helper
 function getLocalData(key, defaultVal) {
