@@ -123,6 +123,8 @@ window.showView = function(targetId) {
     const views = document.querySelectorAll('.view-section');
     const navItems = document.querySelectorAll('.nav-item');
     
+    console.log('Switching to view:', targetId);
+
     // Hide all views
     views.forEach(v => {
         v.classList.remove('active');
@@ -134,6 +136,9 @@ window.showView = function(targetId) {
     if (targetView) {
         targetView.classList.add('active');
         targetView.classList.remove('hidden');
+        console.log('View activated:', targetId);
+    } else {
+        console.warn('Target view not found:', targetId);
     }
     
     // Update active nav
@@ -145,10 +150,10 @@ window.showView = function(targetId) {
     });
 
     // Refresh view specific data
-    if(targetId === 'dashboard') updateDashboard();
-    if(targetId === 'inventory') renderInventory();
-    if(targetId === 'pos') renderPOSItems();
-    if(targetId === 'history') renderHistory();
+    if(targetId === 'dashboard' && typeof updateDashboard === 'function') updateDashboard();
+    if(targetId === 'inventory' && typeof renderInventory === 'function') renderInventory();
+    if(targetId === 'pos' && typeof renderPOSItems === 'function') renderPOSItems();
+    if(targetId === 'history' && typeof renderHistory === 'function') renderHistory();
     if(targetId === 'expenses') {
         if (typeof renderExpenses === 'function') renderExpenses();
         if (typeof updateExpenseStats === 'function') updateExpenseStats();
@@ -159,12 +164,14 @@ window.showView = function(targetId) {
 }
 
 window.checkLogin = function() {
+    console.log('Login attempt started...');
     const pwdInput = document.getElementById('login-password');
     const pwd = pwdInput ? pwdInput.value : '';
     const storedPwd = localStorage.getItem('anokhi_admin_pwd');
     
     // Allow stored password OR default 8540
     if (pwd === storedPwd || pwd === '8540' || (!storedPwd && pwd === '8540')) {
+        console.log('Password matched. Unlocking...');
         const loginScreen = document.getElementById('login-screen');
         if (loginScreen) {
             loginScreen.classList.add('hide');
@@ -175,13 +182,11 @@ window.checkLogin = function() {
         }
         
         showView('dashboard');
-        console.log('Login successful');
     } else {
-        pwdInput.parentElement.classList.add('shake');
-        setTimeout(() => pwdInput.parentElement.classList.remove('shake'), 500);
-        
-        console.warn('Incorrect password entered.');
+        console.warn('Incorrect password attempt.');
         if (pwdInput) {
+            pwdInput.parentElement.classList.add('shake');
+            setTimeout(() => pwdInput.parentElement.classList.remove('shake'), 500);
             pwdInput.value = '';
             pwdInput.focus();
         }
@@ -1893,34 +1898,7 @@ window.filterInventoryByType = function(type) {
 
 // POS Filter logic moved to main.js
 
-window.showView = function(target) {
-    // Show target view
-    views.forEach(v => {
-        v.classList.remove('active');
-        if(v.id === target) {
-            v.classList.add('active');
-        }
-    });
 
-    // Update active nav in sidebar
-    navItems.forEach(item => {
-        item.classList.remove('active');
-        if(item.getAttribute('data-target') === target) {
-            item.classList.add('active');
-        }
-    });
-
-    // Refresh view specific data safely
-    if(target === 'dashboard' && typeof updateDashboard === 'function') updateDashboard();
-    if(target === 'inventory' && typeof renderInventory === 'function') renderInventory();
-    if(target === 'pos' && typeof renderPOSItems === 'function') renderPOSItems();
-    if(target === 'history' && typeof renderHistory === 'function') renderHistory();
-    if(target === 'expenses') {
-        if (typeof renderExpenses === 'function') renderExpenses();
-        if (typeof updateExpenseStats === 'function') updateExpenseStats();
-    }
-    if(target === 'settings' && typeof initSettingsView === 'function') initSettingsView();
-}
 
 window.toggleSidebar = function() {
     const sidebar = document.querySelector('.sidebar');
@@ -1979,8 +1957,8 @@ window.editSale = function(id) {
     if (typeof renderPOSItems === 'function') renderPOSItems(); 
 }
 
-// Global Keyboard Shortcuts
-$(document).on('_disabled_keydown', function (e) {
+// Global Keyboard Shortcuts (Vanilla JS)
+document.addEventListener('keydown', function (e) {
     // Close Receipt Modal with Enter or Escape
     const receiptModal = document.getElementById('receiptModal');
     if (receiptModal && receiptModal.classList.contains('active')) {
