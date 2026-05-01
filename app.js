@@ -39,23 +39,22 @@ function getLocalData(key, defaultVal) {
 }
 
 // Data Structures (Initialized with local cache, will be updated from Supabase)
-let inventory = getLocalData('anokhi_inventory', []);
-let salesHistory = getLocalData('anokhi_sales', []);
-let activeOrders = getLocalData('anokhi_active_orders', []);
-let expensesHistory = getLocalData('anokhi_expenses', []);
-let cart = window.cart || []; window.cart = cart;
+window.inventory = getLocalData('anokhi_inventory', []);
+window.salesHistory = getLocalData('anokhi_sales', []);
+window.activeOrders = getLocalData('anokhi_active_orders', []);
+window.expensesHistory = getLocalData('anokhi_expenses', []);
+window.cart = window.cart || []; 
 window.selectedOrderType = 'DINE_IN';
 window.currentSelectedTable = null;
 let inventoryTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
 let posTypeFilter = 'all'; // 'all' | 'veg' | 'nonveg'
-let tables = getLocalData('anokhi_tables', Array.from({length: 12}, (_, i) => ({
+window.tables = getLocalData('anokhi_tables', Array.from({length: 12}, (_, i) => ({
     id: `T${i+1}`,
     name: `Table ${i+1}`,
     cart: [],
     advance: 0,
     advanceMode: 'CASH'
 })));
-window.tables = tables;
 
 let editingSaleId = null;
 let previousPaidAmount = 0;
@@ -1330,15 +1329,16 @@ window.holdOrder = async function() {
 };
 
 window.loadActiveOrder = async function(id) {
-    const order = activeOrders.find(o => o.id === id);
+    const orders = window.activeOrders || [];
+    const order = orders.find(o => o.id === id);
     if (!order) return;
 
-    if (cart.length > 0) {
+    if (window.cart && window.cart.length > 0) {
         if (!confirm('Cart has items. Replace with this active order?')) return;
     }
 
-    cart = [...order.items];
-    selectedOrderType = order.orderType;
+    window.cart = JSON.parse(JSON.stringify(order.items));
+    window.selectedOrderType = order.orderType;
     
     // Update UI for order type
     const btnClass = order.orderType === 'DINE_IN' ? 'DINE_IN' : (order.orderType === 'TAKEAWAY' ? 'TAKEAWAY' : 'QUICK');
@@ -1346,14 +1346,15 @@ window.loadActiveOrder = async function(id) {
     if (targetBtn && typeof setOrderType === 'function') setOrderType(order.orderType, targetBtn);
 
     // Remove from active orders
-    activeOrders = activeOrders.filter(o => o.id !== id);
+    window.activeOrders = orders.filter(o => o.id !== id);
+    localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders));
     
-    await saveData();
+    saveData().catch(e => console.warn("Sync failed after load:", e));
     
     // Explicitly delete from Supabase to ensure clean removal
     if (db) await db.from('active_orders').delete().eq('id', id);
 
-    renderCart();
+    if (typeof renderCart === 'function') renderCart();
     if (typeof renderActiveOrders === 'function') renderActiveOrders();
     console.log('Order loaded from Hold.');
 };
@@ -1361,8 +1362,10 @@ window.loadActiveOrder = async function(id) {
 window.deleteActiveOrder = async function(id) {
     if (!confirm('Are you sure you want to delete this pending order?')) return;
     
-    activeOrders = activeOrders.filter(o => o.id !== id);
-    await saveData();
+    window.activeOrders = (window.activeOrders || []).filter(o => o.id !== id);
+    localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders));
+    
+    saveData().catch(e => console.warn("Sync failed after delete:", e));
     if (db) await db.from('active_orders').delete().eq('id', id);
     
     if (typeof renderActiveOrders === 'function') renderActiveOrders();
@@ -1373,16 +1376,18 @@ window.renderActiveOrders = function() {
     if (!container) return;
     container.innerHTML = '';
 
-    if (activeOrders.length === 0) {
+    const orders = window.activeOrders || [];
+
+    if (orders.length === 0) {
         container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary); font-size:12px;">No pending takeaway orders.</div>';
         return;
     }
 
-    activeOrders.forEach(order => {
+    orders.forEach(order => {
         const card = document.createElement('div');
         card.className = 'active-order-card glass-panel';
         card.style.cssText = 'margin-bottom:10px; padding:12px; border-left:3px solid var(--accent-color); display:flex; justify-content:space-between; align-items:center; cursor:pointer;';
-        card.onclick = () => loadActiveOrder(order.id);
+        card.onclick = () => window.loadActiveOrder(order.id);
         
         const timeStr = new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         const typeIcon = order.orderType === 'TAKEAWAY' ? 'fa-bag-shopping' : 'fa-bolt';
@@ -1399,7 +1404,7 @@ window.renderActiveOrders = function() {
                 </div>
             </div>
             <div style="display:flex; gap:8px;">
-                <button class="action-btn" style="color:var(--danger-color); font-size:12px;" onclick="event.stopPropagation(); deleteActiveOrder('${order.id}')">
+                <button class="action-btn" style="color:var(--danger-color); font-size:12px;" onclick="event.stopPropagation(); window.deleteActiveOrder('${order.id}')">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
