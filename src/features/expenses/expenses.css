@@ -1,0 +1,32 @@
+
+.expenses-wrapper {
+    padding: 30px;
+}
+
+.expenses-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.expense-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.mini-stat-card {
+    padding: 20px;
+    text-align: center;
+}
+
+.mini-stat-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.mini-stat-card h3 {
+    font-size: 20px;
+    color: var(--danger-color);
+}

@@ -1,0 +1,55 @@
+
+.receipt-paper {
+    background: white;
+    color: black;
+    padding: 30px;
+    width: 300px;
+    margin: 0 auto;
+    font-family: 'Courier New', Courier, monospace;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.receipt-header {
+    text-align: center;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.receipt-header h2 { font-size: 20px; margin: 0; }
+.receipt-header p { font-size: 12px; margin: 2px 0; }
+
+.receipt-info {
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.receipt-items table {
+    width: 100%;
+    font-size: 13px;
+    border-bottom: 1px dashed #ccc;
+    margin-bottom: 15px;
+}
+
+.receipt-totals {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.receipt-totals .row.grand {
+    font-weight: 800;
+    font-size: 16px;
+    border-top: 1px double black;
+    padding-top: 5px;
+}
+
+.receipt-footer {
+    text-align: center;
+    font-size: 12px;
+}
+
+@media print {
+    body * { visibility: hidden; }
+    #printable-receipt, #printable-receipt * { visibility: visible; }
+    #printable-receipt { position: absolute; left: 0; top: 0; width: 100%; }
+}

@@ -1,0 +1,30 @@
+
+<div class="settings-wrapper">
+    <div class="settings-header">
+        <h2><i class="fa-solid fa-gears"></i> System Settings</h2>
+    </div>
+
+    <div class="settings-grid mt-6">
+        <div class="settings-card glass-panel">
+            <div class="card-icon"><i class="fa-solid fa-couch"></i></div>
+            <h3>Table Configuration</h3>
+            <p>Manage the number of tables in your restaurant.</p>
+            <div class="counter-control mt-4">
+                <button onclick="adjustTableCount(-1)">-</button>
+                <input type="number" id="setting-table-count" value="10" readonly>
+                <button onclick="adjustTableCount(1)">+</button>
+            </div>
+            <button class="btn-success full-width mt-4" onclick="saveSettings()">Apply Changes</button>
+        </div>
+
+        <div class="settings-card glass-panel">
+            <div class="card-icon"><i class="fa-solid fa-database"></i></div>
+            <h3>Data Management</h3>
+            <p>Export your sales and inventory data or reset system.</p>
+            <div class="action-buttons mt-4">
+                <button class="btn-secondary full-width" onclick="exportData()"><i class="fa-solid fa-download"></i> Export JSON</button>
+                <button class="btn-danger full-width mt-2" onclick="clearAllData()"><i class="fa-solid fa-triangle-exclamation"></i> Factory Reset</button>
+            </div>
+        </div>
+    </div>
+</div>

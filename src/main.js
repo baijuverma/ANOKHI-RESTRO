@@ -1,34 +1,92 @@
+// ============================================================
+// src/main.js — Module Orchestrator
+// Imports and initializes all FSD layer modules in correct order
+// ============================================================
+
+// ── Layer 0: App Bootstrap (State + DB must load first) ──────
+import './app/store.js';                               // Global state & Supabase DB init
+import { initBoot } from './app/boot.js';              // DOMContentLoaded logic
+
+// ── Layer 1: Shared Utilities ────────────────────────────────
+import { initCoreLogic }     from './shared/lib/core/legacy.model.js';    // formatCurrency, getDDMMYYYY, etc.
+import { initSupabaseLogic } from './shared/lib/supabase/legacy.model.js'; // syncFromSupabase, saveData, setupRealtime
+
+// ── Layer 2: Entities (pure data/model) ─────────────────────
 import { syncInventory } from './entities/inventory/model.js';
-import { syncTables } from './entities/table/model.js';
-import { getSupabase, subscribeToTable } from './shared/api/supabase.js';
-import { addToCart, updateCartQty, reduceLastItemQty, cart } from './features/cart/model.js';
-import { renderPOSGrid } from './widgets/pos-grid/ui.js';
-import { renderCartWidget } from './widgets/cart/ui.js';
+import { syncTables }    from './entities/table/model.js';
+
+// ── Layer 3: Features (business logic) ──────────────────────
+import { initAuthLogic }     from './features/auth/legacy.model.js';
+import { initInventoryLogic} from './features/inventory/legacy.model.js';
+import { initPosLogic }      from './features/pos/legacy.model.js';
+import { initHistoryLogic }  from './features/history/legacy.model.js';
+import { initExpensesLogic } from './features/expenses/model.js';
+import { initSettingsLogic } from './features/settings/legacy.model.js';
+import { initReceiptLogic }  from './features/receipt/legacy.model.js';
+import { setFilter, filterState } from './features/filter/model.js';
+import { setOrderType }      from './features/order-type/model.js';
+import { syncLayoutVisibility } from './features/layout/model.js';
+import { addToCart, updateCartQty, reduceLastItemQty, cart, setCart } from './features/cart/model.js';
+import { initDashboardLogic } from './features/dashboard/model.js';
+import { initTablesLogic } from './features/tables/model.js';
+import { initNotificationsLogic } from './features/notifications/model.js';
+
+// ── Layer 4: Widgets (UI renderers) ─────────────────────────
+import { renderPOSGrid }         from './widgets/pos-grid/ui.js';
+import { renderCartWidget }      from './widgets/cart/ui.js';
 import { renderTableGrid as renderTableWidget } from './widgets/table-grid/ui.js';
 import { renderOrderTypeWidget } from './widgets/order-type/ui.js';
-import { setFilter, filterState } from './features/filter/model.js';
-import { setOrderType, currentOrderType } from './features/order-type/model.js';
-import { initKeyboardShortcuts } from './features/keyboard/model.js';
-import { syncLayoutVisibility } from './features/layout/model.js';
-import { renderInventoryTable } from './widgets/inventory-table/ui.js';
-import { renderSalesHistory } from './widgets/sales-history/ui.js';
-import { renderExpenseTable } from './widgets/expense-table/ui.js';
-import { renderDashboardStats } from './widgets/dashboard-stats/ui.js';
-import { initSettingsWidgets } from './widgets/settings-cards/ui.js';
+import { renderInventoryTable }  from './widgets/inventory-table/ui.js';
+import { renderSalesHistory }    from './widgets/sales-history/ui.js';
+import { renderExpenseTable }    from './widgets/expense-table/ui.js';
+import { renderDashboardStats }  from './widgets/dashboard-stats/ui.js';
+import { initSettingsWidgets }   from './widgets/settings-cards/ui.js';
+import { initSidebar } from './widgets/sidebar/ui.js';
 
+// ── Shared API ───────────────────────────────────────────────
+import { getSupabase, subscribeToTable } from './shared/api/supabase.js';
 
-// Global exports for HTML compatibility (Legacy support)
-window.addToCart = addToCart;
-window.updateCartQty = updateCartQty;
-window.setPOSFilter = setFilter;
-window.setOrderType = setOrderType;
-window.initSettingsView = initSettingsWidgets;
+// ============================================================
+// INITIALIZATION ORDER (sequence matters!)
+// ============================================================
+
+// 1. Core utilities (must be available before anything else)
+initCoreLogic();
+
+// 2. Database sync logic
+initSupabaseLogic();
+
+// 3. Feature logic (depends on core + db)
+initAuthLogic();
+initInventoryLogic();
+initPosLogic();
+initHistoryLogic();
+initExpensesLogic();
+initSettingsLogic();
+initReceiptLogic();
+initDashboardLogic();
+initTablesLogic();
+initNotificationsLogic();
+
+// 4. Widget Logic
+initSidebar();
+
+// 4. Boot logic (depends on all features being ready)
+initBoot();
+
+// ============================================================
+// WINDOW BRIDGE — Expose FSD functions to legacy HTML onclick=""
+// ============================================================
+
+window.addToCart      = addToCart;
+window.updateCartQty  = updateCartQty;
+window.setCart        = setCart;
 
 window.renderTableGrid = () => {
     renderTableWidget('pos-tables-container', window.currentSelectedTable, (id) => {
         window.currentSelectedTable = id;
         if (typeof window.selectTable === 'function') {
-            window.selectTable(id); // Call legacy to sync other UI parts
+            window.selectTable(id);
         } else {
             window.refreshUI();
         }
@@ -41,16 +99,12 @@ window.renderOrderType = () => {
 
 window.toggleTablesCurtain = () => {
     const wrapper = document.getElementById('tables-curtain-area');
-    const icon = document.getElementById('tables-curtain-icon');
+    const icon    = document.getElementById('tables-curtain-icon');
     if (!wrapper || !icon) return;
-
-    if (wrapper.classList.contains('tables-collapsed')) {
-        wrapper.classList.remove('tables-collapsed');
-        wrapper.classList.add('tables-expanded');
+    wrapper.classList.toggle('curtain-collapsed');
+    if (wrapper.classList.contains('curtain-collapsed')) {
         icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
     } else {
-        wrapper.classList.remove('tables-expanded');
-        wrapper.classList.add('tables-collapsed');
         icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
     }
 };
@@ -65,17 +119,15 @@ window.renderCart = () => {
 };
 
 window.toggleCartDetails = () => {
-    const cartContainer = document.querySelector('.cart-items-container');
+    const cartContainer  = document.querySelector('.cart-items-container');
     const detailsCurtain = document.getElementById('cart-details-curtain');
-    const roundOffRow = document.getElementById('round-off-row');
-    const toggleBtn = document.querySelector('.curtain-toggle');
-    const icon = document.getElementById('curtain-icon');
+    const roundOffRow    = document.getElementById('round-off-row');
+    const toggleBtn      = document.querySelector('.curtain-toggle');
+    const icon           = document.getElementById('curtain-icon');
 
     if (cartContainer && detailsCurtain) {
         cartContainer.classList.toggle('expanded');
         detailsCurtain.classList.toggle('hidden-details');
-        
-        // Forcefully hide Round Off row using master class
         if (roundOffRow) {
             if (cartContainer.classList.contains('expanded')) {
                 roundOffRow.classList.add('hide-completely');
@@ -83,10 +135,7 @@ window.toggleCartDetails = () => {
                 roundOffRow.classList.remove('hide-completely');
             }
         }
-
         if (toggleBtn) toggleBtn.classList.toggle('active');
-        
-        // Toggle icon class for rotation
         if (icon) {
             if (cartContainer.classList.contains('expanded')) {
                 icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
@@ -97,75 +146,49 @@ window.toggleCartDetails = () => {
     }
 };
 
+window.initSettingsView = initSettingsWidgets;
+
 window.refreshUI = () => {
     const gridContainer = document.getElementById('pos-item-grid');
-    const searchVal = document.getElementById('pos-search')?.value || '';
+    const searchVal     = document.getElementById('pos-search')?.value || '';
     if (gridContainer) renderPOSGrid(gridContainer, searchVal, filterState.current);
-    
-    // Refresh the table selection highlight if legacy exists
+
     if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
-
-    // Refresh Order Type Widget
     window.renderOrderType();
-
-    // FSD Layout Sync: Handle visibility of Tables, Arrow, and Table Name
     syncLayoutVisibility(window.selectedOrderType, window.currentSelectedTable);
-
-    // Refresh the Cart Widget
     window.renderCart();
 
-    // -------------------------------------------------------------------------
-    // SECTION-WISE MODULAR REFRESH (FSD WIDGETS)
-    // -------------------------------------------------------------------------
+    if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
 
-    // 1. Refresh Inventory Section
-    if (window.inventory) {
-        renderInventoryTable('inventory-tbody', window.inventory);
-    }
+    if (window.inventory)        renderInventoryTable('inventory-tbody', window.inventory);
+    if (window.salesHistory)     renderSalesHistory('sales-tbody', window.salesHistory);
+    if (window.expensesHistory)  renderExpenseTable('expenses-tbody', window.expensesHistory);
 
-    // 2. Refresh Sales History Section
-    if (window.sales) {
-        renderSalesHistory('sales-tbody', window.sales);
-    }
+    const totalSale    = (window.salesHistory    || []).reduce((a, c) => a + (parseFloat(c.total)  || 0), 0);
+    const totalExpense = (window.expensesHistory || []).reduce((a, c) => a + (parseFloat(c.amount) || 0), 0);
+    const totalOrders  = (window.salesHistory    || []).length;
 
-    // 3. Refresh Expenses Section
-    if (window.expenses) {
-        renderExpenseTable('expenses-tbody', window.expenses);
-    }
-
-    // 4. Refresh Dashboard Stats
-    const totalSale = (window.sales || []).reduce((acc, curr) => acc + (parseFloat(curr.total) || 0), 0);
-    const totalExpense = (window.expenses || []).reduce((acc, curr) => acc + (parseFloat(curr.amount) || 0), 0);
-    const totalOrders = (window.sales || []).length;
-    
-    renderDashboardStats({ 
-        totalSale: totalSale.toFixed(2), 
+    renderDashboardStats({
+        totalSale:    totalSale.toFixed(2),
         totalExpense: totalExpense.toFixed(2),
-        totalOrders: totalOrders
+        totalOrders:  totalOrders
     });
 };
 
+// ============================================================
+// REALTIME SUBSCRIPTIONS
+// ============================================================
 const initRealtime = () => {
-    console.log('Initializing Supabase Realtime (WebSockets)...');
-    
-    // 1. Sync Inventory on changes
     subscribeToTable('inventory', async () => {
-        console.log('Realtime Update: Inventory');
         await syncInventory();
         window.refreshUI();
     });
-
-    // 2. Sync Tables on changes
     subscribeToTable('tables', async () => {
-        console.log('Realtime Update: Tables');
         await syncTables();
         window.refreshUI();
     });
-
-    // 3. Sync Sales History & Expenses on changes
     ['sales_history', 'expenses'].forEach(table => {
         subscribeToTable(table, async () => {
-            console.log(`Realtime Update: ${table}`);
             if (typeof window.syncFromSupabase === 'function') {
                 await window.syncFromSupabase();
                 window.refreshUI();
@@ -174,52 +197,54 @@ const initRealtime = () => {
     });
 };
 
+// ============================================================
+// APP INIT (runs after DOM is injected by layout.ui.js)
+// ============================================================
 const init = async () => {
-    console.log('Anokhi Restro: Hybrid FSD + Atomic Refactor Active');
-    
-    // Initial Data Sync
+    console.log('Anokhi Restro POS — FSD Architecture Active');
+
     await syncInventory();
     await syncTables();
-    
-    // Initial Render
+
     window.refreshUI();
 
-    // Global Keydown Handler for Escape logic
+    if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
+    if (typeof window.calculateTotal     === 'function') window.calculateTotal();
+
+    // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             const activeModal = document.querySelector('.modal.active');
-            if (!activeModal && window.cart && window.cart.length > 0) {
+            if (!activeModal && window.cart?.length > 0) {
                 e.preventDefault();
-                reduceLastItemQty(); 
+                reduceLastItemQty();
             }
         }
     });
 
-    // Refresh UI initially
     window.refreshUI();
 
-    // Global Timer Tick (Updates all visible table timers every second)
+    // Global Timer — updates table timers every second
     setInterval(() => {
         document.querySelectorAll('.table-timer').forEach(el => {
-            const start = el.getAttribute('data-start');
+            const start = parseInt(el.getAttribute('data-start') || '0');
             if (!start) return;
-            const diff = Math.floor((Date.now() - new Date(start)) / 1000);
-            const mins = Math.floor(diff / 60);
-            const secs = diff % 60;
-            el.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            const elapsed = Math.floor((Date.now() - start) / 1000);
+            const h = Math.floor(elapsed / 3600);
+            const m = Math.floor((elapsed % 3600) / 60);
+            const s = elapsed % 60;
+            el.textContent = h > 0
+                ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+                : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         });
     }, 1000);
 
-    // Initialize Keyboard Shortcuts (FSD)
-    initKeyboardShortcuts();
-
-    // Initialize Settings Widgets (FSD)
-    initSettingsWidgets();
-
-    // Initialize Realtime Sync (WebSockets)
     initRealtime();
-
-    // Event Listeners for Search moved to app.js or handled via input event
 };
 
-document.addEventListener('DOMContentLoaded', init);
+// Run after layout is injected into DOM
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}

@@ -1,0 +1,31 @@
+
+<div class="sales-history-wrapper">
+    <div class="history-header">
+        <h2><i class="fa-solid fa-clock-rotate-left"></i> Sales History</h2>
+        <div class="date-filters">
+            <input type="date" id="history-date-from">
+            <span>to</span>
+            <input type="date" id="history-date-to">
+            <button class="btn-filter"><i class="fa-solid fa-filter"></i> Apply</button>
+        </div>
+    </div>
+
+    <div class="history-table-container glass-panel mt-6">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>Bill #</th>
+                    <th>Date & Time</th>
+                    <th>Order Type</th>
+                    <th>Customer</th>
+                    <th>Total Amt</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="sales-history-tbody-modular">
+                <!-- Data injected here -->
+            </tbody>
+        </table>
+    </div>
+</div>

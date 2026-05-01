@@ -1,0 +1,36 @@
+/* Widget: POS Item Grid */
+.pos-item-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+    padding: 8px 0;
+    overflow-y: auto;
+}
+.pos-item-card {
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+}
+.pos-item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-color: var(--accent-color);
+}
+.pos-item-card .item-name {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pos-item-card .item-price {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-top: 4px;
+}

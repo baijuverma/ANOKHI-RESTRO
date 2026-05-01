@@ -1,0 +1,23 @@
+
+.base-button {
+    background: var(--accent-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.base-button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.base-button .btn-icon {
+    font-size: 1.1em;
+}

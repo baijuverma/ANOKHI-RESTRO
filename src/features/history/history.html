@@ -1,0 +1,31 @@
+<!-- Feature: Sales History View -->
+<section id="history" class="view-section hidden">
+    <header class="flex-between">
+        <div>
+            <h1>Sales History</h1>
+            <p>View and manage all transactions</p>
+        </div>
+    </header>
+    <div id="history-stats-container" class="stats-grid mt-4"></div>
+    <div id="calendar-wrapper" class="glass-panel mt-4"></div>
+    <div class="glass-panel mt-4">
+        <div class="table-container">
+            <table id="sales-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Order ID</th>
+                        <th>Type</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Mode</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-tbody">
+                    <!-- Dynamic rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
