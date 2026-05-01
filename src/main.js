@@ -10,6 +10,11 @@ document.getElementById('root').innerHTML = appShellHTML;
 // ── Layer 0: App Bootstrap (State + DB must load first) ──────
 import './app/store.js';                               // Global state & Supabase DB init
 import { initBoot } from './app/boot.js';              // DOM setup logic
+import { initSettingsWidgets }   from './widgets/settings-cards/ui.js';
+
+// Expose early for navigation handlers
+window.initSettingsView = initSettingsWidgets;
+console.log('Main.js — window.initSettingsView assigned:', !!window.initSettingsView);
 
 // ── Layer 1: Shared Utilities ────────────────────────────────
 import { initCoreLogic }     from './shared/lib/core/legacy.model.js';    // formatCurrency, getDDMMYYYY, etc.
@@ -44,7 +49,7 @@ import { renderInventoryTable }  from './widgets/inventory-table/ui.js';
 import { renderSalesHistory }    from './widgets/sales-history/ui.js';
 import { renderExpenseTable }    from './widgets/expense-table/ui.js';
 import { renderDashboardStats }  from './widgets/dashboard-stats/ui.js';
-import { initSettingsWidgets }   from './widgets/settings-cards/ui.js';
+// import { initSettingsWidgets }   from './widgets/settings-cards/ui.js'; // Moved up
 import { initSidebar } from './widgets/sidebar/ui.js';
 
 // ── Shared API ───────────────────────────────────────────────
@@ -119,7 +124,7 @@ window.renderPOSItems = (search = '') => {
     if (gridContainer) renderPOSGrid(gridContainer, search, filterState.current);
 };
 
-window.initSettingsView = initSettingsWidgets;
+// initSettingsView moved to top for safety
 
 window.toggleCartDetails = () => {
     const cartContainer  = document.querySelector('.cart-items-container');
