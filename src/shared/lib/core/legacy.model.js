@@ -19,6 +19,11 @@ function getLocalData(key, defaultVal) {
     try {
         const val = localStorage.getItem(key);
         return val ? JSON.parse(val) : defaultVal;
+    } catch (e) {
+        console.warn('Error parsing localStorage key "' + key + '":', e);
+        return defaultVal;
+    }
+}
 
 function formatCurrency(amount) {
     return String.fromCharCode(8377) + parseFloat(amount).toFixed(2);
