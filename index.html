@@ -1,29 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<!DOCTYPE html>
-<html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anokhi Restaurant | Restaurant Inventory</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="src/shared/ui/css/base.css?v=3.2">
-    <link rel="stylesheet" href="src/shared/ui/css/ui.css?v=3.2">
-    <link rel="stylesheet" href="src/app/index.css?v=3.2">
+    <link rel="stylesheet" href="src/app/index.css?v=3.3">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Supabase must load BEFORE main.js module -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 
 <body>
     <div id="root"></div>
-    <script type="module">
-        import { appShellHTML } from "./src/app/layout.ui.js";
-        document.getElementById("root").innerHTML = appShellHTML;
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-    <script type="module" src="src/main.js?v=3.2"></script>
+    <!-- Single module entry point — handles HTML injection AND app init in correct order -->
+    <script type="module" src="src/main.js?v=3.3"></script>
 </body>
 
 </html>

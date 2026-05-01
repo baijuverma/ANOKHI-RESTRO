@@ -3,9 +3,13 @@
 // Imports and initializes all FSD layer modules in correct order
 // ============================================================
 
+// ── STEP 0: Inject HTML Shell into DOM (must happen FIRST) ───
+import { appShellHTML } from './app/layout.ui.js';
+document.getElementById('root').innerHTML = appShellHTML;
+
 // ── Layer 0: App Bootstrap (State + DB must load first) ──────
 import './app/store.js';                               // Global state & Supabase DB init
-import { initBoot } from './app/boot.js';              // DOMContentLoaded logic
+import { initBoot } from './app/boot.js';              // DOM setup logic
 
 // ── Layer 1: Shared Utilities ────────────────────────────────
 import { initCoreLogic }     from './shared/lib/core/legacy.model.js';    // formatCurrency, getDDMMYYYY, etc.
@@ -71,7 +75,8 @@ initNotificationsLogic();
 // 4. Widget Logic
 initSidebar();
 
-// 4. Boot logic (depends on all features being ready)
+// 5. Boot logic — DOM is already ready because modules run after parse
+// (No need for DOMContentLoaded wrapper here)
 initBoot();
 
 // ============================================================
