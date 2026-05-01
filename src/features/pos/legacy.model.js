@@ -1,65 +1,5 @@
 export function initPosLogic() {
-function renderCart() {
-    const cartContainer = document.getElementById('cart-items-modern');
-    if (!cartContainer) return;
-    cartContainer.innerHTML = '';
-    
-    if (cart.length > 0) {
-        const header = document.createElement('div');
-        header.className = 'cart-header-modern';
-        header.innerHTML = `
-            <div class="cart-col-sr">SR</div>
-            <div class="cart-col-info">ITEMS</div>
-            <div class="cart-col-qty">QTY.</div>
-            <div class="cart-col-total">PRICE</div>
-            <div class="cart-col-action"></div>
-        `;
-        cartContainer.appendChild(header);
-    }
-
-    let subtotal = 0;
-    cart.forEach((item, index) => {
-        const itemTotal = item.price * item.cartQty;
-        subtotal += itemTotal;
-
-        const div = document.createElement('div');
-        div.className = 'cart-item-modern';
-        div.innerHTML = `
-            <div class="cart-col-sr">${index + 1}</div>
-            <div class="cart-col-info">
-                <div class="cart-item-name">${truncateName(item.name)}</div>
-                <div class="cart-item-unit-price">${formatCurrency(item.price)} / itm</div>
-            </div>
-            <div class="cart-col-qty">
-                <div class="qty-selector">
-                    <button class="qty-btn" onclick="updateCartQty('${item.id}', -1)"><i class="fa-solid fa-minus"></i></button>
-                    <span class="qty-val">${item.cartQty}</span>
-                    <button class="qty-btn" onclick="updateCartQty('${item.id}', 1)"><i class="fa-solid fa-plus"></i></button>
-                </div>
-            </div>
-            <div class="cart-col-total">${formatCurrency(itemTotal)}</div>
-            <div class="cart-col-action">
-                <button class="cart-delete-btn" onclick="updateCartQty('${item.id}', -${item.cartQty})" title="Remove Item">
-                    <i class="fa-solid fa-trash-can"></i>
-                </button>
-            </div>
-        `;
-        cartContainer.appendChild(div);
-    });
-
-
-    const subtotalEl = document.getElementById('cart-subtotal');
-    if (subtotalEl) subtotalEl.innerText = formatCurrency(subtotal);
-    calculateTotal();
-    
-    // Also refresh POS items grid
-    const searchVal = document.getElementById('pos-search') ? document.getElementById('pos-search').value : '';
-    if (typeof window.renderPOSItems === 'function') {
-        window.renderPOSItems(searchVal);
-    } else if (typeof renderPOSItems === 'function') {
-        renderPOSItems(searchVal);
-    }
-}
+// renderCart (Now handled by widgets/cart in main.js)
 
 window.newBill = function() {
     // If cart has items, ask for confirmation
@@ -89,7 +29,7 @@ window.newBill = function() {
     const dineInBtn = document.querySelector('.order-type-btn[onclick*="DINE_IN"]');
     if (dineInBtn) setOrderType('DINE_IN', dineInBtn);
     
-    renderCart();
+    window.renderCart();
     renderTableGrid(); // Update the grid so table turns from RED to GLASS/GREEN
     if(typeof renderPOSItems === 'function') renderPOSItems(); 
 }
@@ -197,7 +137,7 @@ window.clearCart = function() {
     const prevPaidRow = document.getElementById('prev-paid-row');
     if(prevPaidRow) prevPaidRow.style.display = 'none';
     
-    if (typeof renderCart === 'function') renderCart();
+    if (typeof renderCart === 'function') window.renderCart();
 }
 
 window.calculateDues = function() {
@@ -423,7 +363,7 @@ window.loadActiveOrder = async function(id) {
     if (typeof window.refreshUI === 'function') {
         window.refreshUI();
     } else {
-        if (typeof renderCart === 'function') renderCart();
+        if (typeof renderCart === 'function') window.renderCart();
         if (typeof renderActiveOrders === 'function') renderActiveOrders();
     }
     
@@ -625,7 +565,7 @@ window.editSale = function(id) {
     calculateTotal(); // Refresh total and dues
     setOrderType(type, targetBtn, true);
 
-    renderCart();
+    window.renderCart();
     if (typeof renderPOSItems === 'function') renderPOSItems(); 
 }
 

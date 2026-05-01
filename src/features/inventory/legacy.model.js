@@ -104,67 +104,7 @@ window.showTodaySalesList = function() {
     openModal('todaySalesModal');
 }
 
-// Dashboard Logic
-function updateDashboard() {
-    const todayStr = getDDMMYYYY(new Date());
-    let todaySales = salesHistory.filter(s => getDDMMYYYY(new Date(s.date)) === todayStr);
-    let todayRev = todaySales.reduce((sum, sale) => sum + sale.total, 0);
-    
-    let todayCash = todaySales.reduce((sum, sale) => {
-        if (sale.paymentMode === 'BOTH') return sum + sale.splitAmounts.cash;
-        return sum + ((sale.paymentMode || 'CASH') === 'CASH' ? sale.total : 0);
-    }, 0);
-    
-    let todayUpi = todaySales.reduce((sum, sale) => {
-        if (sale.paymentMode === 'BOTH') return sum + sale.splitAmounts.upi;
-        return sum + (sale.paymentMode === 'UPI' ? sale.total : 0);
-    }, 0);
-
-    // Profit Calculation (Today)
-    const todayExpenses = expensesHistory.filter(e => getDDMMYYYY(new Date(e.date)) === todayStr);
-    const todayExpTotal = todayExpenses.reduce((sum, e) => sum + e.amount, 0);
-    const netProfitToday = todayRev - todayExpTotal;
-    
-    const profitEl = document.getElementById('total-profit');
-    if (profitEl) {
-        profitEl.innerText = formatCurrency(netProfitToday);
-        profitEl.style.color = netProfitToday >= 0 ? '#22c55e' : '#ef4444';
-        const card = document.getElementById('profit-card');
-        if (card) card.style.borderLeft = `4px solid ${netProfitToday >= 0 ? '#22c55e' : '#ef4444'}`;
-    }
-
-    let totalItems = inventory.length;
-    let lowStock = inventory.filter(i => i.quantity <= (i.lowStockThreshold || 5) && i.quantity > 0).length;
-    let outOfStock = inventory.filter(i => i.quantity === 0).length;
-
-    document.getElementById('total-revenue').innerText = formatCurrency(todayRev);
-    document.getElementById('today-cash').innerText = formatCurrency(todayCash);
-    document.getElementById('today-upi').innerText = formatCurrency(todayUpi);
-
-    document.getElementById('total-items').innerText = totalItems;
-    document.getElementById('low-stock').innerText = lowStock;
-    document.getElementById('out-of-stock').innerText = outOfStock;
-
-    // Recent Sales
-    const tbody = document.querySelector('#recent-sales-table tbody');
-    tbody.innerHTML = '';
-    
-    const recentSales = [...salesHistory].slice(0, 5);
-    if(recentSales.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No recent sales</td></tr>';
-    }
-
-    recentSales.forEach(sale => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>#${sale.id}</td>
-            <td>${formatDateTime(sale.date)}</td>
-            <td>${sale.items.length} items</td>
-            <td>${formatCurrency(sale.total)}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
+// Dashboard Logic (Now handled by widgets/dashboard-stats)
 
 // Inventory Logic
 function handleItemSubmit(e) {
@@ -204,50 +144,7 @@ function handleItemSubmit(e) {
     if (typeof updateDashboard === 'function') updateDashboard();
 }
 
-function renderInventory() {
-    const tbody = document.querySelector('#inventory-table tbody');
-    tbody.innerHTML = '';
-
-    let filtered = inventory;
-    if (inventoryTypeFilter === 'veg') {
-        filtered = inventory.filter(i => (i.itemType || '').toLowerCase().replace(/[- ]/g, '') !== 'nonveg');
-    } else if (inventoryTypeFilter === 'nonveg') {
-        filtered = inventory.filter(i => (i.itemType || '').toLowerCase().replace(/[- ]/g, '') === 'nonveg');
-    }
-
-    if(filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No items found.</td></tr>';
-        return;
-    }
-
-    filtered.forEach(item => {
-        let statusClass = 'status-instock';
-        let statusText = 'In Stock';
-        
-        if (item.quantity === 0) {
-            statusClass = 'status-outstock';
-            statusText = 'Out of Stock';
-        } else if (item.quantity <= (item.lowStockThreshold || 5)) {
-            statusClass = 'status-lowstock';
-            statusText = 'Low Stock';
-        }
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td><strong>${truncateName(item.name)}</strong></td>
-            <td>${item.category}</td>
-            <td>${formatCurrency(item.price)}</td>
-            <td>${item.quantity}</td>
-            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-            <td>
-                <button class="action-btn" style="color: var(--success-color); border: 1px solid var(--success-color); background: rgba(16, 185, 129, 0.1);" onclick="openRestockModal('${item.id}')" title="Add Stock"><i class="fa-solid fa-plus"></i></button>
-                <button class="action-btn edit" onclick="editItem('${item.id}')" title="Edit"><i class="fa-solid fa-pen"></i></button>
-                <button class="action-btn delete" onclick="deleteItem('${item.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
+// Inventory Table Logic (Now handled by widgets/inventory-table)
 
 window.openRestockModal = function(id) {
     const item = inventory.find(i => i.id === id);
@@ -319,38 +216,7 @@ window.filterInventoryByType = function(type) {
 // POS Filter logic moved to main.js
 
 
-window.importItems = function() {
-    if (!confirm('This will add 10 Bihar Special items to your inventory. Continue?')) return;
-    
-    const biharSpecial = [
-        { id: 'BS01', name: 'Litti Chokha', price: 120, category: 'Main Course', itemType: 'Veg', status: 'In Stock', quantity: 50 },
-        { id: 'BS02', name: 'Sattu Paratha', price: 80, category: 'Main Course', itemType: 'Veg', status: 'In Stock', quantity: 50 },
-        { id: 'BS03', name: 'Bihari Fish Curry', price: 250, category: 'Main Course', itemType: 'Non-Veg', status: 'In Stock', quantity: 30 },
-        { id: 'BS04', name: 'Champaran Mutton', price: 450, category: 'Main Course', itemType: 'Non-Veg', status: 'In Stock', quantity: 20 },
-        { id: 'BS05', name: 'Dal Pitha', price: 90, category: 'Snacks', itemType: 'Veg', status: 'In Stock', quantity: 40 },
-        { id: 'BS06', name: 'Thekua', price: 150, category: 'Dessert', itemType: 'Veg', status: 'In Stock', quantity: 100 },
-        { id: 'BS07', name: 'Malpua', price: 100, category: 'Dessert', itemType: 'Veg', status: 'In Stock', quantity: 50 },
-        { id: 'BS08', name: 'Bihari Chicken Curry', price: 280, category: 'Main Course', itemType: 'Non-Veg', status: 'In Stock', quantity: 30 },
-        { id: 'BS09', name: 'Khaja', price: 120, category: 'Dessert', itemType: 'Veg', status: 'In Stock', quantity: 60 },
-        { id: 'BS10', name: 'Chana Ghugni', price: 70, category: 'Snacks', itemType: 'Veg', status: 'In Stock', quantity: 50 }
-    ];
-    
-    const existingIds = new Set(inventory.map(i => String(i.id)));
-    const newItems = biharSpecial.filter(i => !existingIds.has(String(i.id)));
-    
-    if (newItems.length === 0) {
-        return alert('Bihar Special items already exist in your inventory.');
-    }
-    
-    inventory.push(...newItems);
-    saveData();
-    
-    alert(`Success! ${newItems.length} Bihar Special items added to inventory.`);
-    
-    if (typeof renderInventory === 'function') renderInventory();
-    if (typeof renderPOSItems === 'function') renderPOSItems();
-    if (typeof refreshUI === 'function') refreshUI();
-}
+// Data Import Logic (Now handled by features/settings/model)
 
 
 

@@ -214,7 +214,6 @@ const init = async () => {
     window.refreshUI();
 
     if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
-    if (typeof window.calculateTotal     === 'function') window.calculateTotal();
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
@@ -226,8 +225,6 @@ const init = async () => {
             }
         }
     });
-
-    window.refreshUI();
 
     // Global Timer — updates table timers every second
     setInterval(() => {

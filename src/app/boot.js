@@ -104,15 +104,7 @@ export function initBoot() {
         }
     });
 
-    // 3. Sidebar Navigation
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            const target = item.getAttribute('data-target');
-            if (typeof window.showView === 'function') window.showView(target);
-        });
-    });
+    // 3. Sidebar Navigation (Handled by inline onclick in layout.ui.js)
 
     // 4. Form Submissions
     const itemForm = document.getElementById('item-form');
