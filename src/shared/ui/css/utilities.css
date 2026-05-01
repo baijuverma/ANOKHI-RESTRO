@@ -1,6 +1,9 @@
 /* Shared: Utilities & Helpers */
 
-/* Utility: force hide element */.force-hidden { display: none !important; }
+/* Utility: force hide element */
+.force-hidden, .hidden { 
+    display: none !important; 
+}
 
 /* Modal Base Styles */
 .modal {
