@@ -70,22 +70,22 @@ export const appShellHTML = `
                 <img src="logo.jpg" alt="Anokhi Restaurant" style="max-width: 100%; height: auto; border-radius: 8px; background: white; padding: 4px;">
             </div>
             <nav>
-                <a href="#" class="nav-item active" data-target="dashboard">
+                <a href="#" class="nav-item active" data-target="dashboard" onclick="window.showView('dashboard'); return false;">
                     <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
                 </a>
-                <a href="#" class="nav-item" data-target="pos">
+                <a href="#" class="nav-item" data-target="pos" onclick="window.showView('pos'); return false;">
                     <i class="fa-solid fa-cash-register"></i> <span>New Sale</span>
                 </a>
-                <a href="#" class="nav-item" data-target="history">
+                <a href="#" class="nav-item" data-target="history" onclick="window.showView('history'); return false;">
                     <i class="fa-solid fa-clock-rotate-left"></i> <span>Sales History</span>
                 </a>
-                <a href="#" class="nav-item" data-target="inventory">
+                <a href="#" class="nav-item" data-target="inventory" onclick="window.showView('inventory'); return false;">
                     <i class="fa-solid fa-boxes-stacked"></i> <span>Inventory</span>
                 </a>
-                <a href="#" class="nav-item" data-target="expenses">
+                <a href="#" class="nav-item" data-target="expenses" onclick="window.showView('expenses'); return false;">
                     <i class="fa-solid fa-wallet"></i> <span>Expenses</span>
                 </a>
-                <a href="#" class="nav-item" data-target="settings">
+                <a href="#" class="nav-item" data-target="settings" onclick="window.showView('settings'); return false;">
                     <i class="fa-solid fa-gear"></i> <span>Settings</span>
                 </a>
             </nav>

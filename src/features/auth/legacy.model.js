@@ -17,8 +17,8 @@ window.checkLogin = function() {
             }, 500);
         }
         
-        if (typeof showView === 'function') {
-            showView('dashboard');
+        if (typeof window.showView === 'function') {
+            window.showView('dashboard');
         } else {
             console.error('showView function not found!');
         }
@@ -104,7 +104,7 @@ window.openResetModal = function() {
     document.getElementById('reset-dob').value = '';
     document.getElementById('new-password').value = '';
     document.getElementById('confirm-new-password').value = '';
-    openModal('reset-password-modal');
+    window.openModal('reset-password-modal');
 }
 
 window.handlePasswordReset = function() {
@@ -141,7 +141,7 @@ window.handlePasswordReset = function() {
 
     localStorage.setItem('anokhi_admin_pwd', newPwd);
     alert('Password updated successfully! You can now login with your new password.');
-    closeModal('reset-password-modal');
+    window.closeModal('reset-password-modal');
     document.getElementById('login-password').focus();
 }
 

@@ -278,7 +278,7 @@ window.processSale = function() {
         document.getElementById('modal-dues-amount').innerText = formatCurrency(dues);
         document.getElementById('cust-name').value = '';
         document.getElementById('cust-mobile').value = '';
-        openModal('customerModal');
+        window.openModal('customerModal');
     } else {
         // NORMAL SALE: Just confirm
         if (!confirm('Are you sure you want to complete this sale?')) {
@@ -300,7 +300,7 @@ window.completeCreditSale = function() {
     }
     
     finalizeSaleRecord(name, mobile);
-    closeModal('customerModal');
+    window.closeModal('customerModal');
 }
 
 // Active Orders (Hold/Takeaway) Logic
@@ -602,7 +602,7 @@ window.editSale = function(id) {
     currentSelectedTable = sale.tableId || null;
     
     // Update UI
-    showView('pos');
+    window.showView('pos');
     
     // Show previous paid in UI
     const prevPaidRow = document.getElementById('prev-paid-row');
