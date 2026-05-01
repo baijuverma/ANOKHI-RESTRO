@@ -41,6 +41,7 @@ function getLocalData(key, defaultVal) {
 // Data Structures (Initialized with local cache, will be updated from Supabase)
 let inventory = getLocalData('anokhi_inventory', []);
 let salesHistory = getLocalData('anokhi_sales', []);
+let activeOrders = getLocalData('anokhi_active_orders', []);
 let expensesHistory = getLocalData('anokhi_expenses', []);
 let cart = window.cart || []; window.cart = cart;
 window.selectedOrderType = 'DINE_IN';
@@ -101,17 +102,207 @@ async function syncFromSupabase() {
             localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
         }
 
+        const { data: activeData } = await db.from('active_orders').select('*').order('created_at', { ascending: false });
+        if (activeData) {
+            activeOrders = activeData.map(o => ({
+                id: o.id,
+                orderType: o.order_type,
+                items: o.items,
+                total: o.total,
+                discount: o.discount || 0,
+                roundOff: o.round_off || 0,
+                customerName: o.customer_name,
+                customerMobile: o.customer_mobile,
+                createdAt: o.created_at
+            }));
+            localStorage.setItem('anokhi_active_orders', JSON.stringify(activeOrders));
+        }
+
         // Re-render views safely
         if (typeof renderInventory === 'function') renderInventory();
         if (typeof renderPOSItems === 'function') renderPOSItems();
         if (typeof renderHistory === 'function') renderHistory();
         if (typeof renderTableGrid === 'function') renderTableGrid();
+        if (typeof renderActiveOrders === 'function') renderActiveOrders();
         if (typeof renderExpenses === 'function') renderExpenses();
         if (typeof updateDashboard === 'function') updateDashboard();
         if (typeof updateExpenseStats === 'function') updateExpenseStats();
     } catch (err) {
         console.error('Sync Error:', err);
     }
+}
+
+// Supabase Realtime Setup
+function setupRealtime() {
+    if (!db) {
+        console.warn('Supabase DB not initialized, Realtime disabled.');
+        return;
+    }
+
+    console.log('Initializing Supabase Realtime...');
+
+    // 1. Inventory Realtime
+    db.channel('inventory-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'inventory' }, payload => {
+            console.log('Realtime Inventory Update:', payload);
+            const { eventType, new: newItem, old: oldItem } = payload;
+            
+            if (eventType === 'INSERT' || eventType === 'UPDATE') {
+                const mapped = {
+                    id: newItem.id,
+                    name: newItem.name,
+                    category: newItem.category,
+                    itemType: newItem.item_type || 'Veg',
+                    price: newItem.price,
+                    quantity: newItem.quantity,
+                    lowStockThreshold: newItem.low_stock_threshold || 5
+                };
+                const idx = inventory.findIndex(i => i.id === mapped.id);
+                if (idx > -1) {
+                    inventory[idx] = mapped;
+                } else {
+                    inventory.push(mapped);
+                }
+            } else if (eventType === 'DELETE') {
+                inventory = inventory.filter(i => i.id !== oldItem.id);
+            }
+            
+            localStorage.setItem('anokhi_inventory', JSON.stringify(inventory));
+            if (typeof renderInventory === 'function') renderInventory();
+            if (typeof renderPOSItems === 'function') renderPOSItems();
+            if (typeof updateDashboard === 'function') updateDashboard();
+        })
+        .subscribe();
+
+    // 2. Tables Realtime
+    db.channel('tables-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tables' }, payload => {
+            console.log('Realtime Tables Update:', payload);
+            const { eventType, new: newTable } = payload;
+            
+            if (eventType === 'INSERT' || eventType === 'UPDATE') {
+                const idx = tables.findIndex(t => t.id === newTable.id);
+                if (idx > -1) {
+                    tables[idx] = { 
+                        ...tables[idx], 
+                        id: newTable.id,
+                        name: newTable.name,
+                        cart: newTable.cart || [],
+                        advance: newTable.advance || 0,
+                        advanceMode: newTable.advance_mode || 'CASH'
+                    };
+                } else {
+                    tables.push({
+                        id: newTable.id,
+                        name: newTable.name,
+                        cart: newTable.cart || [],
+                        advance: newTable.advance || 0,
+                        advanceMode: newTable.advance_mode || 'CASH'
+                    });
+                }
+            }
+            
+            localStorage.setItem('anokhi_tables', JSON.stringify(tables));
+            if (typeof renderTableGrid === 'function') renderTableGrid();
+            
+            // If the table being edited is the current table, refresh its state
+            if (window.currentSelectedTable && window.currentSelectedTable.id === newTable.id) {
+                window.currentSelectedTable = tables.find(t => t.id === newTable.id);
+                window.cart = window.currentSelectedTable.cart || [];
+                if (typeof renderCart === 'function') renderCart();
+            }
+        })
+        .subscribe();
+
+    // 3. Sales History Realtime
+    db.channel('sales-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'sales_history' }, payload => {
+            console.log('Realtime Sales Update:', payload);
+            const { eventType, new: newSale, old: oldSale } = payload;
+            
+            if (eventType === 'INSERT' || eventType === 'UPDATE') {
+                const mapped = {
+                    id: newSale.id,
+                    date: newSale.date,
+                    items: newSale.items,
+                    total: newSale.total,
+                    discount: newSale.discount,
+                    roundOff: newSale.round_off,
+                    paymentMode: newSale.payment_mode,
+                    splitAmounts: newSale.split_amounts,
+                    orderType: newSale.order_type,
+                    tableName: newSale.table_name,
+                    advancePaid: newSale.advance_paid
+                };
+                const idx = salesHistory.findIndex(s => s.id === mapped.id);
+                if (idx > -1) {
+                    salesHistory[idx] = mapped;
+                } else {
+                    salesHistory.unshift(mapped);
+                }
+            } else if (eventType === 'DELETE') {
+                salesHistory = salesHistory.filter(s => s.id !== oldSale.id);
+            }
+            
+            localStorage.setItem('anokhi_sales', JSON.stringify(salesHistory));
+            if (typeof renderHistory === 'function') renderHistory();
+            if (typeof updateDashboard === 'function') updateDashboard();
+        })
+        .subscribe();
+
+    // 4. Expenses Realtime
+    db.channel('expenses-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'expenses' }, payload => {
+            console.log('Realtime Expenses Update:', payload);
+            const { eventType, new: newExpense, old: oldExpense } = payload;
+            
+            if (eventType === 'INSERT' || eventType === 'UPDATE') {
+                const idx = expensesHistory.findIndex(e => e.id === newExpense.id);
+                if (idx > -1) {
+                    expensesHistory[idx] = newExpense;
+                } else {
+                    expensesHistory.unshift(newExpense);
+                }
+            } else if (eventType === 'DELETE') {
+                expensesHistory = expensesHistory.filter(e => e.id !== oldExpense.id);
+            }
+            
+            localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
+            if (typeof renderExpenses === 'function') renderExpenses();
+            if (typeof updateExpenseStats === 'function') updateExpenseStats();
+            if (typeof updateDashboard === 'function') updateDashboard();
+        })
+        .subscribe();
+
+    // 5. Active Orders Realtime
+    db.channel('active-orders-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'active_orders' }, payload => {
+            console.log('Realtime Active Orders Update:', payload);
+            const { eventType, new: newOrder, old: oldOrder } = payload;
+            
+            if (eventType === 'INSERT' || eventType === 'UPDATE') {
+                const mapped = {
+                    id: newOrder.id,
+                    orderType: newOrder.order_type,
+                    items: newOrder.items,
+                    total: newOrder.total,
+                    discount: newOrder.discount || 0,
+                    roundOff: newOrder.round_off || 0,
+                    customerName: newOrder.customer_name,
+                    customerMobile: newOrder.customer_mobile,
+                    createdAt: newOrder.created_at
+                };
+                const idx = activeOrders.findIndex(o => o.id === mapped.id);
+                if (idx > -1) activeOrders[idx] = mapped;
+                else activeOrders.unshift(mapped);
+            } else if (eventType === 'DELETE') {
+                activeOrders = activeOrders.filter(o => o.id !== oldOrder.id);
+            }
+            
+            localStorage.setItem('anokhi_active_orders', JSON.stringify(activeOrders));
+            if (typeof renderActiveOrders === 'function') renderActiveOrders();
+        })
+        .subscribe();
 }
 
 // DOM Elements
@@ -386,7 +577,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof updateExpenseStats === 'function') updateExpenseStats();
 
     // Sync from Supabase in background
-    if (typeof syncFromSupabase === 'function') syncFromSupabase();
+    if (typeof syncFromSupabase === 'function') {
+        syncFromSupabase().then(() => {
+            if (typeof setupRealtime === 'function') setupRealtime();
+        });
+    }
 
     // Default to Dine-In on Load (Defensive check)
     const dineInBtn = document.querySelector('.order-type-btn[onclick*="DINE_IN"]');
@@ -402,6 +597,7 @@ async function saveData() {
     localStorage.setItem('anokhi_sales', JSON.stringify(salesHistory));
     localStorage.setItem('anokhi_tables', JSON.stringify(tables));
     localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
+    localStorage.setItem('anokhi_active_orders', JSON.stringify(activeOrders));
 
     // Async push to Supabase
     if (!db) return;
@@ -427,6 +623,21 @@ async function saveData() {
                 cart: t.cart,
                 advance: t.advance,
                 advance_mode: t.advanceMode
+            })));
+        }
+
+        // Upsert Active Orders
+        if (activeOrders.length > 0) {
+            await db.from('active_orders').upsert(activeOrders.map(o => ({
+                id: o.id,
+                order_type: o.orderType,
+                items: o.items,
+                total: o.total,
+                discount: o.discount,
+                round_off: o.roundOff,
+                customer_name: o.customerName,
+                customer_mobile: o.customer_mobile,
+                created_at: o.createdAt
             })));
         }
 
@@ -1044,6 +1255,128 @@ window.completeCreditSale = function() {
     finalizeSaleRecord(name, mobile);
     closeModal('customerModal');
 }
+
+// Active Orders (Hold/Takeaway) Logic
+window.holdOrder = async function() {
+    if (cart.length === 0) return alert('Cart is empty!');
+    
+    // For Dine-In, we already have table-based persistence, but we can allow holding too
+    if (selectedOrderType === 'DINE_IN' && !currentSelectedTable) {
+        return alert('Please select a table to hold a Dine-In order.');
+    }
+
+    const totals = calculateTotal();
+    const newActiveOrder = {
+        id: `ACT-${Date.now()}`,
+        orderType: selectedOrderType,
+        items: [...cart],
+        total: totals.total,
+        discount: totals.discount,
+        roundOff: totals.roundOff,
+        customerName: document.getElementById('cust-name')?.value || null,
+        customerMobile: document.getElementById('cust-mobile')?.value || null,
+        createdAt: new Date().toISOString()
+    };
+
+    activeOrders.unshift(newActiveOrder);
+    
+    // If it was a Dine-In table, clear that table's cart
+    if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
+        const tIdx = tables.findIndex(t => t.id === currentSelectedTable);
+        if (tIdx > -1) {
+            tables[tIdx].cart = [];
+            tables[tIdx].advance = 0;
+        }
+    }
+
+    await saveData();
+    clearCart();
+    currentSelectedTable = null;
+    document.getElementById('current-table-name').innerText = 'No Table Selected';
+    
+    if (typeof renderActiveOrders === 'function') renderActiveOrders();
+    if (typeof renderTableGrid === 'function') renderTableGrid();
+    alert('Order placed on Hold (Active Orders).');
+};
+
+window.loadActiveOrder = async function(id) {
+    const order = activeOrders.find(o => o.id === id);
+    if (!order) return;
+
+    if (cart.length > 0) {
+        if (!confirm('Cart has items. Replace with this active order?')) return;
+    }
+
+    cart = [...order.items];
+    selectedOrderType = order.orderType;
+    
+    // Update UI for order type
+    const btnClass = order.orderType === 'DINE_IN' ? 'DINE_IN' : (order.orderType === 'TAKEAWAY' ? 'TAKEAWAY' : 'QUICK');
+    const targetBtn = document.querySelector(`.order-type-btn[onclick*="${btnClass}"]`);
+    if (targetBtn && typeof setOrderType === 'function') setOrderType(order.orderType, targetBtn);
+
+    // Remove from active orders
+    activeOrders = activeOrders.filter(o => o.id !== id);
+    
+    await saveData();
+    
+    // Explicitly delete from Supabase to ensure clean removal
+    if (db) await db.from('active_orders').delete().eq('id', id);
+
+    renderCart();
+    if (typeof renderActiveOrders === 'function') renderActiveOrders();
+    console.log('Order loaded from Hold.');
+};
+
+window.deleteActiveOrder = async function(id) {
+    if (!confirm('Are you sure you want to delete this pending order?')) return;
+    
+    activeOrders = activeOrders.filter(o => o.id !== id);
+    await saveData();
+    if (db) await db.from('active_orders').delete().eq('id', id);
+    
+    if (typeof renderActiveOrders === 'function') renderActiveOrders();
+};
+
+window.renderActiveOrders = function() {
+    const container = document.getElementById('active-orders-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (activeOrders.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary); font-size:12px;">No pending takeaway orders.</div>';
+        return;
+    }
+
+    activeOrders.forEach(order => {
+        const card = document.createElement('div');
+        card.className = 'active-order-card glass-panel';
+        card.style.cssText = 'margin-bottom:10px; padding:12px; border-left:3px solid var(--accent-color); display:flex; justify-content:space-between; align-items:center; cursor:pointer;';
+        card.onclick = () => loadActiveOrder(order.id);
+        
+        const timeStr = new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const typeIcon = order.orderType === 'TAKEAWAY' ? 'fa-bag-shopping' : 'fa-bolt';
+        
+        card.innerHTML = `
+            <div style="flex:1;">
+                <div style="font-weight:700; font-size:13px; display:flex; align-items:center; gap:5px;">
+                    <i class="fa-solid ${typeIcon}" style="color:var(--accent-color);"></i>
+                    <span>${order.orderType}</span>
+                    <span style="font-size:10px; color:var(--text-secondary); font-weight:400;">(${timeStr})</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                    ${order.items.length} items • <strong>${formatCurrency(order.total)}</strong>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button class="action-btn" style="color:var(--danger-color); font-size:12px;" onclick="event.stopPropagation(); deleteActiveOrder('${order.id}')">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+};
 
 function finalizeSaleRecord(custName = null, custMobile = null) {
     const totals = calculateTotal();

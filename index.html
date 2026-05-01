@@ -335,6 +335,17 @@
                             </div>
                         </div>
 
+                        <!-- Active Pending Orders (Takeaway/Counter) -->
+                        <div id="active-orders-section" class="glass-panel mt-2" style="padding: 15px; max-height: 250px; overflow-y: auto;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h2 style="font-size: 14px;"><i class="fa-solid fa-clock-rotate-left"></i> Active Takeaway</h2>
+                                <span style="font-size: 10px; color: var(--text-secondary);">Click to Resume</span>
+                            </div>
+                            <div id="active-orders-list">
+                                <!-- Active orders injected here -->
+                            </div>
+                        </div>
+
                         <div class="pos-items glass-panel" style="position: relative; padding-top: 35px;">
                             <!-- Tables Toggle Arrow (Absolute Top Center) -->
                             <div id="tables-curtain-toggle-btn" class="tables-curtain-toggle top-center-toggle" onclick="toggleTablesCurtain()" style="position: absolute; top: -5px; left: 50%; transform: translateX(-50%); z-index: 500; cursor: pointer;">
