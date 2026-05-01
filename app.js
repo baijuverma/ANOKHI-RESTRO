@@ -1182,6 +1182,10 @@ window.clearCart = function() {
     if(cashIn) cashIn.value = '';
     if(upiIn) upiIn.value = '';
 
+    // Reset Hold Button Text
+    const holdBtn = document.getElementById('btn-hold-order');
+    if (holdBtn) holdBtn.innerHTML = '<i class="fa-solid fa-clock"></i> Hold [F8]';
+
     // Refresh the Cart Widget
     window.renderCart();
 
@@ -1403,6 +1407,10 @@ window.loadActiveOrder = async function(id) {
     const btnClass = order.orderType === 'DINE_IN' ? 'DINE_IN' : (order.orderType === 'TAKEAWAY' ? 'TAKEAWAY' : 'QUICK');
     const targetBtn = document.querySelector(`.order-type-btn[onclick*="${btnClass}"]`);
     if (targetBtn && typeof setOrderType === 'function') setOrderType(order.orderType, targetBtn);
+
+    // Change Hold button to Update
+    const holdBtn = document.getElementById('btn-hold-order');
+    if (holdBtn) holdBtn.innerHTML = '<i class="fa-solid fa-clock"></i> Update [F8]';
 
     // Remove from active orders
     window.activeOrders = orders.filter(o => o.id !== id);
