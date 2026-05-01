@@ -1095,57 +1095,57 @@ window.newBill = function() {
 }
 
 window.calculateTotal = function() {
-    const currentCart = window.cart || [];
-    let subtotal = currentCart.reduce((sum, item) => sum + (item.price * item.cartQty), 0);
-    
-    let discPercentInput = document.getElementById('cart-discount-percent');
-    let discFixedInput = document.getElementById('cart-discount-fixed');
-    
-    let discPercent = discPercentInput ? (parseFloat(discPercentInput.value) || 0) : 0;
-    let discFixed = discFixedInput ? (parseFloat(discFixedInput.value) || 0) : 0;
-    
-    // Ensure % is not more than 100
-    if (discPercent > 100) {
-        discPercent = 100;
-        if(discPercentInput) discPercentInput.value = 100;
+    try {
+        const currentCart = window.cart || [];
+        let subtotal = currentCart.reduce((sum, item) => sum + (item.price * item.cartQty), 0);
+        
+        let discPercentInput = document.getElementById('cart-discount-percent');
+        let discFixedInput = document.getElementById('cart-discount-fixed');
+        
+        let discPercent = discPercentInput ? (parseFloat(discPercentInput.value) || 0) : 0;
+        let discFixed = discFixedInput ? (parseFloat(discFixedInput.value) || 0) : 0;
+        
+        if (discPercent > 100) {
+            discPercent = 100;
+            if(discPercentInput) discPercentInput.value = 100;
+        }
+
+        let discountAmount = (subtotal * (discPercent / 100)) + discFixed;
+        if (discountAmount > subtotal) discountAmount = subtotal;
+        
+        let advancePaid = 0;
+        if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
+            const allTables = window.tables || [];
+            const table = allTables.find(t => t.id === window.currentSelectedTable);
+            if (table) advancePaid = table.advance || 0;
+        }
+
+        let totalBeforeRound = subtotal - discountAmount - advancePaid;
+        let finalTotal = Math.max(0, Math.round(totalBeforeRound));
+        let roundOffVal = finalTotal - totalBeforeRound;
+        let refundAmount = totalBeforeRound < 0 ? Math.abs(Math.round(totalBeforeRound)) : 0;
+
+        const roundOffEl = document.getElementById('cart-roundoff');
+        if (roundOffEl && typeof formatCurrency === 'function') {
+            const sign = roundOffVal >= 0 ? '+' : '';
+            roundOffEl.innerText = sign + formatCurrency(roundOffVal);
+        }
+
+        const totalLabel = document.getElementById('cart-total-label');
+        if(totalLabel) totalLabel.innerText = (refundAmount > 0) ? 'Payable' : 'Total';
+
+        const totalEl = document.getElementById('cart-total');
+        if (totalEl && typeof formatCurrency === 'function') {
+            totalEl.innerText = formatCurrency(finalTotal);
+        }
+        
+        if (typeof calculateDues === 'function') calculateDues();
+        
+        return { subtotal, discount: discountAmount, advance: advancePaid, roundOff: roundOffVal, total: finalTotal };
+    } catch (e) {
+        console.error("Calculation Error:", e);
+        return { subtotal: 0, discount: 0, advance: 0, roundOff: 0, total: 0 };
     }
-
-    let discountAmount = (subtotal * (discPercent / 100)) + discFixed;
-
-    // Ensure total discount is not more than subtotal
-    if (discountAmount > subtotal) {
-        discountAmount = subtotal;
-    }
-    
-    let advancePaid = 0;
-    if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
-        const table = (window.tables || []).find(t => t.id === window.currentSelectedTable);
-        if (table) advancePaid = table.advance || 0;
-    }
-
-    let totalBeforeRound = subtotal - discountAmount - advancePaid;
-    let finalTotal = Math.max(0, Math.round(totalBeforeRound));
-    let roundOffVal = finalTotal - totalBeforeRound;
-    let refundAmount = totalBeforeRound < 0 ? Math.abs(Math.round(totalBeforeRound)) : 0;
-
-    // Update Round Off UI
-    const roundOffEl = document.getElementById('cart-roundoff');
-    if (roundOffEl) {
-        const sign = roundOffVal >= 0 ? '+' : '';
-        roundOffEl.innerText = sign + formatCurrency(roundOffVal);
-        roundOffEl.style.color = roundOffVal === 0 ? 'var(--text-secondary)' : (roundOffVal > 0 ? 'var(--success-color)' : 'var(--danger-color)');
-    }
-
-    const totalLabel = document.getElementById('cart-total-label');
-    if(totalLabel) totalLabel.innerText = (refundAmount > 0) ? 'Payable' : 'Total';
-
-    const totalEl = document.getElementById('cart-total');
-    if (totalEl) totalEl.innerText = formatCurrency(finalTotal);
-    
-    // Update dues whenever total changes
-    if (typeof calculateDues === 'function') calculateDues();
-    
-    return { subtotal, discount: discountAmount, advance: advancePaid, roundOff: roundOffVal, total: finalTotal };
 }
 
 window.clearCart = function() {
@@ -1275,24 +1275,20 @@ window.completeCreditSale = function() {
 
 // Active Orders (Hold/Takeaway) Logic
 window.holdOrder = async function() {
-    const currentCart = window.cart || [];
-    console.log("Hold Order Triggered. Cart Length:", currentCart.length);
-    
-    if (currentCart.length === 0) {
-        return alert('Cart is empty! Please add some items first.');
-    }
-    
-    if (window.selectedOrderType === 'DINE_IN' && !window.currentSelectedTable) {
-        return alert('Please select a Table first or switch to Takeaway mode to hold this order.');
-    }
-
     try {
+        const currentCart = window.cart || [];
+        if (currentCart.length === 0) return alert('Cart is empty!');
+        
+        if (window.selectedOrderType === 'DINE_IN' && !window.currentSelectedTable) {
+            return alert('Please select a Table first.');
+        }
+
         const totals = window.calculateTotal();
         const newActiveOrder = {
             id: `ACT-${Date.now()}`,
             orderType: window.selectedOrderType,
             items: JSON.parse(JSON.stringify(currentCart)),
-            total: totals.total,
+            total: totals.total || 0,
             discount: totals.discount || 0,
             roundOff: totals.roundOff || 0,
             customerName: document.getElementById('cust-name')?.value || null,
@@ -1300,9 +1296,9 @@ window.holdOrder = async function() {
             createdAt: new Date().toISOString()
         };
 
-        activeOrders.unshift(newActiveOrder);
+        if (!window.activeOrders) window.activeOrders = [];
+        window.activeOrders.unshift(newActiveOrder);
         
-        // If it was a Dine-In table, clear that table's cart
         if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
             const allTables = window.tables || [];
             const tIdx = allTables.findIndex(t => t.id === window.currentSelectedTable);
@@ -1312,12 +1308,11 @@ window.holdOrder = async function() {
             }
         }
 
-        // Save locally first so UI updates even if DB is slow/fails
-        localStorage.setItem('anokhi_active_orders', JSON.stringify(activeOrders));
+        localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders));
         localStorage.setItem('anokhi_tables', JSON.stringify(window.tables));
         
-        // Background sync to Supabase
-        saveData().catch(e => console.warn("Background sync failed during hold:", e));
+        // Non-blocking sync
+        saveData().catch(e => console.warn("Sync failed:", e));
 
         window.clearCart();
         window.currentSelectedTable = null;
@@ -1329,8 +1324,8 @@ window.holdOrder = async function() {
         
         alert('Order Success: Order is now on Hold.');
     } catch (error) {
-        console.error("Hold Order Critical Error:", error);
-        alert('Could not hold order. Error: ' + error.message);
+        console.error("Hold Order Error:", error);
+        alert('Internal Error. Please refresh and try again.');
     }
 };
 
