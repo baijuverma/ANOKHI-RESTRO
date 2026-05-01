@@ -17,7 +17,11 @@ import { renderDashboardStats } from './widgets/dashboard-stats/ui.js';
 import { initSettingsWidgets } from './widgets/settings-cards/ui.js';
 
 
+import { formatCurrency, getDDMMYYYY } from './shared/lib/utils.js';
+
 // Global exports for HTML compatibility (Legacy support)
+window.formatCurrency = formatCurrency;
+window.getDDMMYYYY = getDDMMYYYY;
 window.addToCart = addToCart;
 window.updateCartQty = updateCartQty;
 window.setPOSFilter = setFilter;
