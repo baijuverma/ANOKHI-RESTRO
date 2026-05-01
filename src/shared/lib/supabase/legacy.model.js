@@ -243,68 +243,7 @@ function setupRealtime() {
         })
         .subscribe();
 }
-
-// DOM Elements
-const views = document.querySelectorAll('.view-section');
-const navItems = document.querySelectorAll('.nav-item');
-
-// Initialize App
-window.showView = function(targetId) {
-    const views = document.querySelectorAll('.view-section');
-    const navItems = document.querySelectorAll('.nav-item');
-    
-    // Hide all views
-    views.forEach(v => {
-        v.classList.remove('active');
-        v.classList.add('hidden');
-    });
-    
-    // Show target view
-    const targetView = document.getElementById(targetId);
-    if (targetView) {
-        targetView.classList.add('active');
-        targetView.classList.remove('hidden');
-    }
-    
-    // Update active nav
-    navItems.forEach(item => {
-        item.classList.remove('active');
-        if (item.getAttribute('data-target') === targetId) {
-            item.classList.add('active');
-        }
-    });
-
-    // Refresh view specific data
-    if(targetId === 'dashboard') updateDashboard();
-    if(targetId === 'inventory') renderInventory();
-    if(targetId === 'pos') renderPOSItems();
-    if(targetId === 'history') renderHistory();
-    if(targetId === 'expenses') {
-        if (typeof renderExpenses === 'function') renderExpenses();
-        if (typeof updateExpenseStats === 'function') updateExpenseStats();
-    }
-    if(targetId === 'settings') {
-        if (typeof initSettingsView === 'function') initSettingsView();
-    }
-}
-
-
-    if (typeof syncFromSupabase === 'function') {
-        syncFromSupabase().then(() => {
-            if (typeof setupRealtime === 'function') setupRealtime();
-        });
-    }
-
-    // Default to Dine-In on Load (Defensive check)
-    const dineInBtn = document.querySelector('.order-type-btn[onclick*="DINE_IN"]');
-    if (dineInBtn && typeof setOrderType === 'function') {
-        setOrderType('DINE_IN', dineInBtn);
-    }
-});
-
-// Utility: Save to LocalStorage
-// Utility: Save to LocalStorage and Sync to Supabase
-async function saveData() {
+window.saveData = async function() {
     localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
     localStorage.setItem('anokhi_sales', JSON.stringify(window.salesHistory));
     localStorage.setItem('anokhi_tables', JSON.stringify(window.tables));
@@ -312,11 +251,11 @@ async function saveData() {
     localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders));
 
     // Async push to Supabase
-    if (!db) return;
+    if (!window.db) return;
     try {
         // Upsert inventory
-        if (inventory.length > 0) {
-            await db.from('inventory').upsert(inventory.map(i => ({
+        if (window.inventory && window.inventory.length > 0) {
+            await window.db.from('inventory').upsert(window.inventory.map(i => ({
                 id: i.id,
                 name: i.name,
                 category: i.category,
@@ -328,8 +267,8 @@ async function saveData() {
         }
         
         // Upsert tables
-        if (tables.length > 0) {
-            await db.from('tables').upsert(tables.map(t => ({
+        if (window.tables && window.tables.length > 0) {
+            await window.db.from('tables').upsert(window.tables.map(t => ({
                 id: t.id,
                 name: t.name,
                 cart: t.cart,
@@ -340,7 +279,7 @@ async function saveData() {
 
         // Upsert Active Orders
         if (window.activeOrders && window.activeOrders.length > 0) {
-            await db.from('active_orders').upsert(window.activeOrders.map(o => ({
+            await window.db.from('active_orders').upsert(window.activeOrders.map(o => ({
                 id: o.id,
                 order_type: o.orderType,
                 items: o.items,
@@ -355,10 +294,12 @@ async function saveData() {
         }
 
         // For sales history, we usually only add new ones, but upsert is safer if we allow edits
-        if (expensesHistory.length > 0) { await db.from('expenses').upsert(expensesHistory); }
+        if (window.expensesHistory && window.expensesHistory.length > 0) { 
+            await window.db.from('expenses').upsert(window.expensesHistory); 
+        }
 
-        if (salesHistory.length > 0) {
-            await db.from('sales_history').upsert(salesHistory.map(s => ({
+        if (window.salesHistory && window.salesHistory.length > 0) {
+            await window.db.from('sales_history').upsert(window.salesHistory.map(s => ({
                 id: s.id,
                 date: s.date,
                 items: s.items,
@@ -376,8 +317,5 @@ async function saveData() {
         console.error('Push Error:', err);
     }
 }
-
-// Format Currency
-
-
 }
+
