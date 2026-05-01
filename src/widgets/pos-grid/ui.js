@@ -7,15 +7,15 @@ export const renderPOSGrid = (container, search = '', filterType = 'all') => {
     if (!container) return;
     container.innerHTML = '';
 
-    // Use centralized robust filter logic
-    const filtered = filterItems(inventory, search, filterType).filter(item => item.quantity > 0);
-    console.log(`Grid Rendered: Filter=${filterType}, Search="${search}", TotalItems=${inventory.length}, FilteredItems=${filtered.length}`);
+    const currentInventory = window.inventory || inventory;
+    const filtered = filterItems(currentInventory, search, filterType).filter(item => item.quantity > 0);
+    console.log(`Grid Rendered: Filter=${filterType}, Search="${search}", TotalItems=${currentInventory.length}, FilteredItems=${filtered.length}`);
 
     filtered.forEach(item => {
-        const cartItem = cart.find(c => String(c.id) === String(item.id));
+        const currentCart = window.cart || cart;
+        const cartItem = currentCart.find(c => String(c.id) === String(item.id));
         const cartQty = cartItem ? cartItem.cartQty : 0;
         const card = createItemCard(item, cartQty, addToCart, updateCartQty);
         container.appendChild(card);
     });
 };
-

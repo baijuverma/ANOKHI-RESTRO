@@ -7,10 +7,10 @@ export const renderTableGrid = (containerId, currentSelectedTable, onSelect) => 
 
     container.innerHTML = '';
     
-    // Get held bills from global state (Legacy app.js compatibility)
+    const currentTables = window.tables || tables;
     const heldBills = window.heldBills || [];
 
-    tables.forEach(table => {
+    currentTables.forEach(table => {
         const isSelected = String(table.id) === String(currentSelectedTable);
         
         // Check if table has a held bill or active cart items
