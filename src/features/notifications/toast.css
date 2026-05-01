@@ -1,40 +1,15 @@
+/* Feature: Toast Notifications */
 
-.toast-stack {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 10000;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    pointer-events: none;
-}
+/* Toast Notifications */
+.toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: var(--panel-bg); backdrop-filter: blur(12px); border: 1px solid var(--panel-border); border-radius: 12px; padding: 16px 24px; color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s ease forwards; min-width: 300px; border-left: 4px solid var(--accent-color); }
+.toast.success { border-left-color: var(--success-color); }
+.toast.error { border-left-color: var(--danger-color); }
+.toast i { font-size: 20px; }
+.toast.success i { color: var(--success-color); }
+.toast.error i { color: var(--danger-color); }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast.fade-out { animation: slideOut 0.3s ease forwards; }
+@keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
-.modern-toast {
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 16px 24px;
-    border-radius: 12px;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    animation: toastIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-    min-width: 300px;
-    pointer-events: auto;
-}
 
-@keyframes toastIn {
-    from { transform: translateX(100%) scale(0.9); opacity: 0; }
-    to { transform: translateX(0) scale(1); opacity: 1; }
-}
-
-.toast-icon {
-    font-size: 20px;
-}
-
-.toast-success { border-left: 4px solid #22c55e; }
-.toast-error { border-left: 4px solid #ef4444; }
-.toast-info { border-left: 4px solid var(--accent-color); }

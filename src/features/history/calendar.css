@@ -1,0 +1,61 @@
+/* Feature: History - Calendar Chart */
+
+/* Calendar Chart */
+.calendar-chart {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+.calendar-day {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 10px;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, border-color 0.2s;
+}
+.calendar-day:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-color);
+}
+.calendar-day.empty {
+    background: transparent;
+    border: none;
+}
+.calendar-day.empty:hover {
+    transform: none;
+}
+.calendar-date-num {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+.calendar-sales-amt {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-align: right;
+    margin-top: 8px;
+}
+.calendar-day.has-sales {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.4);
+}
+.calendar-day.has-sales .calendar-sales-amt {
+    color: var(--success-color);
+}
+
+

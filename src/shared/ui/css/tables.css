@@ -1,0 +1,45 @@
+/* Shared: Table Styles */
+
+/* Tables */
+.table-container {
+    padding: 20px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--panel-border);
+}
+
+th {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+tbody tr {
+    transition: background 0.2s ease;
+}
+
+tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-instock { background: rgba(16, 185, 129, 0.1); color: var(--success-color); }
+.status-lowstock { background: rgba(245, 158, 11, 0.1); color: var(--warning-color); }
+.status-outstock { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
+
+

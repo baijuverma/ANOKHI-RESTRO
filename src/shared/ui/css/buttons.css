@@ -1,0 +1,85 @@
+/* Shared: Buttons */
+
+/* Buttons */
+button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    font-family: var(--font-family);
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+}
+
+button, button * {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.btn-danger {
+    background-color: #ef4444 !important;
+    color: #ffffff !important;
+    border: none !important;
+    min-width: 100px;
+}
+
+.btn-danger i, .btn-danger span {
+    color: #ffffff !important;
+}
+}
+
+.btn-primary {
+    background: var(--accent-color) !important;
+    color: white !important;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    min-height: 48px;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    border: none;
+}
+.btn-primary:hover { 
+    background: var(--accent-hover) !important; 
+    transform: translateY(-2px);
+}
+
+.btn-success { 
+    background: var(--success-color) !important; 
+    color: white !important; 
+    padding: 14px 28px; 
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    min-height: 48px;
+    border: none;
+}
+.btn-success:hover { 
+    filter: brightness(1.1); 
+    transform: translateY(-2px); 
+}
+
+.btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); padding: 12px 24px; border-radius: 10px; border: 1px solid var(--danger-color); }
+.btn-danger:hover { background: var(--danger-color); color: white; transform: translateY(-2px); }
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+}
+
+.action-btn.edit:hover { background: var(--accent-color); }
+.action-btn.delete:hover { background: var(--danger-color); }
+
+

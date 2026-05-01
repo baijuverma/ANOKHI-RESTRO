@@ -1,0 +1,27 @@
+/* 
+ * src/app/index.css — Master CSS Entry Point
+ * All layer-wise CSS modules imported in correct cascade order
+ */
+
+/* Layer 0: Base (Variables, Reset, Typography) */
+@import '../shared/ui/css/base.css';
+
+/* Layer 1: Shared UI Components */
+@import '../shared/ui/css/buttons.css';
+@import '../shared/ui/css/forms.css';
+@import '../shared/ui/css/tables.css';
+@import '../shared/ui/css/utilities.css';
+
+/* Layer 2: Widgets */
+@import '../widgets/sidebar/sidebar.css';
+@import '../widgets/dashboard-stats/stats.css';
+@import '../widgets/table-grid/tables.css';
+@import '../widgets/cart/cart.css';
+
+/* Layer 3: Features */
+@import '../features/pos/pos.css';
+@import '../features/history/calendar.css';
+@import '../features/notifications/toast.css';
+
+/* Layer 4: Responsive (must be last to override) */
+@import '../shared/ui/css/responsive.css';

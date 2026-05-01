@@ -1,0 +1,220 @@
+/* Shared: Forms, Modals, Inputs, Segmented Controls */
+
+/* Forms & Modals */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active { display: flex; }
+
+.modal-content {
+    width: 100%;
+    max-width: 500px;
+    padding: 32px;
+    position: relative;
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.close-btn {
+    position: absolute;
+    top: 20px; right: 24px;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.close-btn:hover { color: var(--text-primary); }
+
+/* Floating Label Input Group */
+.payment-input-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 0px;
+    padding: 2px 8px;
+}
+
+.input-group-floating {
+    position: relative;
+    flex: 1;
+}
+
+.input-group-floating input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--panel-border);
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    background: transparent !important;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.input-group-floating label {
+    position: absolute;
+    top: 14px;
+    left: 12px;
+    color: var(--text-secondary);
+    background-color: transparent;
+    transition: 0.2s ease all;
+    pointer-events: none;
+    font-size: 14px;
+    margin: 0;
+}
+
+.input-group-floating input:focus ~ label,
+.input-group-floating input:not(:placeholder-shown) ~ label {
+    top: -10px; 
+    left: 10px;
+    font-size: 12px;
+    color: var(--accent-color);
+    font-weight: bold;
+    background-color: #0f172a; /* Match the sidebar/background color */
+    padding: 0 5px; 
+}
+
+.input-group-floating input:focus {
+    border-color: var(--accent-color);
+}
+
+.input-group-floating input.dues-field {
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.3);
+}
+
+.input-group-floating input.dues-field:focus {
+    border-color: #f87171;
+}
+
+.input-group-floating input.dues-field ~ label {
+    color: #f87171;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    align-items: flex-end;
+}
+
+/* Segmented Control (Modern Radio) */
+.segmented-control {
+    display: flex;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid var(--panel-border);
+    gap: 4px;
+    width: 100%;
+}
+
+.segmented-control input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.segmented-control label {
+    flex: 1;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 4px;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.segmented-control input[type="radio"]:checked + label {
+    background: var(--accent-color) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.segmented-control label:hover:not(.segmented-control input[type="radio"]:checked + label) {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    transition: border 0.3s ease;
+}
+
+input:focus, select:focus {
+    border-color: var(--accent-color);
+    outline: none;
+}
+
+/* Order Type Selector */
+.order-type-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.order-type-btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--panel-border);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    min-height: 40px;
+    cursor: pointer;
+}
+
+
+
+.order-type-btn:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateY(-2px);
+    color: var(--text-primary);
+}
+
+.order-type-btn.active {
+    background: linear-gradient(135deg, var(--accent-color) 0%, #4f46e5 100%);
+    border-color: transparent;
+    color: white;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
