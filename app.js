@@ -1154,6 +1154,10 @@ window.clearCart = function() {
     if(discPercentIn) discPercentIn.value = '';
     if(discFixedIn) discFixedIn.value = '';
     
+    // Reset search
+    const searchIn = document.getElementById('pos-search');
+    if(searchIn) searchIn.value = '';
+
     // Reset payment fields
     const cashIn = document.getElementById('pay-cash-amount');
     const upiIn = document.getElementById('pay-upi-amount');
@@ -1321,10 +1325,10 @@ window.holdOrder = async function() {
         if (typeof renderActiveOrders === 'function') renderActiveOrders();
         if (typeof renderTableGrid === 'function') renderTableGrid();
         
-        alert('Order Success: Order is now on Hold.');
+        showToast('Order Success: Order is now on Hold.', 'success');
     } catch (error) {
         console.error("Hold Order Error:", error);
-        alert('Internal Error. Please refresh and try again.');
+        showToast('Internal Error. Please try again.', 'error');
     }
 };
 
@@ -2428,3 +2432,25 @@ window.importItems = function() {
 
 
 
+
+/* Utility: Toast Notification */
+window.showToast = function(message, type = " success\) {
+ let container = document.querySelector(.toast-container);
+ if (!container) {
+ container = document.createElement(\div\);
+ container.className = \toast-container\;
+ document.body.appendChild(container);
+ }
+
+ const toast = document.createElement(\div\);
+ toast.className = `toast `;
+ const icon = type === \success\ ? \fa-circle-check\ : \fa-circle-exclamation\;
+ 
+ toast.innerHTML = `<i class=\fa-solid \></i><span></span>`;
+ container.appendChild(toast);
+
+ setTimeout(() => {
+ toast.classList.add(\fade-out\);
+ setTimeout(() => toast.remove(), 300);
+ }, 3000);
+}
