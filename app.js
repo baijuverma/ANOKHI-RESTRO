@@ -102,8 +102,8 @@ window.syncFromSupabase = async function() {
         }
 
         const { data: activeData } = await db.from('active_orders').select('*').order('created_at', { ascending: false });
-        if (activeData) {
-            activeOrders = activeData.map(o => ({
+        if (activeData && activeData.length > 0) {
+            window.activeOrders = activeData.map(o => ({
                 id: o.id,
                 orderType: o.order_type,
                 items: o.items,
@@ -114,7 +114,7 @@ window.syncFromSupabase = async function() {
                 customerMobile: o.customer_mobile,
                 createdAt: o.created_at
             }));
-            localStorage.setItem('anokhi_active_orders', JSON.stringify(activeOrders));
+            localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders));
         }
 
         // Re-render views safely
@@ -592,11 +592,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // Utility: Save to LocalStorage
 // Utility: Save to LocalStorage and Sync to Supabase
 async function saveData() {
-    localStorage.setItem('anokhi_inventory', JSON.stringify(inventory));
-    localStorage.setItem('anokhi_sales', JSON.stringify(salesHistory));
-    localStorage.setItem('anokhi_tables', JSON.stringify(tables));
-    localStorage.setItem('anokhi_expenses', JSON.stringify(expensesHistory));
-    localStorage.setItem('anokhi_active_orders', JSON.stringify(activeOrders));
+    localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
+    localStorage.setItem('anokhi_sales', JSON.stringify(window.salesHistory));
+    localStorage.setItem('anokhi_tables', JSON.stringify(window.tables));
+    localStorage.setItem('anokhi_expenses', JSON.stringify(window.expensesHistory));
+    localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders));
 
     // Async push to Supabase
     if (!db) return;
@@ -626,8 +626,8 @@ async function saveData() {
         }
 
         // Upsert Active Orders
-        if (activeOrders.length > 0) {
-            await db.from('active_orders').upsert(activeOrders.map(o => ({
+        if (window.activeOrders && window.activeOrders.length > 0) {
+            await db.from('active_orders').upsert(window.activeOrders.map(o => ({
                 id: o.id,
                 order_type: o.orderType,
                 items: o.items,
