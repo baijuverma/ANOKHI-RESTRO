@@ -100,7 +100,7 @@ export const appShellHTML = `
                     <p>Welcome back! Here's your restaurant summary.</p>
                 </header>
                 <div class="stats-grid">
-                    <div class="stat-card glass-panel" style="cursor: pointer;" onclick="showTodaySalesList()">
+                    <div class="stat-card glass-panel" style="cursor: pointer;" onclick="window.showTodaySalesList()">
                         <div class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
                         <div class="stat-details" style="width: 100%;">
                             <h3>Total Sale (Today)</h3>
@@ -111,7 +111,7 @@ export const appShellHTML = `
                             </div>
                         </div>
                     </div>
-                    <div class="stat-card glass-panel" id="profit-card" style="border-left: 4px solid #22c55e; cursor: pointer;" onclick="showView('history')">
+                    <div class="stat-card glass-panel" id="profit-card" style="border-left: 4px solid #22c55e; cursor: pointer;" onclick="window.showView('history')">
                         <div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div>
                         <div class="stat-details">
                             <h3>Profit / Loss (Today)</h3>
@@ -121,21 +121,21 @@ export const appShellHTML = `
                             </div>
                         </div>
                     </div>
-                    <div class="stat-card glass-panel" style="cursor: pointer;" onclick="showStockList('total')">
+                    <div class="stat-card glass-panel" style="cursor: pointer;" onclick="window.showStockList('total')">
                         <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
                         <div class="stat-details">
                             <h3>Total Items Available</h3>
                             <p id="total-items">0</p>
                         </div>
                     </div>
-                    <div class="stat-card glass-panel warning" style="cursor: pointer;" onclick="showStockList('low')">
+                    <div class="stat-card glass-panel warning" style="cursor: pointer;" onclick="window.showStockList('low')">
                         <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
                         <div class="stat-details">
                             <h3>Low Stock Items</h3>
                             <p id="low-stock">0</p>
                         </div>
                     </div>
-                    <div class="stat-card glass-panel danger" style="cursor: pointer;" onclick="showStockList('out')">
+                    <div class="stat-card glass-panel danger" style="cursor: pointer;" onclick="window.showStockList('out')">
                         <div class="stat-icon"><i class="fa-solid fa-circle-xmark"></i></div>
                         <div class="stat-details">
                             <h3>Out of Stock</h3>
@@ -525,7 +525,7 @@ export const appShellHTML = `
                         </div>
 
                         <!-- Monthly Expenses Card -->
-                        <div class="glass-panel" onclick="showView('expenses')" style="padding: 12px 20px; border-left: 4px solid #f87171; min-width: 220px; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                        <div class="glass-panel" onclick="window.showView('expenses')" style="padding: 12px 20px; border-left: 4px solid #f87171; min-width: 220px; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                             <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Expenses</h3>
                             <p id="monthly-expense-total" style="font-size: 28px; font-weight: 800; color: #f87171; margin: 0;">₹0</p>
                             <div style="font-size: 13px; margin-top: 8px; color: var(--text-secondary); font-weight: 600;">Total Spent This Month</div>
