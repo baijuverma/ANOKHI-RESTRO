@@ -53,14 +53,25 @@ function formatDateTime(isoString) {
 }
 
 // Modals
-
-function openModal(id) {
-    document.getElementById(id).classList.add('active');
+window.openModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
 }
 
-function closeModal(id) {
-    document.getElementById(id).classList.remove('active');
+window.closeModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
 }
+
+// Also expose as local functions for backward compatibility
+const openModal = window.openModal;
+const closeModal = window.closeModal;
+
+// Expose formatCurrency globally
+window.formatCurrency = formatCurrency;
+window.getDDMMYYYY = getDDMMYYYY;
+window.formatDateTime = formatDateTime;
+window.formatDateLabel = formatDateLabel;
 
 
 function formatDateLabel(isoString) {
@@ -86,42 +97,40 @@ window.showView = function(target) {
     const views = document.querySelectorAll('.view-section');
     const navItems = document.querySelectorAll('.nav-item');
     
-    console.log('Switching to view:', target);
+    console.log('showView called:', target);
 
-    // Hide all views
+    // Hide ALL views by removing .active (CSS: .view-section { display:none } .view-section.active { display:flex })
     views.forEach(v => {
         v.classList.remove('active');
-        v.classList.add('hidden');
     });
     
-    // Show target view
+    // Show only the target view
     const targetView = document.getElementById(target);
     if (targetView) {
         targetView.classList.add('active');
-        targetView.classList.remove('hidden');
         console.log('View activated:', target);
     } else {
-        console.warn('Target view not found:', target);
+        console.warn('showView: Target view not found:', target);
     }
 
-    // Update active nav in sidebar
+    // Update active nav highlight
     navItems.forEach(item => {
         item.classList.remove('active');
-        if(item.getAttribute('data-target') === target) {
+        if (item.getAttribute('data-target') === target) {
             item.classList.add('active');
         }
     });
 
-    // Refresh view specific data safely
-    if(target === 'dashboard' && typeof updateDashboard === 'function') updateDashboard();
-    if(target === 'inventory' && typeof renderInventory === 'function') renderInventory();
-    if(target === 'pos' && typeof renderPOSItems === 'function') renderPOSItems();
-    if(target === 'history' && typeof renderHistory === 'function') renderHistory();
-    if(target === 'expenses') {
-        if (typeof renderExpenses === 'function') renderExpenses();
-        if (typeof updateExpenseStats === 'function') updateExpenseStats();
+    // Refresh view-specific data
+    if (target === 'dashboard' && typeof window.updateDashboard === 'function') window.updateDashboard();
+    if (target === 'inventory' && typeof window.renderInventory === 'function') window.renderInventory();
+    if (target === 'pos' && typeof window.renderPOSItems === 'function') window.renderPOSItems();
+    if (target === 'history' && typeof window.renderHistory === 'function') window.renderHistory();
+    if (target === 'expenses') {
+        if (typeof window.renderExpenses === 'function') window.renderExpenses();
+        if (typeof window.updateExpenseStats === 'function') window.updateExpenseStats();
     }
-    if(target === 'settings' && typeof initSettingsView === 'function') initSettingsView();
+    if (target === 'settings' && typeof window.initSettingsView === 'function') window.initSettingsView();
 }
 
 window.toggleSidebar = function() {

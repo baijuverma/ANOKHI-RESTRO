@@ -165,7 +165,7 @@ export const appShellHTML = `
             </section>
 
             <!-- Inventory View -->
-            <section id="inventory" class="view-section hidden">
+            <section id="inventory" class="view-section">
                 <header class="flex-between">
                     <div>
                         <h1>Inventory Management</h1>
@@ -303,7 +303,7 @@ export const appShellHTML = `
             </section>
 
             <!-- POS View -->
-            <section id="pos" class="view-section hidden">
+            <section id="pos" class="view-section">
                 <div class="pos-layout">
                     <!-- Left Pane: Tables + Items -->
                     <div class="pos-left-pane">
@@ -455,7 +455,7 @@ export const appShellHTML = `
             </section>
 
             <!-- Settings View -->
-            <section id="settings" class="view-section hidden">
+            <section id="settings" class="view-section">
                 <header>
                     <h1>System Settings</h1>
                     <p>Configure your restaurant layout and preferences</p>
@@ -500,7 +500,7 @@ export const appShellHTML = `
             </section>
 
             <!-- History View -->
-            <section id="history" class="view-section hidden">
+            <section id="history" class="view-section">
                 <header class="flex-between">
                     <div>
                         <h1>Sales History</h1>

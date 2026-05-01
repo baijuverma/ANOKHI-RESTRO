@@ -110,7 +110,7 @@ export function initBoot() {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             const target = item.getAttribute('data-target');
-            if (typeof showView === 'function') showView(target);
+            if (typeof window.showView === 'function') window.showView(target);
         });
     });
 
