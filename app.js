@@ -1095,7 +1095,9 @@ window.newBill = function() {
 }
 
 window.calculateTotal = function() {
-    let subtotal = cart.reduce((sum, item) => sum + (item.price * item.cartQty), 0);
+    const currentCart = window.cart || [];
+    let subtotal = currentCart.reduce((sum, item) => sum + (item.price * item.cartQty), 0);
+    
     let discPercentInput = document.getElementById('cart-discount-percent');
     let discFixedInput = document.getElementById('cart-discount-fixed');
     
@@ -1116,29 +1118,38 @@ window.calculateTotal = function() {
     }
     
     let advancePaid = 0;
-    if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
-        const table = tables.find(t => t.id === currentSelectedTable);
-        if (table) advancePaid = table.advance;
+    if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
+        const table = (window.tables || []).find(t => t.id === window.currentSelectedTable);
+        if (table) advancePaid = table.advance || 0;
     }
 
     let totalBeforeRound = subtotal - discountAmount - advancePaid;
     let finalTotal = Math.max(0, Math.round(totalBeforeRound));
+    let roundOffVal = finalTotal - totalBeforeRound;
     let refundAmount = totalBeforeRound < 0 ? Math.abs(Math.round(totalBeforeRound)) : 0;
 
-    const refundInfo = document.getElementById('refund-info');
+    // Update Round Off UI
+    const roundOffEl = document.getElementById('cart-roundoff');
+    if (roundOffEl) {
+        const sign = roundOffVal >= 0 ? '+' : '';
+        roundOffEl.innerText = sign + formatCurrency(roundOffVal);
+        roundOffEl.style.color = roundOffVal === 0 ? 'var(--text-secondary)' : (roundOffVal > 0 ? 'var(--success-color)' : 'var(--danger-color)');
+    }
+
     const totalLabel = document.getElementById('cart-total-label');
     if(totalLabel) totalLabel.innerText = (refundAmount > 0) ? 'Payable' : 'Total';
 
-    document.getElementById('cart-total').innerText = formatCurrency(finalTotal);
+    const totalEl = document.getElementById('cart-total');
+    if (totalEl) totalEl.innerText = formatCurrency(finalTotal);
     
     // Update dues whenever total changes
     if (typeof calculateDues === 'function') calculateDues();
     
-    return { subtotal, discount: discountAmount, advance: advancePaid, roundOff, total: finalTotal };
+    return { subtotal, discount: discountAmount, advance: advancePaid, roundOff: roundOffVal, total: finalTotal };
 }
 
 window.clearCart = function() {
-    cart = [];
+    window.cart = [];
     const discPercentIn = document.getElementById('cart-discount-percent');
     const discFixedIn = document.getElementById('cart-discount-fixed');
     if(discPercentIn) discPercentIn.value = '';
@@ -1151,12 +1162,12 @@ window.clearCart = function() {
     if(upiIn) upiIn.value = '';
 
     // Reset editing state
-    editingSaleId = null;
-    previousPaidAmount = 0;
+    window.editingSaleId = null;
+    window.previousPaidAmount = 0;
     const prevPaidRow = document.getElementById('prev-paid-row');
     if(prevPaidRow) prevPaidRow.style.display = 'none';
     
-    renderCart();
+    if (typeof renderCart === 'function') renderCart();
 }
 
 window.calculateDues = function() {
@@ -1264,23 +1275,23 @@ window.completeCreditSale = function() {
 
 // Active Orders (Hold/Takeaway) Logic
 window.holdOrder = async function() {
-    console.log("Hold Order Triggered. Cart Length:", cart.length);
+    const currentCart = window.cart || [];
+    console.log("Hold Order Triggered. Cart Length:", currentCart.length);
     
-    if (!cart || cart.length === 0) {
+    if (currentCart.length === 0) {
         return alert('Cart is empty! Please add some items first.');
     }
     
-    // For Dine-In, we already have table-based persistence
-    if (selectedOrderType === 'DINE_IN' && !currentSelectedTable) {
+    if (window.selectedOrderType === 'DINE_IN' && !window.currentSelectedTable) {
         return alert('Please select a Table first or switch to Takeaway mode to hold this order.');
     }
 
     try {
-        const totals = calculateTotal();
+        const totals = window.calculateTotal();
         const newActiveOrder = {
             id: `ACT-${Date.now()}`,
-            orderType: selectedOrderType,
-            items: JSON.parse(JSON.stringify(cart)), // Deep copy
+            orderType: window.selectedOrderType,
+            items: JSON.parse(JSON.stringify(currentCart)),
             total: totals.total,
             discount: totals.discount || 0,
             roundOff: totals.roundOff || 0,
@@ -1289,23 +1300,27 @@ window.holdOrder = async function() {
             createdAt: new Date().toISOString()
         };
 
-        console.log("Saving Active Order:", newActiveOrder);
         activeOrders.unshift(newActiveOrder);
         
         // If it was a Dine-In table, clear that table's cart
-        if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
-            const tIdx = tables.findIndex(t => t.id === currentSelectedTable);
+        if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
+            const allTables = window.tables || [];
+            const tIdx = allTables.findIndex(t => t.id === window.currentSelectedTable);
             if (tIdx > -1) {
-                tables[tIdx].cart = [];
-                tables[tIdx].advance = 0;
+                allTables[tIdx].cart = [];
+                allTables[tIdx].advance = 0;
             }
         }
 
-        await saveData();
-        clearCart();
+        // Save locally first so UI updates even if DB is slow/fails
+        localStorage.setItem('anokhi_active_orders', JSON.stringify(activeOrders));
+        localStorage.setItem('anokhi_tables', JSON.stringify(window.tables));
         
-        // Reset state
-        currentSelectedTable = null;
+        // Background sync to Supabase
+        saveData().catch(e => console.warn("Background sync failed during hold:", e));
+
+        window.clearCart();
+        window.currentSelectedTable = null;
         const tableNameEl = document.getElementById('current-table-name');
         if (tableNameEl) tableNameEl.innerText = 'No Table Selected';
         
@@ -1314,8 +1329,8 @@ window.holdOrder = async function() {
         
         alert('Order Success: Order is now on Hold.');
     } catch (error) {
-        console.error("Hold Order Error:", error);
-        alert('Error: Could not hold order. Check console for details.');
+        console.error("Hold Order Critical Error:", error);
+        alert('Could not hold order. Error: ' + error.message);
     }
 };
 
