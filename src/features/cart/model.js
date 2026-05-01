@@ -52,6 +52,12 @@ export const reduceLastItemQty = () => {
     }
 };
 
+export const setCart = (newCart) => {
+    cart = [...newCart];
+    window.cart = cart;
+    if (window.refreshUI) window.refreshUI();
+};
+
 export const clearCart = () => {
     cart = [];
     syncWithWindow();

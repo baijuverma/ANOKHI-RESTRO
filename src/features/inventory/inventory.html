@@ -1,0 +1,39 @@
+
+<div class="inventory-wrapper">
+    <div class="inventory-header">
+        <h2><i class="fa-solid fa-boxes-stacked"></i> Inventory Management</h2>
+        <div class="header-actions">
+            <button class="btn-primary" onclick="openAddItemModal()">
+                <i class="fa-solid fa-plus"></i> Add New Item
+            </button>
+            <button class="btn-secondary" onclick="importItems()">
+                <i class="fa-solid fa-file-import"></i> Import Defaults
+            </button>
+        </div>
+    </div>
+
+    <div class="inventory-filters mt-4">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="inventory-search" placeholder="Filter items...">
+        </div>
+    </div>
+
+    <div class="table-container glass-panel mt-6">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>Item ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="inventory-tbody-modular">
+                <!-- Data injected here -->
+            </tbody>
+        </table>
+    </div>
+</div>

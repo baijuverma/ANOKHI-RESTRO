@@ -1148,7 +1148,11 @@ window.calculateTotal = function() {
 }
 
 window.clearCart = function() {
-    window.cart = [];
+    if (typeof window.setCart === 'function') {
+        window.setCart([]);
+    } else {
+        window.cart = [];
+    }
     const discPercentIn = document.getElementById('cart-discount-percent');
     const discFixedIn = document.getElementById('cart-discount-fixed');
     if(discPercentIn) discPercentIn.value = '';
@@ -1341,7 +1345,12 @@ window.loadActiveOrder = async function(id) {
         if (!confirm('Cart has items. Replace with this active order?')) return;
     }
 
-    window.cart = JSON.parse(JSON.stringify(order.items));
+    const newCart = JSON.parse(JSON.stringify(order.items));
+    if (typeof window.setCart === 'function') {
+        window.setCart(newCart);
+    } else {
+        window.cart = newCart;
+    }
     window.selectedOrderType = order.orderType;
     
     // Update UI for order type

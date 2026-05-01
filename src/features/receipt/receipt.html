@@ -1,0 +1,45 @@
+
+<div class="receipt-preview glass-panel">
+    <div class="receipt-paper" id="printable-receipt">
+        <div class="receipt-header">
+            <h2>ANOKHI RESTRO</h2>
+            <p>123, Food Street, Main City</p>
+            <p>Tel: +91 9876543210</p>
+        </div>
+        
+        <div class="receipt-info">
+            <p>Bill #: <span id="rec-bill-id"></span></p>
+            <p>Date: <span id="rec-date"></span></p>
+            <p>Type: <span id="rec-type"></span></p>
+        </div>
+
+        <div class="receipt-items">
+            <table id="rec-items-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Amt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Items injected here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="receipt-totals">
+            <div class="row"><span>Subtotal:</span><span id="rec-subtotal"></span></div>
+            <div class="row grand"><span>GRAND TOTAL:</span><span id="rec-total"></span></div>
+        </div>
+
+        <div class="receipt-footer">
+            <p>Thank you for visiting!</p>
+            <p>Visit again soon</p>
+        </div>
+    </div>
+    
+    <button class="btn-print" onclick="window.print()">
+        <i class="fa-solid fa-print"></i> PRINT RECEIPT
+    </button>
+</div>

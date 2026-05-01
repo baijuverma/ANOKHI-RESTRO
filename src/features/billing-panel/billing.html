@@ -1,0 +1,26 @@
+
+<div class="billing-container glass-panel">
+    <div class="billing-header">
+        <h3><i class="fa-solid fa-receipt"></i> Current Bill</h3>
+        <button class="btn-clear" onclick="clearCart()">Clear All</button>
+    </div>
+    
+    <div id="cart-items-container" class="cart-items-list">
+        <!-- Items will be injected here -->
+    </div>
+
+    <div class="billing-summary">
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="bill-subtotal">₹0.00</span>
+        </div>
+        <div class="summary-row accent">
+            <span>Total Payable</span>
+            <span id="bill-total">₹0.00</span>
+        </div>
+    </div>
+
+    <button class="btn-process-sale full-width" onclick="processSale()">
+        PROCEED TO PAYMENT
+    </button>
+</div>

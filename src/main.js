@@ -1,7 +1,7 @@
 import { syncInventory } from './entities/inventory/model.js';
 import { syncTables } from './entities/table/model.js';
 import { getSupabase, subscribeToTable } from './shared/api/supabase.js';
-import { addToCart, updateCartQty, reduceLastItemQty, cart } from './features/cart/model.js';
+import { addToCart, updateCartQty, reduceLastItemQty, cart, setCart } from './features/cart/model.js';
 import { renderPOSGrid } from './widgets/pos-grid/ui.js';
 import { renderCartWidget } from './widgets/cart/ui.js';
 import { renderTableGrid as renderTableWidget } from './widgets/table-grid/ui.js';
@@ -26,6 +26,7 @@ window.addToCart = addToCart;
 window.updateCartQty = updateCartQty;
 window.setPOSFilter = setFilter;
 window.setOrderType = setOrderType;
+window.setCart = setCart;
 window.initSettingsView = initSettingsWidgets;
 
 window.renderTableGrid = () => {

@@ -1,0 +1,38 @@
+
+<div class="expenses-wrapper">
+    <div class="expenses-header">
+        <h2><i class="fa-solid fa-wallet"></i> Business Expenses</h2>
+        <button class="btn-danger" onclick="openExpenseModal()">
+            <i class="fa-solid fa-minus-circle"></i> Log New Expense
+        </button>
+    </div>
+
+    <div class="expense-stats-grid mt-6">
+        <div class="mini-stat-card glass-panel">
+            <p>Today's Expenses</p>
+            <h3 id="exp-today-total">₹0.00</h3>
+        </div>
+        <div class="mini-stat-card glass-panel">
+            <p>Monthly Total</p>
+            <h3 id="exp-monthly-total">₹0.00</h3>
+        </div>
+    </div>
+
+    <div class="expense-table-container glass-panel mt-6">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Payment</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="expenses-tbody-modular">
+                <!-- Data injected here -->
+            </tbody>
+        </table>
+    </div>
+</div>
