@@ -30,3 +30,26 @@
     font-size: 20px;
     color: var(--danger-color);
 }
+
+.searchable-dropdown { position: relative; width: 100%; }
+.dropdown-arrow { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none; transition: transform 0.2s; font-size: 12px; }
+.searchable-dropdown input:focus + .dropdown-arrow { transform: translateY(-50%) rotate(180deg); color: var(--accent-color); }
+
+.suggestions-panel { 
+    position: absolute; top: calc(100% + 5px); left: 0; width: 100%; 
+    background: #1e293b; border: 1px solid var(--panel-border); border-radius: 8px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000; max-height: 200px; overflow-y: auto; 
+    backdrop-filter: blur(10px);
+}
+.suggestions-panel.hidden { display: none; }
+
+.suggestion-item { padding: 10px 15px; cursor: pointer; color: var(--text-primary); font-size: 14px; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.suggestion-item:last-child { border-bottom: none; }
+.suggestion-item:hover { background: var(--accent-color); color: white; }
+.suggestion-item.empty { color: var(--text-secondary); font-style: italic; cursor: default; }
+.suggestion-item.empty:hover { background: transparent; }
+
+/* Custom Scrollbar for panel */
+.suggestions-panel::-webkit-scrollbar { width: 6px; }
+.suggestions-panel::-webkit-scrollbar-track { background: transparent; }
+.suggestions-panel::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 10px; }

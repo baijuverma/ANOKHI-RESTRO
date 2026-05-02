@@ -1,55 +1,96 @@
 export function initExpensesLogic() {
-    window.updateExpenseSubCats = function() {
-        const mainCatEl = document.getElementById('expense-main-cat');
-        const subCatEl = document.getElementById('expense-sub-cat');
-        const subCatList = document.getElementById('sub-cat-list');
-        
-        if (!mainCatEl || !subCatList) return;
-
-        const mainCatValue = mainCatEl.value;
-        
-        // Map Display Names to internal keys
-        const categoryMap = {
-            'Staff & Payroll': 'staff',
-            'Raw Material/Ingredients': 'material',
-            'Operations & Maintenance': 'operation',
-            'Other Expenses': 'other'
-        };
-
-        const key = categoryMap[mainCatValue];
-        const subCats = {
-            'staff': ['Staff Salary', 'Staff Advance', 'Incentives/Bonus', 'Staff Meals', 'Uniforms', 'Training', 'Staff Welfare'],
-            'material': ['Groceries & Spices', 'Vegetables & Fruits', 'Meat, Fish & Poultry', 'Dairy & Eggs', 'Oil & Ghee', 'Flour/Rice/Dal', 'Beverages/Soft Drinks', 'Water Cans', 'Tea/Coffee/Milk', 'Bakery Items'],
-            'operation': ['Rent', 'Electricity Bill', 'Water Bill', 'Gas/Fuel', 'Internet/Phone', 'Marketing/Ads', 'Repairs & Maintenance', 'Cleaning Supplies', 'Packaging Material', 'Software/POS Subscription', 'Waste Management', 'License/Legal', 'Stationery', 'Electricity Repair', 'Plumbing'],
-            'other': ['Miscellaneous', 'Petty Cash', 'Transport/Delivery', 'Taxes', 'Others', 'Donations', 'Bank Charges']
-        };
-
-        // Clear existing list
-        subCatList.innerHTML = '';
-
-        if (key && subCats[key]) {
-            subCats[key].forEach(sub => {
-                const opt = document.createElement('option');
-                opt.value = sub;
-                subCatList.appendChild(opt);
-            });
-            
-            // If main category is a perfect match from our list, clear sub-cat to avoid mismatched data
-            if (subCatEl && !subCats[key].includes(subCatEl.value)) {
-                // Only clear if the current sub-cat doesn't belong to the new main category
-                // This prevents clearing when just typing
-            }
+    // --- Custom Searchable Dropdown Logic ---
+    const expenseData = {
+        main: ['Staff & Payroll', 'Raw Material/Ingredients', 'Operations & Maintenance', 'Other Expenses'],
+        sub: {
+            'Staff & Payroll': ['Staff Salary', 'Staff Advance', 'Incentives/Bonus', 'Staff Meals', 'Uniforms', 'Training', 'Staff Welfare'],
+            'Raw Material/Ingredients': ['Groceries & Spices', 'Vegetables & Fruits', 'Meat, Fish & Poultry', 'Dairy & Eggs', 'Oil & Ghee', 'Flour/Rice/Dal', 'Beverages/Soft Drinks', 'Water Cans', 'Tea/Coffee/Milk', 'Bakery Items'],
+            'Operations & Maintenance': ['Rent', 'Electricity Bill', 'Water Bill', 'Gas/Fuel', 'Internet/Phone', 'Marketing/Ads', 'Repairs & Maintenance', 'Cleaning Supplies', 'Packaging Material', 'Software/POS Subscription', 'Waste Management', 'License/Legal', 'Stationery', 'Electricity Repair', 'Plumbing'],
+            'Other Expenses': ['Miscellaneous', 'Petty Cash', 'Transport/Delivery', 'Taxes', 'Others', 'Donations', 'Bank Charges']
         }
     };
 
-    // Add direct event listener as reinforcement
-    setTimeout(() => {
-        const mainCatEl = document.getElementById('expense-main-cat');
-        if (mainCatEl) {
-            mainCatEl.addEventListener('input', window.updateExpenseSubCats);
-            console.log('Expense sub-category input listener attached');
+    window.showSuggestions = function(inputId, panelId) {
+        const input = document.getElementById(inputId);
+        const panel = document.getElementById(panelId);
+        if (!input || !panel) return;
+
+        // Populate panel based on input type
+        let items = [];
+        if (inputId === 'expense-main-cat') {
+            items = expenseData.main;
+        } else {
+            const mainValue = document.getElementById('expense-main-cat').value;
+            items = expenseData.sub[mainValue] || [];
         }
-    }, 500);
+
+        renderSuggestions(items, input, panel);
+        panel.classList.remove('hidden');
+    };
+
+    window.handleSearchableInput = function(inputId, panelId) {
+        const input = document.getElementById(inputId);
+        const panel = document.getElementById(panelId);
+        const query = input.value.toLowerCase();
+
+        let items = [];
+        if (inputId === 'expense-main-cat') {
+            items = expenseData.main.filter(i => i.toLowerCase().includes(query));
+        } else {
+            const mainValue = document.getElementById('expense-main-cat').value;
+            items = (expenseData.sub[mainValue] || []).filter(i => i.toLowerCase().includes(query));
+        }
+
+        renderSuggestions(items, input, panel);
+        panel.classList.remove('hidden');
+    };
+
+    window.toggleSuggestions = function(inputId, panelId) {
+        const panel = document.getElementById(panelId);
+        if (panel.classList.contains('hidden')) {
+            window.showSuggestions(inputId, panelId);
+        } else {
+            panel.classList.add('hidden');
+        }
+    };
+
+    function renderSuggestions(items, input, panel) {
+        panel.innerHTML = '';
+        if (items.length === 0) {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item empty';
+            div.textContent = 'No suggestions (Type custom)';
+            panel.appendChild(div);
+            return;
+        }
+
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.textContent = item;
+            div.onclick = () => {
+                input.value = item;
+                panel.classList.add('hidden');
+                // Trigger sub-cat update if main cat was selected
+                if (input.id === 'expense-main-cat') {
+                    const subInput = document.getElementById('expense-sub-cat');
+                    if (subInput) subInput.value = '';
+                }
+            };
+            panel.appendChild(div);
+        });
+    }
+
+    // Hide panels on click outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.searchable-dropdown')) {
+            document.querySelectorAll('.suggestions-panel').forEach(p => p.classList.add('hidden'));
+        }
+    });
+
+    window.updateExpenseSubCats = function() {
+        // Kept for backward compatibility but logic is now in showSuggestions
+    };
 
     window.handleExpenseSubmit = async function(e) {
         e.preventDefault();
