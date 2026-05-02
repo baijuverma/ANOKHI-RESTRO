@@ -496,84 +496,83 @@ window.renderActiveOrders = function() {
 };
 
 function finalizeSaleRecord(custName = null, custMobile = null) {
-    const totals = calculateTotal();
+    const totals = window.calculateTotal() || { total: 0, discount: 0, roundOff: 0, advance: 0 };
     const total = totals.total;
     const discount = totals.discount;
     const roundOff = totals.roundOff;
+    
     // Get current payment values
     const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
     const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
 
-    // Merge payments if editing
-    let finalCash = payCash;
-    let finalUpi = payUpi;
     let finalSaleId = Math.floor(100000 + Math.random() * 900000).toString();
     let finalCustName = custName;
     let finalCustMobile = custMobile;
 
     if (window.editingSaleId) {
-        const oldSale = window.salesHistory.find(s => s.id == window.editingSaleId);
+        const oldSale = (window.salesHistory || []).find(s => s.id == window.editingSaleId);
         if (oldSale) {
             finalSaleId = oldSale.id;
-            // Restore inventory for old items before re-applying update
             if (oldSale.items) {
                 oldSale.items.forEach(oldItem => {
                     const invItem = (window.inventory || []).find(i => i.id === oldItem.id);
                     if (invItem) invItem.quantity += oldItem.cartQty;
                 });
             }
-            
-            // Note: We don't merge payments here because the user entered the NEW total split in the UI
-            // But if the user wants to keep track of cumulative payments, we could.
-            // For now, let's assume the UI has the current final payment values.
-            
             if (!finalCustName) finalCustName = oldSale.customerName;
             if (!finalCustMobile) finalCustMobile = oldSale.customerMobile;
-            
-            // Remove old record
             window.salesHistory = window.salesHistory.filter(s => s.id != window.editingSaleId);
         }
     }
 
-    const finalSplitAmounts = { cash: finalCash, upi: finalUpi };
+    const finalSplitAmounts = { cash: payCash, upi: payUpi };
 
     // Deduct Inventory
-    cart.forEach(cartItem => {
-        const invItem = inventory.find(i => i.id === cartItem.id);
+    (window.cart || []).forEach(cartItem => {
+        const invItem = (window.inventory || []).find(i => i.id === cartItem.id);
         if(invItem) {
             invItem.quantity -= cartItem.cartQty;
         }
     });
 
+    // Determine Table Name
+    let tableName = null;
+    if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
+        const table = (window.tables || []).find(t => t.id === window.currentSelectedTable);
+        tableName = table ? table.name : window.currentSelectedTable;
+    }
+
     // Record Sale
     const sale = {
         id: finalSaleId,
         date: new Date().toISOString(),
-        items: [...cart],
+        items: [...window.cart],
         total: total,
         discount: discount,
         roundOff: roundOff,
-        paymentMode: (finalCash > 0 && finalUpi > 0) ? 'BOTH' : (finalUpi > 0 ? 'UPI' : 'CASH'),
+        paymentMode: (payCash > 0 && payUpi > 0) ? 'BOTH' : (payUpi > 0 ? 'UPI' : 'CASH'),
         splitAmounts: finalSplitAmounts,
-        orderType: selectedOrderType,
-        tableName: selectedOrderType === 'DINE_IN' && currentSelectedTable ? tables.find(t => t.id === currentSelectedTable).name : null,
+        orderType: window.selectedOrderType,
+        tableName: tableName,
         advancePaid: totals.advance,
         customerName: finalCustName,
         customerMobile: finalCustMobile,
-        dues: Math.max(0, total - (finalCash + finalUpi))
+        dues: Math.max(0, total - (payCash + payUpi))
     };
     
     // Clear held table if applicable
-    if (selectedOrderType === 'DINE_IN' && currentSelectedTable) {
-        const tableIndex = tables.findIndex(t => t.id === currentSelectedTable);
+    if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
+        const tableIndex = (window.tables || []).findIndex(t => t.id === window.currentSelectedTable);
         if (tableIndex > -1) {
-            tables[tableIndex].cart = [];
-            tables[tableIndex].advance = 0;
+            window.tables[tableIndex].cart = [];
+            window.tables[tableIndex].advance = 0;
         }
     }
 
-    salesHistory.unshift(sale);
-    saveData();
+    if (!window.salesHistory) window.salesHistory = [];
+    window.salesHistory.unshift(sale);
+    
+    if (typeof window.saveData === 'function') window.saveData();
 
     // Reset editing state
     editingSaleId = null;

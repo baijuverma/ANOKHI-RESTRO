@@ -755,11 +755,11 @@ export const appShellHTML = `
             
             <div class="form-group">
                 <label><i class="fa-solid fa-user"></i> Customer Name</label>
-                <input type="text" id="cust-name" placeholder="Enter full name..." required>
+                <input type="text" id="cust-name" placeholder="Enter full name..." required onkeyup="if(event.key === 'Enter') document.getElementById('cust-mobile').focus()">
             </div>
             <div class="form-group">
                 <label><i class="fa-solid fa-phone"></i> Mobile Number</label>
-                <input type="tel" id="cust-mobile" placeholder="Enter 10-digit mobile..." maxlength="10" required>
+                <input type="tel" id="cust-mobile" placeholder="Enter 10-digit mobile..." maxlength="10" required onkeyup="if(event.key === 'Enter') completeCreditSale()">
             </div>
             
             <div id="dues-amount-notice" style="margin-bottom: 20px; padding: 12px; background: rgba(248, 113, 113, 0.1); border-radius: 8px; border: 1px solid rgba(248, 113, 113, 0.2); text-align: center;">
