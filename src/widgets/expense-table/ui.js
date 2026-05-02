@@ -15,11 +15,11 @@ export const renderExpenseTable = (containerId, expenses, onDelete) => {
     container.innerHTML = expenses.map(exp => `
         <tr>
             <td>${new Date(exp.date).toLocaleDateString()}</td>
-            <td><span class="category-tag">${exp.category}</span></td>
-            <td>${exp.subCategory || '-'}</td>
+            <td><span class="category-tag">${exp.main_category || exp.category}</span></td>
+            <td>${exp.sub_category || exp.subCategory || '-'}</td>
             <td>₹${exp.amount}</td>
-            <td>${exp.paymentMode}</td>
-            <td>${exp.reason || '-'}</td>
+            <td><span class="status-badge">${exp.payment_mode || exp.paymentMode}</span></td>
+            <td title="${exp.description || exp.reason || ''}">${exp.description || exp.reason || '-'}</td>
             <td>
                 <button onclick="deleteExpenseItem('${exp.id}')" class="btn-icon" style="color: var(--danger-color);"><i class="fa-solid fa-trash"></i></button>
             </td>

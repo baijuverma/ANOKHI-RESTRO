@@ -303,26 +303,37 @@ export function initSupabaseLogic() {
                 })));
             }
 
-            if (window.expensesHistory.length > 0) { await db.from('expenses').upsert(window.expensesHistory); }
-
-            if (window.salesHistory.length > 0) {
+            if (window.salesHistory && window.salesHistory.length > 0) {
                 await db.from('sales_history').upsert(window.salesHistory.map(s => ({
                     id: s.id,
                     date: s.date,
                     items: s.items,
                     total: s.total,
-                    discount: s.discount,
-                    round_off: s.roundOff,
+                    discount: s.discount || 0,
+                    round_off: s.roundOff || 0,
                     payment_mode: s.paymentMode,
                     split_amounts: s.splitAmounts,
                     order_type: s.orderType,
                     table_name: s.tableName,
-                    advance_paid: s.advancePaid
+                    table_id: s.tableId,
+                    advance_paid: s.advancePaid || 0,
+                    customer_name: s.customerName,
+                    customer_mobile: s.customerMobile,
+                    dues: s.dues || 0
                 })));
             }
-        } catch (err) {
-            console.error('Push Error:', err);
-        }
+
+            if (window.expensesHistory && window.expensesHistory.length > 0) {
+                await db.from('expenses').upsert(window.expensesHistory.map(e => ({
+                    id: e.id,
+                    date: e.date,
+                    main_category: e.main_category,
+                    sub_category: e.sub_category,
+                    amount: e.amount,
+                    payment_mode: e.payment_mode,
+                    description: e.description
+                })));
+            }
     };
 
     // Auto-sync on init
