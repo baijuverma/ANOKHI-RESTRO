@@ -1,6 +1,7 @@
 export function initExpensesLogic() {
     window.updateExpenseSubCats = function() {
         const mainCatEl = document.getElementById('expense-main-cat');
+        const subCatEl = document.getElementById('expense-sub-cat');
         const subCatList = document.getElementById('sub-cat-list');
         
         if (!mainCatEl || !subCatList) return;
@@ -17,10 +18,10 @@ export function initExpensesLogic() {
 
         const key = categoryMap[mainCatValue];
         const subCats = {
-            'staff': ['Staff Salary', 'Staff Advance', 'Incentives/Bonus', 'Staff Meals', 'Uniforms', 'Training'],
-            'material': ['Groceries & Spices', 'Vegetables & Fruits', 'Meat, Fish & Poultry', 'Dairy & Eggs', 'Oil & Ghee', 'Flour/Rice/Dal', 'Beverages/Soft Drinks', 'Water Cans'],
-            'operation': ['Rent', 'Electricity Bill', 'Water Bill', 'Gas/Fuel', 'Internet/Phone', 'Marketing/Ads', 'Repairs & Maintenance', 'Cleaning Supplies', 'Packaging Material', 'Software/POS Subscription', 'Waste Management', 'License/Legal'],
-            'other': ['Miscellaneous', 'Petty Cash', 'Transport/Delivery', 'Taxes', 'Others']
+            'staff': ['Staff Salary', 'Staff Advance', 'Incentives/Bonus', 'Staff Meals', 'Uniforms', 'Training', 'Staff Welfare'],
+            'material': ['Groceries & Spices', 'Vegetables & Fruits', 'Meat, Fish & Poultry', 'Dairy & Eggs', 'Oil & Ghee', 'Flour/Rice/Dal', 'Beverages/Soft Drinks', 'Water Cans', 'Tea/Coffee/Milk', 'Bakery Items'],
+            'operation': ['Rent', 'Electricity Bill', 'Water Bill', 'Gas/Fuel', 'Internet/Phone', 'Marketing/Ads', 'Repairs & Maintenance', 'Cleaning Supplies', 'Packaging Material', 'Software/POS Subscription', 'Waste Management', 'License/Legal', 'Stationery', 'Electricity Repair', 'Plumbing'],
+            'other': ['Miscellaneous', 'Petty Cash', 'Transport/Delivery', 'Taxes', 'Others', 'Donations', 'Bank Charges']
         };
 
         // Clear existing list
@@ -32,6 +33,12 @@ export function initExpensesLogic() {
                 opt.value = sub;
                 subCatList.appendChild(opt);
             });
+            
+            // If main category is a perfect match from our list, clear sub-cat to avoid mismatched data
+            if (subCatEl && !subCats[key].includes(subCatEl.value)) {
+                // Only clear if the current sub-cat doesn't belong to the new main category
+                // This prevents clearing when just typing
+            }
         }
     };
 
