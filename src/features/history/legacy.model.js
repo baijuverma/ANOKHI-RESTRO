@@ -82,7 +82,7 @@ window.showTodaySalesList = function() {
 window.updateCalendarView = function() {
     const m = parseInt(document.getElementById('calendar-month-select').value);
     const y = parseInt(document.getElementById('calendar-year-select').value);
-    currentCalendarDate = new Date(y, m, 1);
+    window.currentCalendarDate = new Date(y, m, 1);
     
     renderHistory();
 }
@@ -92,10 +92,10 @@ function renderCalendarChart(dailyTotals) {
     if(!wrapper) return;
 
     let targetDate = new Date();
-    if (currentCalendarDate) {
-        targetDate = currentCalendarDate;
+    if (window.currentCalendarDate) {
+        targetDate = window.currentCalendarDate;
     } else {
-        currentCalendarDate = targetDate;
+        window.currentCalendarDate = targetDate;
     }
     
     const year = targetDate.getFullYear();
@@ -216,33 +216,41 @@ function renderHistoryCards() {
 
     let mTotal = 0, mCash = 0, mUpi = 0;
     monthlySales.forEach(s => {
-        const amt = parseFloat(s.total) || 0;
-        mTotal += amt;
-        if (s.paymentMode === "UPI") mUpi += amt;
+        mTotal += s.total;
+        if (s.paymentMode === "UPI") mUpi += s.total;
         else if (s.paymentMode === "BOTH" && s.splitAmounts) {
-            mUpi += parseFloat(s.splitAmounts.upi) || 0;
-            mCash += parseFloat(s.splitAmounts.cash) || 0;
-        } else mCash += amt;
+            mUpi += (s.splitAmounts.upi || 0);
+            mCash += (s.splitAmounts.cash || 0);
+        } else mCash += s.total;
     });
 
-    const mExpTotal = monthlyExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+    const mExpTotal = monthlyExpenses.reduce((sum, e) => sum + e.amount, 0);
     const mNetProfit = mTotal - mExpTotal;
 
     // Update UI Cards
-    const el = (id) => document.getElementById(id);
+    const mSaleEl = document.getElementById("monthly-sale-total");
+    const mCashEl = document.getElementById("monthly-cash");
+    const mUpiEl = document.getElementById("monthly-upi");
     
-    if (el("monthly-sale-total")) el("monthly-sale-total").innerText = formatCurrency(mTotal);
-    if (el("monthly-cash")) el("monthly-cash").innerText = formatCurrency(mCash);
-    if (el("monthly-upi")) el("monthly-upi").innerText = formatCurrency(mUpi);
-    if (el("monthly-expense-total")) el("monthly-expense-total").innerText = formatCurrency(mExpTotal);
-    if (el("monthly-profit-total")) {
-        el("monthly-profit-total").innerText = formatCurrency(mNetProfit);
-        el("monthly-profit-total").style.color = mNetProfit >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
-    }
+    if (mSaleEl) mSaleEl.innerText = window.formatCurrency ? window.formatCurrency(mTotal) : `₹${mTotal}`;
+    if (mCashEl) mCashEl.innerText = window.formatCurrency ? window.formatCurrency(mCash) : `₹${mCash}`;
+    if (mUpiEl) mUpiEl.innerText = window.formatCurrency ? window.formatCurrency(mUpi) : `₹${mUpi}`;
+    
+    const mExpEl = document.getElementById("monthly-expense-total");
+    if (mExpEl) mExpEl.innerText = window.formatCurrency ? window.formatCurrency(mExpTotal) : `₹${mExpTotal}`;
     
     // Calculate Total Dues from all time
-    const totalDues = sHistory.reduce((sum, s) => sum + (parseFloat(s.dues) || 0), 0);
-    if (el("history-total-dues")) el("history-total-dues").innerText = formatCurrency(totalDues);
+    const totalDuesHistory = sHistory.reduce((sum, s) => sum + (parseFloat(s.dues) || 0), 0);
+    const totalDuesHistoryEl = document.getElementById("history-total-dues");
+    if (totalDuesHistoryEl) totalDuesHistoryEl.innerText = window.formatCurrency ? window.formatCurrency(totalDuesHistory) : `₹${totalDuesHistory}`;
+
+    const mProfitEl = document.getElementById("monthly-profit-total");
+    if (mProfitEl) {
+        mProfitEl.innerText = window.formatCurrency ? window.formatCurrency(mNetProfit) : `₹${mNetProfit}`;
+        mProfitEl.style.color = mNetProfit >= 0 ? "#22c55e" : "#ef4444";
+        const mProfitCard = document.getElementById("monthly-profit-card");
+        if (mProfitCard) mProfitCard.style.borderLeft = `4px solid ${mNetProfit >= 0 ? "#22c55e" : "#ef4444"}`;
+    }
 }
 
 let isLoadingMore = false;

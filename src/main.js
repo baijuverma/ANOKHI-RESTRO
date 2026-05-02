@@ -137,59 +137,14 @@ window.renderCart = () => {
 };
 
 window.updateDashboard = () => {
-    const today = new Date();
-    const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : '';
+    const totalSale    = (window.salesHistory    || []).reduce((a, c) => a + (parseFloat(c.total)  || 0), 0);
+    const totalExpense = (window.expensesHistory || []).reduce((a, c) => a + (parseFloat(c.amount) || 0), 0);
+    const totalOrders  = (window.salesHistory    || []).length;
 
-    const todaySales = (window.salesHistory || []).filter(s =>
-        window.getDDMMYYYY && window.getDDMMYYYY(new Date(s.date)) === todayStr
-    );
-    const todayExpenses = (window.expensesHistory || []).filter(e =>
-        window.getDDMMYYYY && window.getDDMMYYYY(new Date(e.date)) === todayStr
-    );
-
-    let totalRevenue = 0;
-    let cashTotal = 0;
-    let upiTotal = 0;
-
-    todaySales.forEach(s => {
-        const amt = parseFloat(s.total) || 0;
-        totalRevenue += amt;
-        if (s.paymentMode === 'UPI') upiTotal += amt;
-        else if (s.paymentMode === 'BOTH' && s.splitAmounts) {
-            upiTotal += parseFloat(s.splitAmounts.upi) || 0;
-            cashTotal += parseFloat(s.splitAmounts.cash) || 0;
-        } else cashTotal += amt;
-    });
-
-    const totalExpense = todayExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
-    const profit = totalRevenue - totalExpense;
-
-    const inventory = window.inventory || [];
-    const lowStockThreshold = 5;
-    const totalItems = inventory.length;
-    const lowStock = inventory.filter(i => i.quantity <= (i.lowStockThreshold || lowStockThreshold) && i.quantity > 0).length;
-    const outOfStock = inventory.filter(i => i.quantity === 0).length;
-
-    // Update Dashboard UI
-    const el = (id) => document.getElementById(id);
-    
-    if (el('total-revenue')) el('total-revenue').textContent = `₹${totalRevenue.toFixed(2)}`;
-    if (el('today-cash')) el('today-cash').textContent = `₹${cashTotal.toFixed(2)}`;
-    if (el('today-upi')) el('today-upi').textContent = `₹${upiTotal.toFixed(2)}`;
-    if (el('total-profit')) {
-        el('total-profit').textContent = `₹${profit.toFixed(2)}`;
-        el('total-profit').style.color = profit >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
-    }
-    
-    if (el('total-items')) el('total-items').textContent = totalItems;
-    if (el('low-stock')) el('low-stock').textContent = lowStock;
-    if (el('out-of-stock')) el('out-of-stock').textContent = outOfStock;
-
-    // Also update the widget if it's used elsewhere
     renderDashboardStats({
-        totalSale:    totalRevenue.toFixed(2),
+        totalSale:    totalSale.toFixed(2),
         totalExpense: totalExpense.toFixed(2),
-        totalOrders:  todaySales.length
+        totalOrders:  totalOrders
     });
 };
 

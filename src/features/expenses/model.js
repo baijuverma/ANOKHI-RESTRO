@@ -78,6 +78,7 @@ export function initExpensesLogic() {
         e.target.reset();
         window.renderExpenses();
         window.updateExpenseStats();
+        if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
         alert('Expense(s) added successfully!');
     }
 
@@ -173,6 +174,7 @@ export function initExpensesLogic() {
             
             window.renderExpenses();
             window.updateExpenseStats();
+            if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
         }
     }
 

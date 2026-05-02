@@ -593,6 +593,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     if (typeof renderPOSItems === 'function') renderPOSItems();
     if (typeof updateDashboard === 'function') updateDashboard();
     if (typeof renderTableGrid === 'function') renderTableGrid();
+    if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
 }
 
 
