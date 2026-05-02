@@ -95,11 +95,7 @@ export const appShellHTML = `
         <main class="main-content">
             <!-- Dashboard View -->
             <section id="dashboard" class="view-section active">
-                <header>
-                    <h1>Dashboard Overview</h1>
-                    <p>Welcome back! Here's your restaurant summary.</p>
-                </header>
-                <div class="stats-grid">
+                <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr); margin-top: 0;">
                     <div class="stat-card glass-panel" style="cursor: pointer;" onclick="window.showTodaySalesList()">
                         <div class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
                         <div class="stat-details" style="width: 100%;">
