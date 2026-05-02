@@ -676,18 +676,31 @@ window.editSale = function(id) {
     if (searchInput) searchInput.value = '';
     
     // Set order type
-    const targetBtn = Array.from(document.querySelectorAll('.order-type-btn')).find(btn => 
-        btn.innerText.toUpperCase().includes(type)
-    );
-    if (targetBtn && typeof window.setOrderType === 'function') window.setOrderType(type, targetBtn);
+    if (typeof window.setOrderType === 'function') {
+        window.setOrderType(type);
+    }
+    
+    // Restore Table UI if DINE_IN
+    const tableNameEl = document.getElementById('current-table-name');
+    if (type === 'DINE_IN' && window.currentSelectedTable) {
+        const tbl = (window.tables || []).find(t => String(t.id) === String(window.currentSelectedTable) || t.name === window.currentSelectedTable);
+        if (tbl) {
+            window.currentSelectedTable = tbl.id;
+            if (tableNameEl) tableNameEl.innerText = tbl.name;
+        } else {
+            if (tableNameEl) tableNameEl.innerText = window.currentSelectedTable;
+        }
+    } else {
+        window.currentSelectedTable = null;
+        if (tableNameEl) tableNameEl.innerText = 'No Table Selected';
+    }
     
     if (typeof window.calculateTotal === 'function') window.calculateTotal(); // Refresh total and dues
-    if (typeof window.setOrderType === 'function') window.setOrderType(type, targetBtn, true);
     
     // Explicitly refresh UI components
     if (typeof window.renderCart === 'function') window.renderCart();
-    if (typeof window.calculateTotal === 'function') window.calculateTotal(); 
     if (typeof window.renderPOSItems === 'function') window.renderPOSItems(); 
+    if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
 }
 
 // Global Keyboard Shortcuts
