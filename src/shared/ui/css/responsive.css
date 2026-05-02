@@ -178,16 +178,29 @@
     .table-container {
         padding: 10px;
     }
+
+    .table-grid-compact {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
 }
 
 @media (max-width: 480px) {
     .item-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 8px;
     }
 
     .pos-item-card {
-        padding: 12px;
+        padding: 8px;
+    }
+    .pos-item-card h4 {
+        font-size: 12px !important;
+    }
+    .pos-item-card .price {
+        font-size: 14px !important;
+    }
+    .pos-item-card .stock {
+        font-size: 9px !important;
     }
     
     header h1 {
