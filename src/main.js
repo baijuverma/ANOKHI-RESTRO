@@ -120,10 +120,8 @@ window.renderInventory = (isLoadMore = false) => {
 };
 
 window.renderHistory = () => {
-    // On Dashboard, limit to 10. On History page, it's handled by infinite scroll.
-    const isDashboard = document.getElementById('dashboard').classList.contains('active');
     if (window.salesHistory) {
-        renderSalesHistory('sales-tbody', window.salesHistory, isDashboard ? 10 : null);
+        renderSalesHistory('sales-tbody', window.salesHistory, 10);
         updateCalendarData(window.salesHistory);
     }
 };

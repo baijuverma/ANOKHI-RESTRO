@@ -152,9 +152,11 @@ export const appShellHTML = `
                                 <tr>
                                     <th style="width: 50px;">Sr No.</th>
                                     <th>Order ID</th>
-                                    <th>Time</th>
-                                    <th>Items</th>
-                                    <th>Total</th>
+                                    <th>Date & Time</th>
+                                    <th>Items Details</th>
+                                    <th>Payment</th>
+                                    <th>Total Amount</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="sales-tbody">
