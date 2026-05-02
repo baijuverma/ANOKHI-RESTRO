@@ -12,9 +12,9 @@ export const renderSalesHistory = (containerId, orders, limit = null) => {
         return;
     }
 
-    // Filter by dues if applicable
+    // Filter by dues ONLY on history page (limit === null), NOT on dashboard
     let activeOrders = orders;
-    if (window.showOnlyDues) {
+    if (window.showOnlyDues && limit === null) {
         activeOrders = activeOrders.filter(s => (s.dues || 0) > 0.01);
     }
 

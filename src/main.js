@@ -133,8 +133,13 @@ window.renderInventory = (isLoadMore = false) => {
 
 window.renderHistory = () => {
     if (window.salesHistory) {
-        renderSalesHistory('sales-tbody', window.salesHistory, 10);
+        // Dashboard recent sales: always show latest 10, sorted by time — NO dues filter
+        const dashboardOrders = [...window.salesHistory].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
+        renderSalesHistory('sales-tbody', dashboardOrders, 10);
+
+        // History page: apply dues filter if active
         renderSalesHistory('history-tbody', window.salesHistory, null);
+        
         updateCalendarData(window.salesHistory);
         if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
     }
