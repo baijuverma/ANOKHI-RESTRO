@@ -37,7 +37,16 @@ export const updateCartQty = (id, delta) => {
 
         item.cartQty += delta;
         if (item.cartQty <= 0) {
+            const removedItem = { ...item };
             cart.splice(idx, 1);
+            
+            if (window.showToast) {
+                window.showToast(`${removedItem.name} removed`, "success", () => {
+                    cart.unshift(removedItem);
+                    syncWithWindow();
+                    if (window.refreshUI) window.refreshUI();
+                });
+            }
         } else if (invItem && item.cartQty > invItem.quantity) {
             item.cartQty = invItem.quantity;
             alert('Not enough stock!');

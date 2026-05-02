@@ -174,7 +174,11 @@ export function initExpensesLogic() {
     }
 
     window.deleteExpense = async function(id) {
+        const expenseToUndo = window.expensesHistory.find(e => e.id === id);
+        if (!expenseToUndo) return;
+
         if(confirm('Are you sure you want to delete this expense?')) {
+            const originalHistory = [...window.expensesHistory];
             window.expensesHistory = window.expensesHistory.filter(e => e.id !== id);
             window.saveData();
             
@@ -189,6 +193,20 @@ export function initExpensesLogic() {
             window.renderExpenses();
             window.updateExpenseStats();
             if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
+            
+            // Show toast with Undo
+            if (typeof window.showToast === 'function') {
+                window.showToast("Expense Deleted", "success", async () => {
+                    window.expensesHistory = originalHistory;
+                    if (window.db) {
+                        await window.db.from('expenses').upsert([expenseToUndo]);
+                    }
+                    window.saveData();
+                    window.renderExpenses();
+                    window.updateExpenseStats();
+                    if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
+                });
+            }
         }
     }
 

@@ -208,8 +208,21 @@ window.selectTable = function(id) {
     }
 };
 
-window.showToast = function(message, type = "success") {
+window.lastAction = null;
 
+window.undoLastAction = function() {
+    if (!window.lastAction) return;
+    
+    console.log('Undoing last action:', window.lastAction.type);
+    
+    if (typeof window.lastAction.undo === 'function') {
+        window.lastAction.undo();
+        window.lastAction = null;
+        window.showToast("Action Undone Successfully", "success");
+    }
+};
+
+window.showToast = function(message, type = "success", undoCallback = null) {
     let container = document.querySelector(".toast-container");
     if (!container) {
         container = document.createElement("div");
@@ -221,13 +234,28 @@ window.showToast = function(message, type = "success") {
     toast.className = `toast ${type}`;
     const icon = type === "success" ? "fa-circle-check" : "fa-circle-exclamation";
     
-    toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+    let undoHtml = '';
+    if (undoCallback) {
+        window.lastAction = { type: message, undo: undoCallback };
+        undoHtml = `<button class="toast-undo-btn" onclick="window.undoLastAction(); this.parentElement.remove();">Undo</button>`;
+    }
+    
+    toast.innerHTML = `
+        <i class="fa-solid ${icon}"></i>
+        <div style="display:flex; flex-direction:column; gap:2px; flex:1;">
+            <span style="font-size:14px; font-weight:600;">${message}</span>
+        </div>
+        ${undoHtml}
+    `;
     container.appendChild(toast);
 
+    // Auto-remove toast
     setTimeout(() => {
-        toast.classList.add("fade-out");
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
+        if (toast.parentElement) {
+            toast.classList.add("fade-out");
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, undoCallback ? 6000 : 3000); // Give more time if undo is available
 }
 
 }

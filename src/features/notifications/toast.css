@@ -10,6 +10,6 @@
 .toast.error i { color: var(--danger-color); }
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 .toast.fade-out { animation: slideOut 0.3s ease forwards; }
-@keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-
-
+@keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }.toast-undo-btn { background: var(--accent-color); color: white; border: none; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-left: auto; }
+.toast-undo-btn:hover { background: white; color: var(--accent-color); transform: scale(1.05); }
+.toast-undo-btn:active { transform: scale(0.95); }
