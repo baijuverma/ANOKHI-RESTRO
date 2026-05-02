@@ -606,6 +606,7 @@ export const appShellHTML = `
                     <div class="input-group-floating">
                         <input type="number" id="item-price" required min="0" step="0.01" placeholder=" ">
                         <label for="item-price">Price (₹)</label>
+                        <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('item-price')" style="right: 12px; top: 50%; transform: translateY(-50%);"></i>
                     </div>
                     <div class="input-group-floating">
                         <input type="number" id="item-quantity" required min="0" placeholder=" ">
