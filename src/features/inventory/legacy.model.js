@@ -4,12 +4,29 @@ window.openAddItemModal = function() {
     document.getElementById('item-id').value = '';
     document.getElementById('item-low-stock').value = '5';
     document.getElementById('modal-title').innerText = 'Add New Item';
+    
+    // Set button text
+    const submitBtn = document.getElementById('submit-item-btn');
+    if (submitBtn) submitBtn.innerText = 'Save Item';
+
+    // Hide delete button for new items
+    const delBtn = document.getElementById('delete-item-modal-btn');
+    if (delBtn) delBtn.classList.add('force-hidden');
+    
     // Reset veg/nonveg to Veg
     const vegRadio = document.getElementById('type-veg');
     if (vegRadio) vegRadio.checked = true;
     // Populate item name datalist from existing inventory
     populateItemNameDatalist();
     openModal('addItemModal');
+}
+
+window.handleModalDelete = function() {
+    const id = document.getElementById('item-id').value;
+    if (id && typeof window.deleteItem === 'function') {
+        window.deleteItem(id);
+        closeModal('addItemModal');
+    }
 }
 
 function populateItemNameDatalist() {
@@ -26,29 +43,42 @@ function closeModal(id) {
     document.getElementById(id).classList.remove('active');
 }
 
-window.showStockList = function(type) {
+let stockListPagination = null;
+window.showStockList = function(type, isLoadMore = false) {
     let list = [];
     let title = '';
     
     if (type === 'total') {
-        list = inventory;
+        list = window.inventory;
         title = 'Total Items Available';
     } else if (type === 'low') {
-        list = inventory.filter(i => i.quantity <= (i.lowStockThreshold || 5) && i.quantity > 0);
+        list = window.inventory.filter(i => i.quantity <= (i.lowStockThreshold || 5) && i.quantity > 0);
         title = 'Low Stock Items';
     } else if (type === 'out') {
-        list = inventory.filter(i => i.quantity === 0);
+        list = window.inventory.filter(i => i.quantity === 0);
         title = 'Out of Stock Items';
     }
     
-    document.getElementById('stock-list-title').innerText = title;
+    if (!isLoadMore) {
+        document.getElementById('stock-list-title').innerText = title;
+        stockListPagination = new LocalPagination(list, 30);
+    }
+
     const tbody = document.getElementById('stock-list-tbody');
-    tbody.innerHTML = '';
+    if (!isLoadMore) tbody.innerHTML = '';
+    else {
+        const existingSentinel = document.getElementById('stock-list-sentinel');
+        if (existingSentinel) existingSentinel.remove();
+    }
     
-    if (list.length === 0) {
+    const visibleItems = stockListPagination.getVisibleItems();
+    // Only render the NEW items if loading more, or all if first time
+    const itemsToRender = isLoadMore ? visibleItems.slice(-stockListPagination.pageSize) : visibleItems;
+
+    if (visibleItems.length === 0) {
         tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No items found in this category.</td></tr>';
     } else {
-        list.forEach(item => {
+        itemsToRender.forEach(item => {
             let statusColor = 'var(--success-color)';
             if (item.quantity === 0) statusColor = 'var(--danger-color)';
             else if (item.quantity <= (item.lowStockThreshold || 5)) statusColor = 'var(--warning-color)';
@@ -62,8 +92,23 @@ window.showStockList = function(type) {
             tbody.appendChild(tr);
         });
     }
+
+    if (stockListPagination.hasMore()) {
+        const sentinelRow = document.createElement('tr');
+        sentinelRow.id = 'stock-list-sentinel';
+        sentinelRow.innerHTML = `<td colspan="3" style="text-align:center; padding:10px; color:var(--text-secondary); font-size:11px;"><i class="fa-solid fa-spinner fa-spin"></i> More...</td>`;
+        tbody.appendChild(sentinelRow);
+        
+        setTimeout(() => {
+            setupInfiniteScroll('stock-list-sentinel', () => {
+                if (stockListPagination.loadMore()) {
+                    window.showStockList(type, true);
+                }
+            });
+        }, 100);
+    }
     
-    openModal('stockListModal');
+    if (!isLoadMore) openModal('stockListModal');
 }
 
 window.showTodaySalesList = function() {
@@ -184,6 +229,15 @@ window.editItem = function(id) {
         document.getElementById('item-quantity').value = item.quantity;
         document.getElementById('item-low-stock').value = item.lowStockThreshold || 5;
         document.getElementById('modal-title').innerText = 'Edit Item';
+        
+        // Set button text to Update
+        const submitBtn = document.getElementById('submit-item-btn');
+        if (submitBtn) submitBtn.innerText = 'Update Item';
+
+        // Show delete button during edit
+        const delBtn = document.getElementById('delete-item-modal-btn');
+        if (delBtn) delBtn.classList.remove('force-hidden');
+
         populateItemNameDatalist();
         openModal('addItemModal');
     }

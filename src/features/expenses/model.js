@@ -80,10 +80,10 @@ export function initExpensesLogic() {
         if(!tbody) return;
         tbody.innerHTML = '';
 
-        window.expensesHistory.forEach(exp => {
+        window.expensesHistory.forEach((exp, index) => {
             const tr = document.createElement('tr');
-            // Assuming formatDateLabel and formatCurrency exist on window
             tr.innerHTML = `
+                <td style="color: var(--text-secondary); font-size: 11px;">${index + 1}</td>
                 <td>${window.formatDateLabel ? window.formatDateLabel(exp.date) : exp.date}</td>
                 <td>${exp.main_category}</td>
                 <td>${exp.sub_category}</td>
@@ -98,6 +98,58 @@ export function initExpensesLogic() {
             `;
             tbody.appendChild(tr);
         });
+
+        // Add Infinite Scroll Sentinel
+        if (window.expensesHistory.length >= 20) {
+            const sentinelRow = document.createElement('tr');
+            sentinelRow.id = 'expenses-sentinel';
+            sentinelRow.innerHTML = `
+                <td colspan="7" style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 13px;">
+                    <div id="expenses-load-status">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Loading more expenses...
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(sentinelRow);
+
+            setTimeout(() => {
+                if (typeof window.setupInfiniteScroll === 'function') {
+                    window.setupInfiniteScroll('expenses-sentinel', window.loadMoreExpenses);
+                }
+            }, 100);
+        }
+    }
+
+    let isLoadingMoreExp = false;
+    window.loadMoreExpenses = async function() {
+        if (isLoadingMoreExp || !window.db) return;
+        isLoadingMoreExp = true;
+
+        const status = document.getElementById('expenses-load-status');
+        if (status) status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Fetching records...';
+
+        try {
+            const start = window.expensesHistory.length;
+            const end = start + 19;
+            const { data, error } = await window.db.from('expenses').select('*').order('date', { ascending: false }).range(start, end);
+            
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                window.expensesHistory = [...window.expensesHistory, ...data];
+                window.renderExpenses();
+            } else {
+                if (status) status.innerHTML = 'All expenses loaded';
+                setTimeout(() => {
+                    const row = document.getElementById('expenses-sentinel');
+                    if (row) row.remove();
+                }, 3000);
+            }
+        } catch (err) {
+            console.error('Load More Expenses Error:', err);
+        } finally {
+            isLoadingMoreExp = false;
+        }
     }
 
     window.deleteExpense = async function(id) {

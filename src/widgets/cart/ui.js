@@ -9,7 +9,9 @@ export const renderCartWidget = (containerId) => {
     
     container.innerHTML = '';
     
-    if (cart.length > 0) {
+    const currentCart = window.cart || [];
+    
+    if (currentCart.length > 0) {
         // Add Header Row
         const header = document.createElement('div');
         header.className = 'cart-header-modern';
@@ -24,7 +26,7 @@ export const renderCartWidget = (containerId) => {
     }
 
     let subtotal = 0;
-    cart.forEach((item, index) => {
+    currentCart.forEach((item, index) => {
         subtotal += (item.price * item.cartQty);
         const itemEl = createCartItem(item, index, updateCartQty);
         // Ensure the item element also gets the modern class if it's created via module

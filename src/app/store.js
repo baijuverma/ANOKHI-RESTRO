@@ -19,18 +19,29 @@ window.getLocalData = getLocalData;
 
 // --- Supabase DB Instance ---
 export let db = null;
-try {
-    const _supa = window.supabase || window.Supabase;
-    if (_supa && _supa.createClient) {
-        db = _supa.createClient(
-            'https://fhshckrdkasopfneujmw.supabase.co',
-            'sb_publishable_qFlDlQChYsm7WobmTOmc6w_Wkb3XSBl'
-        );
+export const initSupabase = () => {
+    if (db) return db;
+    try {
+        const _supa = window.supabase || window.Supabase;
+        if (_supa && _supa.createClient) {
+            db = _supa.createClient(
+                'https://fhshckrdkasopfneujmw.supabase.co',
+                'sb_publishable_qFlDlQChYsm7WobmTOmc6w_Wkb3XSBl'
+            );
+            window.db = db;
+            console.log('Supabase initialized successfully.');
+        } else {
+            console.warn('Supabase JS SDK not found on window.');
+        }
+    } catch (e) {
+        console.warn('Supabase initialization failed:', e);
     }
-} catch (e) {
-    console.warn('Supabase not loaded, running in offline mode:', e);
-}
-window.db = db;
+    return db;
+};
+
+// Initial attempt
+initSupabase();
+window.reinitSupabase = initSupabase;
 
 // --- Core Data State ---
 window.inventory        = getLocalData('anokhi_inventory', []);

@@ -23,7 +23,13 @@ export const syncLayoutVisibility = (orderType, currentTableId) => {
         if (typeof window.toggleTablesCurtain === 'function') window.toggleTablesCurtain();
     });
 
-    // 3. Handle Total Row Table Indicator
+    // 3. Handle Pending Bill Section Visibility (Hide for Dine-In)
+    const activeOrdersSection = document.getElementById('active-orders-section');
+    if (activeOrdersSection) {
+        activeOrdersSection.style.setProperty('display', isDineIn ? 'none' : 'block', 'important');
+    }
+
+    // 4. Handle Total Row Table Indicator
     if (tableIndicator) {
         if (isDineIn && currentTableId) {
             const found = (window.tables || []).find(t => String(t.id) === String(currentTableId));

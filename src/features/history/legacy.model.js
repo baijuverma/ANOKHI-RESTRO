@@ -281,7 +281,7 @@ function renderHistory() {
         ? salesHistory.filter(s => (s.dues || 0) > 0.01) 
         : salesHistory;
 
-    sortedHistory.forEach(sale => {
+    sortedHistory.forEach((sale, index) => {
         if (!sale) return;
         const items = sale.items || [];
         const itemsStr = items.map(i => `${i.name || 'Unknown'} (x${i.cartQty || 0})`).join(', ');
@@ -325,6 +325,7 @@ function renderHistory() {
         const displayDate = sale.date || sale.timestamp || new Date();
 
         tr.innerHTML = `
+            <td style="color: var(--text-secondary); font-size: 11px;">${index + 1}</td>
             <td style="color: inherit;">
                 <strong>#${sale.id.toString().slice(-6)}</strong>
                 ${typeBadge}
@@ -336,9 +337,11 @@ function renderHistory() {
             <td style="color:${(sale.status || sale.dues > 0) ? '#1e293b' : 'var(--success-color)'}; font-weight:bold;">${formatCurrency(sale.total)}</td>
             <td>
                 <div style="display: flex; gap: 5px;">
-                    <button class="btn-primary" style="padding: 6px 12px; font-size:12px;" onclick="viewReceipt('${sale.id}')">View</button>
-                    <button class="btn-primary" style="padding: 6px 12px; font-size:12px; background: var(--warning-color); border: none;" onclick="editSale('${sale.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
-                    <button class="btn-danger" style="padding: 6px 12px; font-size:12px;" onclick="deleteSale('${sale.id}')"><i class="fa-solid fa-trash"></i></button>
+                    <button class="btn-primary" style="padding: 6px 16px; font-size:12px; background: var(--accent-color); border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="editSale('${sale.id}')">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </button>
+
+
                 </div>
             </td>
         `;
@@ -347,16 +350,23 @@ function renderHistory() {
 
     // Add Load More button if there are potentially more records
     if (salesHistory.length >= 20) {
-        const loadMoreRow = document.createElement('tr');
-        loadMoreRow.id = 'load-more-row';
-        loadMoreRow.innerHTML = `
-            <td colspan="6" style="text-align: center; padding: 20px;">
+        const sentinelRow = document.createElement('tr');
+        sentinelRow.id = 'load-more-sentinel';
+        sentinelRow.innerHTML = `
+            <td colspan="6" style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 13px;">
                 <button id="load-more-btn" class="btn-primary" style="background: rgba(255,255,255,0.05); border: 1px solid var(--panel-border); width: 200px;" onclick="loadMoreSales()">
-                    <i class="fa-solid fa-arrow-down"></i> Load More Transactions
-                </button>
+                    Scrolling for more...
+                </div>
             </td>
         `;
-        tbody.appendChild(loadMoreRow);
+        tbody.appendChild(sentinelRow);
+
+        // Setup IntersectionObserver
+        setTimeout(() => {
+            if (typeof window.setupInfiniteScroll === 'function') {
+                window.setupInfiniteScroll('load-more-sentinel', window.loadMoreSales);
+            }
+        }, 100);
     }
 }
 
@@ -365,7 +375,7 @@ window.loadMoreSales = async function() {
     if (isLoadingMore || !db) return;
     isLoadingMore = true;
     
-    const btn = document.getElementById('load-more-btn');
+    const status = document.getElementById('load-more-status');
     if (btn) {
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
         btn.disabled = true;
@@ -383,14 +393,14 @@ window.loadMoreSales = async function() {
         if (error) throw error;
 
         if (data && data.length > 0) {
-            salesHistory = [...salesHistory, ...data];
+            window.salesHistory = [...window.salesHistory, ...data];
             // No need to re-render everything, just append to table
             if (typeof renderHistory === 'function') renderHistory(); 
         } else {
             // No more data
-            if (btn) btn.innerHTML = 'No more transactions';
+            if (status) status.innerHTML = 'All transactions loaded';
             setTimeout(() => {
-                const row = document.getElementById('load-more-row');
+                const row = document.getElementById('load-more-sentinel');
                 if (row) row.remove();
             }, 2000);
         }

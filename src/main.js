@@ -19,6 +19,7 @@ console.log('Main.js — window.initSettingsView assigned:', !!window.initSettin
 // ── Layer 1: Shared Utilities ────────────────────────────────
 import { initCoreLogic }     from './shared/lib/core/legacy.model.js';    // formatCurrency, getDDMMYYYY, etc.
 import { initSupabaseLogic } from './shared/lib/supabase/legacy.model.js'; // syncFromSupabase, saveData, setupRealtime
+import './shared/lib/ui/infinite-scroll.js';                             // Reusable infinite scroll utility
 
 // ── Layer 2: Entities (pure data/model) ─────────────────────
 import { syncInventory } from './entities/inventory/model.js';
@@ -58,39 +59,18 @@ import { getSupabase, subscribeToTable } from './shared/api/supabase.js';
 // ============================================================
 // INITIALIZATION ORDER (sequence matters!)
 // ============================================================
+// INITIALIZATION ORDER (sequence matters!)
+// ============================================================
 
 // 1. Core utilities (must be available before anything else)
 initCoreLogic();
 
-// 2. Database sync logic
-initSupabaseLogic();
-
-// 3. Feature logic (depends on core + db)
-initAuthLogic();
-initInventoryLogic();
-initPosLogic();
-initHistoryLogic();
-initExpensesLogic();
-initSettingsLogic();
-initReceiptLogic();
-initDashboardLogic();
-initTablesLogic();
-initNotificationsLogic();
-
-// 4. Widget Logic
-initSidebar();
-
-// 5. Boot logic — DOM is already ready because modules run after parse
-// (No need for DOMContentLoaded wrapper here)
-initBoot();
-
-// ============================================================
-// WINDOW BRIDGE — Expose FSD functions to legacy HTML onclick=""
-// ============================================================
-
+// 2. WINDOW BRIDGE — Expose FSD functions to legacy HTML onclick=""
+// Bind these BEFORE initializing logic so that sync callbacks find them
 window.addToCart      = addToCart;
 window.updateCartQty  = updateCartQty;
 window.setCart        = setCart;
+window.setPOSFilter   = setFilter;
 
 window.renderTableGrid = () => {
     renderTableWidget('pos-tables-container', window.currentSelectedTable, (id) => {
@@ -107,14 +87,95 @@ window.renderOrderType = () => {
     renderOrderTypeWidget('order-type-container');
 };
 
+let inventoryPagination = null;
+window.renderInventory = (isLoadMore = false) => {
+    if (!window.inventory) return;
+    
+    if (!inventoryPagination || !isLoadMore) {
+        inventoryPagination = new LocalPagination(window.inventory, 20);
+    }
+    
+    const visibleItems = inventoryPagination.getVisibleItems();
+    renderInventoryTable('inventory-tbody', visibleItems);
+    
+    // Add sentinel for infinite scroll if more items exist
+    if (inventoryPagination.hasMore()) {
+        const tbody = document.getElementById('inventory-tbody');
+        const sentinelRow = document.createElement('tr');
+        sentinelRow.id = 'inventory-sentinel';
+        sentinelRow.innerHTML = `<td colspan="7" style="text-align:center; padding:20px; color:var(--text-secondary); opacity:0.6;"><i class="fa-solid fa-spinner fa-spin"></i> Loading more items...</td>`;
+        tbody.appendChild(sentinelRow);
+        
+        setTimeout(() => {
+            setupInfiniteScroll('inventory-sentinel', () => {
+                if (inventoryPagination.loadMore()) {
+                    window.renderInventory(true);
+                }
+            });
+        }, 100);
+    }
+};
+
+window.renderHistory = () => {
+    // On Dashboard, limit to 10. On History page, it's handled by infinite scroll.
+    const isDashboard = document.getElementById('dashboard').classList.contains('active');
+    if (window.salesHistory) renderSalesHistory('sales-tbody', window.salesHistory, isDashboard ? 10 : null);
+};
+
+window.renderExpenses = () => {
+    if (window.expensesHistory) renderExpenseTable('expenses-tbody', window.expensesHistory);
+};
+
+window.renderCart = () => {
+    renderCartWidget('cart-items-modern');
+};
+
+window.updateDashboard = () => {
+    const totalSale    = (window.salesHistory    || []).reduce((a, c) => a + (parseFloat(c.total)  || 0), 0);
+    const totalExpense = (window.expensesHistory || []).reduce((a, c) => a + (parseFloat(c.amount) || 0), 0);
+    const totalOrders  = (window.salesHistory    || []).length;
+
+    renderDashboardStats({
+        totalSale:    totalSale.toFixed(2),
+        totalExpense: totalExpense.toFixed(2),
+        totalOrders:  totalOrders
+    });
+};
+
+window.refreshUI = () => {
+    const gridContainer = document.getElementById('pos-item-grid');
+    const searchVal     = document.getElementById('pos-search')?.value || '';
+    if (gridContainer) renderPOSGrid(gridContainer, searchVal, filterState.current);
+
+    if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
+    window.renderOrderType();
+    syncLayoutVisibility(window.selectedOrderType, window.currentSelectedTable);
+    window.renderCart();
+
+    if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
+
+    window.renderInventory();
+    window.renderHistory();
+    window.renderExpenses();
+    window.updateDashboard();
+    
+    if (typeof window.updateExpenseStats === 'function') window.updateExpenseStats();
+};
+
 window.toggleTablesCurtain = () => {
     const wrapper = document.getElementById('tables-curtain-area');
     const icon    = document.getElementById('tables-curtain-icon');
     if (!wrapper || !icon) return;
-    wrapper.classList.toggle('curtain-collapsed');
-    if (wrapper.classList.contains('curtain-collapsed')) {
+    
+    const isCollapsed = wrapper.classList.contains('tables-collapsed');
+    
+    if (isCollapsed) {
+        wrapper.classList.remove('tables-collapsed');
+        wrapper.classList.add('tables-expanded');
         icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
     } else {
+        wrapper.classList.remove('tables-expanded');
+        wrapper.classList.add('tables-collapsed');
         icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
     }
 };
@@ -123,8 +184,6 @@ window.renderPOSItems = (search = '') => {
     const gridContainer = document.getElementById('pos-item-grid');
     if (gridContainer) renderPOSGrid(gridContainer, search, filterState.current);
 };
-
-// initSettingsView moved to top for safety
 
 window.toggleCartDetails = () => {
     const cartContainer  = document.querySelector('.cart-items-container');
@@ -154,36 +213,24 @@ window.toggleCartDetails = () => {
     }
 };
 
-window.renderCart = () => {
-    renderCartWidget('cart-items-modern');
-};
+// 3. Database & Feature logic (depends on window bridge being ready)
+initSupabaseLogic();
+initAuthLogic();
+initInventoryLogic();
+initPosLogic();
+initHistoryLogic();
+initExpensesLogic();
+initSettingsLogic();
+initReceiptLogic();
+initDashboardLogic();
+initTablesLogic();
+initNotificationsLogic();
 
-window.refreshUI = () => {
-    const gridContainer = document.getElementById('pos-item-grid');
-    const searchVal     = document.getElementById('pos-search')?.value || '';
-    if (gridContainer) renderPOSGrid(gridContainer, searchVal, filterState.current);
+// 4. Widget Logic
+initSidebar();
 
-    if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
-    window.renderOrderType();
-    syncLayoutVisibility(window.selectedOrderType, window.currentSelectedTable);
-    window.renderCart();
-
-    if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
-
-    if (window.inventory)        renderInventoryTable('inventory-tbody', window.inventory);
-    if (window.salesHistory)     renderSalesHistory('sales-tbody', window.salesHistory);
-    if (window.expensesHistory)  renderExpenseTable('expenses-tbody', window.expensesHistory);
-
-    const totalSale    = (window.salesHistory    || []).reduce((a, c) => a + (parseFloat(c.total)  || 0), 0);
-    const totalExpense = (window.expensesHistory || []).reduce((a, c) => a + (parseFloat(c.amount) || 0), 0);
-    const totalOrders  = (window.salesHistory    || []).length;
-
-    renderDashboardStats({
-        totalSale:    totalSale.toFixed(2),
-        totalExpense: totalExpense.toFixed(2),
-        totalOrders:  totalOrders
-    });
-};
+// 5. Boot logic
+initBoot();
 
 // ============================================================
 // REALTIME SUBSCRIPTIONS
@@ -208,13 +255,20 @@ const initRealtime = () => {
 };
 
 // ============================================================
-// APP INIT (runs after DOM is injected by layout.ui.js)
+// APP INIT
 // ============================================================
 const init = async () => {
     console.log('Anokhi Restro POS — FSD Architecture Active');
 
+    // Initial render from local cache
+    window.refreshUI();
+
+    // Background sync
     await syncInventory();
     await syncTables();
+    if (typeof window.syncFromSupabase === 'function') {
+        await window.syncFromSupabase();
+    }
 
     window.refreshUI();
 
@@ -222,16 +276,35 @@ const init = async () => {
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+        const activeModal = document.querySelector('.modal.active');
+        
+        // 1. ESCAPE: Close modal or Reset POS (Deselect Table/Cart)
         if (e.key === 'Escape') {
-            const activeModal = document.querySelector('.modal.active');
-            if (!activeModal && window.cart?.length > 0) {
+            if (activeModal) {
+                activeModal.classList.remove('active');
+            } else {
                 e.preventDefault();
-                reduceLastItemQty();
+                if (typeof window.newBill === 'function') window.newBill();
+            }
+            return;
+        }
+
+        // 2. SEARCH: Type anywhere to focus search (only if not already in an input)
+        if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+            const active = document.activeElement;
+            const isInput = active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable;
+            
+            if (!isInput && !activeModal) {
+                const searchInput = document.getElementById('pos-search');
+                if (searchInput) {
+                    searchInput.focus();
+                    // Character will be typed naturally into the focused input
+                }
             }
         }
     });
 
-    // Global Timer — updates table timers every second
+    // Global Timer
     setInterval(() => {
         document.querySelectorAll('.table-timer').forEach(el => {
             const start = parseInt(el.getAttribute('data-start') || '0');
@@ -249,9 +322,10 @@ const init = async () => {
     initRealtime();
 };
 
-// Run after layout is injected into DOM
+// Start
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
     init();
 }
+

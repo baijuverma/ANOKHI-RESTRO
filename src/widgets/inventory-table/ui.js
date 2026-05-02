@@ -12,13 +12,14 @@ export const renderInventoryTable = (containerId, inventory, onEdit, onDelete) =
         return;
     }
 
-    container.innerHTML = inventory.map(item => {
+    container.innerHTML = inventory.map((item, index) => {
         let statusClass = 'status-ok';
         if (item.quantity === 0) statusClass = 'status-out';
         else if (item.quantity <= (item.lowStockThreshold || 5)) statusClass = 'status-low';
 
         return `
             <tr>
+                <td style="color: var(--text-secondary); font-size: 11px;">${index + 1}</td>
                 <td>${item.name}</td>
                 <td>${item.category}</td>
                 <td>${item.itemType || 'Veg'}</td>
@@ -26,9 +27,8 @@ export const renderInventoryTable = (containerId, inventory, onEdit, onDelete) =
                 <td class="${statusClass}">${item.quantity}</td>
                 <td>${item.lowStockThreshold || 5}</td>
                 <td>
-                    <div style="display: flex; gap: 5px; justify-content: center;">
-                        <button onclick="editInventoryItem('${item.id}')" class="btn-icon" style="color: var(--accent-color);"><i class="fa-solid fa-edit"></i></button>
-                        <button onclick="deleteInventoryItem('${item.id}')" class="btn-icon" style="color: var(--danger-color);"><i class="fa-solid fa-trash"></i></button>
+                    <div style="display: flex; gap: 8px; justify-content: center;">
+                        <button onclick="editItem('${item.id}')" class="btn-primary" style="padding: 6px 12px; font-size: 14px; background: var(--accent-color); border:none;" title="Edit Item"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
                     </div>
                 </td>
             </tr>

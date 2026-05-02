@@ -4,6 +4,9 @@ export let cart = window.cart || [];
 
 const syncWithWindow = () => {
     window.cart = cart;
+    if (window.currentSelectedTable && window.updateTableCart) {
+        window.updateTableCart(window.currentSelectedTable, cart);
+    }
 };
 
 export const addToCart = (item) => {
@@ -54,12 +57,11 @@ export const reduceLastItemQty = () => {
 
 export const setCart = (newCart) => {
     cart = [...newCart];
-    window.cart = cart;
+    syncWithWindow();
     if (window.refreshUI) window.refreshUI();
 };
 
 export const clearCart = () => {
     cart = [];
     syncWithWindow();
-    if (window.refreshUI) window.refreshUI();
 };

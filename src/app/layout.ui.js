@@ -150,13 +150,14 @@ export const appShellHTML = `
                         <table id="recent-sales-table">
                             <thead>
                                 <tr>
+                                    <th style="width: 50px;">Sr No.</th>
                                     <th>Order ID</th>
                                     <th>Time</th>
                                     <th>Items</th>
                                     <th>Total</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="sales-tbody">
                                 <!-- Dynamic content -->
                             </tbody>
                         </table>
@@ -187,15 +188,17 @@ export const appShellHTML = `
                         <table id="inventory-table">
                             <thead>
                                 <tr>
+                                    <th style="width: 50px;">Sr No.</th>
                                     <th>Name</th>
                                     <th>Category</th>
+                                    <th>Type</th>
                                     <th>Price (₹)</th>
                                     <th>Stock</th>
-                                    <th>Status</th>
+                                    <th>Min Stock</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="inventory-tbody">
                                 <!-- Dynamic content -->
                             </tbody>
                         </table>
@@ -205,22 +208,12 @@ export const appShellHTML = `
 
             <!-- Expenses View -->
             <section id="expenses" class="view-section">
-                <div class="expenses-analytics-header glass-panel" style="margin-bottom: 24px; padding: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <div>
-                            <h1 style="margin: 0; font-size: 24px;">Financial Analytics</h1>
-                            <p style="margin: 5px 0 0; color: var(--text-secondary); font-size: 13px;">Daily Sales vs Expenses vs Net Profit</p>
-                        </div>
-                        <div style="display: flex; gap: 15px;">
-                            <div class="chart-legend-item"><span class="legend-dot" style="background: #22c55e;"></span> Sales</div>
-                            <div class="chart-legend-item"><span class="legend-dot" style="background: #ef4444;"></span> Expenses</div>
-                            <div class="chart-legend-item"><span class="legend-dot" style="background: #818cf8;"></span> Profit</div>
-                        </div>
+                <header class="flex-between">
+                    <div>
+                        <h1 style="margin: 0; font-size: 24px;">Business Expenses</h1>
+                        <p style="margin: 5px 0 0; color: var(--text-secondary); font-size: 13px;">Manage your daily business expenses and cash flow</p>
                     </div>
-                    <div style="height: 300px; width: 100%; position: relative;">
-                        <canvas id="expenses-analytics-chart"></canvas>
-                    </div>
-                </div>
+                </header>
 
                 <div class="glass-panel mt-4" style="padding: 24px;">
                     <form id="expense-form" class="expense-entry-form" onsubmit="handleExpenseSubmit(event)">
@@ -285,6 +278,7 @@ export const appShellHTML = `
                         <table id="expenses-table">
                             <thead>
                                 <tr>
+                                    <th style="width: 50px;">Sr No.</th>
                                     <th>Date</th>
                                     <th>Category</th>
                                     <th>Sub-Category</th>
@@ -321,13 +315,13 @@ export const appShellHTML = `
                         </div>
 
                         <!-- Active Pending Orders (Takeaway/Counter) -->
-                        <div id="active-orders-section" class="glass-panel mt-2" style="padding: 15px; max-height: 250px; overflow-y: auto;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <h2 style="font-size: 14px;"><i class="fa-solid fa-clock-rotate-left"></i> Active Takeaway</h2>
-                                <span style="font-size: 10px; color: var(--text-secondary);">Click to Resume</span>
+                        <div id="active-orders-section" class="glass-panel mt-2" style="padding: 10px 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <h2 style="font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-color);"><i class="fa-solid fa-clock-rotate-left"></i> Pending Bill</h2>
+                                <span style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase;">Scroll Horizontal <i class="fa-solid fa-arrow-right"></i></span>
                             </div>
-                            <div id="active-orders-list">
-                                <!-- Active orders injected here -->
+                            <div id="active-orders-list" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin;">
+                                <!-- Active orders injected here as horizontal cards -->
                             </div>
                         </div>
 
@@ -359,8 +353,8 @@ export const appShellHTML = `
                     </div>
 
                     <!-- Right Pane: Order Type + Cart -->
-                        <div class="pos-right-pane">
-                            <div id="order-type-container"></div>
+                    <div class="pos-right-pane" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div id="order-type-container" class="order-type-container" style="min-height: 45px; z-index: 1000;"></div>
 
                         <div class="pos-cart glass-panel">
                             <!-- Hidden elements to maintain JS compatibility -->
@@ -442,10 +436,10 @@ export const appShellHTML = `
                                     <button id="btn-hold-order" class="btn-primary" style="background: var(--accent-color); border: none; padding: 10px 5px; font-size: 11px; flex: 1;" onclick="holdOrder()" title="Shortcut: F8">
                                         <i class="fa-solid fa-clock"></i> Hold [F8]
                                     </button>
-                                    <button class="btn-success" style="padding: 10px 5px; font-size: 11px; flex: 1.5;" onclick="processSale()" title="Shortcut: Enter">
+                                    <button id="btn-process-sale" class="btn-success" style="padding: 10px 5px; font-size: 11px; flex: 1.5;" onclick="processSale()" title="Shortcut: Enter">
                                         <i class="fa-solid fa-check"></i> Sale [Ent]
                                     </button>
-                                    <button class="btn-danger" style="padding: 10px 5px; font-size: 11px; flex: 1;" onclick="newBill()" title="Shortcut: Esc">
+                                    <button id="btn-new-bill" class="btn-danger" style="padding: 10px 5px; font-size: 11px; flex: 1;" onclick="newBill()" title="Shortcut: Esc">
                                         <i class="fa-solid fa-xmark"></i> Can [Esc]
                                     </button>
                                 </div>
@@ -556,6 +550,7 @@ export const appShellHTML = `
                         <table id="history-table">
                             <thead>
                                 <tr>
+                                    <th style="width: 50px;">Sr No.</th>
                                     <th>Order ID</th>
                                     <th>Date & Time</th>
                                     <th>Items Details</th>
@@ -564,7 +559,7 @@ export const appShellHTML = `
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="history-tbody">
                                 <!-- Dynamic content -->
                             </tbody>
                         </table>
@@ -641,7 +636,10 @@ export const appShellHTML = `
                         <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('item-low-stock')"></i>
                     </div>
                 </div>
-                <button type="submit" class="btn-primary full-width mt-2">Save Item</button>
+                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                    <button type="submit" id="submit-item-btn" class="btn-primary" style="flex: 2;">Save Item</button>
+                    <button type="button" id="delete-item-modal-btn" class="btn-danger force-hidden" style="flex: 1;" onclick="handleModalDelete()">Delete</button>
+                </div>
             </form>
         </div>
     </div>

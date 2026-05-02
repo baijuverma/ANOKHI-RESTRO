@@ -8,20 +8,29 @@ export const renderTableGrid = (containerId, currentSelectedTable, onSelect) => 
     container.innerHTML = '';
     
     const currentTables = window.tables || tables;
-    const heldBills = window.heldBills || [];
+    const activeOrders = window.activeOrders || [];
 
     currentTables.forEach(table => {
         const isSelected = String(table.id) === String(currentSelectedTable);
         
         // Check if table has a held bill or active cart items
-        const tableHeldBill = heldBills.find(b => String(b.tableId) === String(table.id));
-        const hasActiveCart = table.cart && table.cart.length > 0;
+        // Fix: Ensure the held order actually has items
+        const tableHeldOrder = activeOrders.find(o => 
+            String(o.tableId) === String(table.id) && 
+            o.items && o.items.length > 0
+        );
+        
+        const hasActiveCart = Array.isArray(table.cart) && table.cart.length > 0;
+        
+        // Final Occupied state
+        const isOccupied = !!(tableHeldOrder || hasActiveCart);
         
         // Enhance table object for the UI component
         const enhancedTable = {
             ...table,
-            isOccupied: tableHeldBill || hasActiveCart,
-            timestamp: tableHeldBill ? tableHeldBill.timestamp : (table.timestamp || Date.now())
+            isOccupied: isOccupied,
+            total: tableHeldOrder ? tableHeldOrder.total : 0,
+            timestamp: tableHeldOrder ? tableHeldOrder.createdAt : (table.timestamp || null)
         };
 
         const card = createTableCard(enhancedTable, isSelected, onSelect);

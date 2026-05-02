@@ -2,36 +2,81 @@ export function initPosLogic() {
 // renderCart (Now handled by widgets/cart in main.js)
 
 window.newBill = function() {
+    // Inject Delete Button if missing
+    if (!document.getElementById('btn-delete-sale')) {
+        const canBtn = document.getElementById('btn-new-bill') || document.querySelector('button[onclick="newBill()"]');
+        if (canBtn && canBtn.parentElement) {
+            const delBtn = document.createElement('button');
+            delBtn.id = 'btn-delete-sale';
+            delBtn.className = 'btn-danger';
+            delBtn.style.cssText = 'display: none; padding: 10px 5px; font-size: 11px; flex: 1; background: #ef4444; border: none; border-radius: 6px; cursor: pointer; color: white;';
+            delBtn.onclick = () => window.deleteSaleFromEdit();
+            delBtn.innerHTML = '<i class="fa-solid fa-trash"></i> Del';
+            canBtn.parentElement.insertBefore(delBtn, canBtn);
+            
+            // Also ensure process button has an ID
+            const procBtn = document.querySelector('button[onclick="processSale()"]');
+            if (procBtn) procBtn.id = 'btn-process-sale';
+            if (canBtn) canBtn.id = 'btn-new-bill';
+        }
+    }
+    console.log('newBill() called. Resetting POS state.');
+    const currentCart = window.cart || [];
+    
     // If cart has items, ask for confirmation
-    if (cart.length > 0) {
+    if (currentCart.length > 0) {
         if (!confirm('Are you sure you want to cancel this order? All unsaved changes will be lost.')) {
             return;
         }
     }
 
     // If a table is selected, clear its saved cart and advance as well (Full Cancel)
-    if (currentSelectedTable) {
-        const tableIndex = tables.findIndex(t => t.id === currentSelectedTable);
+    if (window.currentSelectedTable) {
+        const allTables = window.tables || [];
+        const tableIndex = allTables.findIndex(t => t.id === window.currentSelectedTable);
         if (tableIndex > -1) {
-            tables[tableIndex].cart = [];
-            tables[tableIndex].advance = 0;
-            saveData();
+            allTables[tableIndex].cart = [];
+            allTables[tableIndex].advance = 0;
+            if (typeof saveData === 'function') saveData();
         }
     }
     
     // Reset POS State
-    currentSelectedTable = null;
-    cart = [];
-    document.getElementById('current-table-name').innerText = 'No Table Selected';
-    document.getElementById('advance-paid-info').style.display = 'none';
+    window.currentSelectedTable = null;
+    
+    // Reset Buttons
+    const processBtn = document.getElementById('btn-process-sale');
+    if (processBtn) {
+        processBtn.innerHTML = '<i class="fa-solid fa-check"></i> Sale [Ent]';
+        processBtn.style.background = ''; // Revert to CSS default (success green)
+    }
+    
+    const deleteBtn = document.getElementById('btn-delete-sale');
+    if (deleteBtn) deleteBtn.style.display = 'none';
+
+    if (typeof window.setCart === 'function') {
+        window.setCart([]);
+    } else {
+        window.cart = [];
+    }
+    
+    const tableNameEl = document.getElementById('current-table-name');
+    if (tableNameEl) tableNameEl.innerText = 'No Table Selected';
+    
+    const advInfo = document.getElementById('advance-paid-info');
+    if (advInfo) advInfo.style.display = 'none';
     
     // Reset to default Order Type UI (Dine-In)
     const dineInBtn = document.querySelector('.order-type-btn[onclick*="DINE_IN"]');
-    if (dineInBtn) setOrderType('DINE_IN', dineInBtn);
+    if (dineInBtn && typeof setOrderType === 'function') setOrderType('DINE_IN', dineInBtn);
     
-    window.renderCart();
-    renderTableGrid(); // Update the grid so table turns from RED to GLASS/GREEN
-    if(typeof renderPOSItems === 'function') renderPOSItems(); 
+    if (typeof window.refreshUI === 'function') {
+        window.refreshUI();
+    } else {
+        if (typeof window.renderCart === 'function') window.renderCart();
+        if (typeof renderTableGrid === 'function') renderTableGrid(); 
+        if (typeof renderPOSItems === 'function') renderPOSItems(); 
+    }
 }
 
 window.calculateTotal = function() {
@@ -388,40 +433,64 @@ window.renderActiveOrders = function() {
     if (!container) return;
     container.innerHTML = '';
 
-    const orders = window.activeOrders || [];
+    const allOrders = window.activeOrders || [];
+    // Only show Takeaway and Quick/Counter sales in this list
+    const orders = allOrders.filter(o => o.orderType !== 'DINE_IN');
 
     if (orders.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary); font-size:12px;">No pending takeaway orders.</div>';
+        container.innerHTML = '<div style="text-align:center; padding:10px; color:var(--text-secondary); font-size:11px; width:100%;">No pending takeaway/counter bills.</div>';
         return;
     }
 
     orders.forEach(order => {
         const card = document.createElement('div');
-        card.className = 'active-order-card glass-panel';
-        card.style.cssText = 'margin-bottom:10px; padding:12px; border-left:3px solid var(--accent-color); display:flex; justify-content:space-between; align-items:center; cursor:pointer;';
+        card.className = 'pending-order-card glass-panel';
+        // Style like a table card
+        card.style.cssText = `
+            flex: 0 0 110px;
+            height: 90px;
+            padding: 10px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03);
+        `;
+        
         card.onclick = () => window.loadActiveOrder(order.id);
         
         const timeStr = new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        const typeIcon = order.orderType === 'TAKEAWAY' ? 'fa-bag-shopping' : 'fa-bolt';
+        const typeIcon = order.orderType === 'TAKEAWAY' ? 'fa-bag-shopping' : (order.orderType === 'DINE_IN' ? 'fa-chair' : 'fa-bolt');
         
         card.innerHTML = `
-            <div style="flex:1;">
-                <div style="font-weight:700; font-size:13px; display:flex; align-items:center; gap:5px;">
-                    <i class="fa-solid ${typeIcon}" style="color:var(--accent-color);"></i>
-                    <span>${order.orderType}</span>
-                    <span style="font-size:10px; color:var(--text-secondary); font-weight:400;">(${timeStr})</span>
-                </div>
-                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
-                    ${order.items.length} items • <strong>${formatCurrency(order.total)}</strong>
-                    ${order.tableName ? `<span style="margin-left:8px; color:var(--accent-color); font-weight:700;">[${order.tableName}]</span>` : ''}
-                </div>
+            <span class="bullet" style="position:absolute; top:8px; right:8px; background:var(--warning-color); width:6px; height:6px; border-radius:50%;"></span>
+            <div style="font-size: 18px; color: var(--accent-color); margin-bottom: 4px;">
+                <i class="fa-solid ${typeIcon}"></i>
             </div>
-            <div style="display:flex; gap:8px;">
-                <button class="action-btn" style="color:var(--danger-color); font-size:12px;" onclick="event.stopPropagation(); window.deleteActiveOrder('${order.id}')">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
+            <div style="font-weight:800; font-size:11px; color:white; line-height:1;">
+                ${order.tableName || order.orderType}
             </div>
+            <div style="font-size:10px; font-weight:700; color:var(--warning-color); margin-top:4px;">
+                ${formatCurrency(order.total)}
+            </div>
+            <div style="font-size:8px; color:var(--text-secondary); margin-top:2px;">
+                ${order.items.length} Items • ${timeStr}
+            </div>
+            <button class="action-btn" style="position:absolute; bottom:5px; right:5px; color:rgba(255,255,255,0.3); font-size:10px; padding:2px; background:transparent; border:none;" onclick="event.stopPropagation(); window.deleteActiveOrder('${order.id}')">
+                <i class="fa-solid fa-trash"></i>
+            </button>
         `;
+
+        // Add hover effect via JS
+        card.onmouseover = () => { card.style.background = 'rgba(255,255,255,0.08)'; card.style.transform = 'translateY(-2px)'; };
+        card.onmouseout = () => { card.style.background = 'rgba(255,255,255,0.03)'; card.style.transform = 'translateY(0)'; };
+
         container.appendChild(card);
     });
 };
@@ -442,17 +511,27 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     let finalCustName = custName;
     let finalCustMobile = custMobile;
 
-    if (editingSaleId) {
-        const oldSale = salesHistory.find(s => s.id == editingSaleId);
+    if (window.editingSaleId) {
+        const oldSale = window.salesHistory.find(s => s.id == window.editingSaleId);
         if (oldSale) {
             finalSaleId = oldSale.id;
-            finalCash += (oldSale.splitAmounts?.cash || 0);
-            finalUpi += (oldSale.splitAmounts?.upi || 0);
+            // Restore inventory for old items before re-applying update
+            if (oldSale.items) {
+                oldSale.items.forEach(oldItem => {
+                    const invItem = (window.inventory || []).find(i => i.id === oldItem.id);
+                    if (invItem) invItem.quantity += oldItem.cartQty;
+                });
+            }
+            
+            // Note: We don't merge payments here because the user entered the NEW total split in the UI
+            // But if the user wants to keep track of cumulative payments, we could.
+            // For now, let's assume the UI has the current final payment values.
+            
             if (!finalCustName) finalCustName = oldSale.customerName;
             if (!finalCustMobile) finalCustMobile = oldSale.customerMobile;
             
             // Remove old record
-            salesHistory = salesHistory.filter(s => s.id != editingSaleId);
+            window.salesHistory = window.salesHistory.filter(s => s.id != window.editingSaleId);
         }
     }
 
@@ -544,6 +623,16 @@ window.editSale = function(id) {
     // Update UI
     window.showView('pos');
     
+    // Update Buttons for Edit Mode
+    const processBtn = document.getElementById('btn-process-sale');
+    if (processBtn) {
+        processBtn.innerHTML = '<i class="fa-solid fa-save"></i> Update Sale';
+        processBtn.style.background = 'var(--warning-color)'; // Make it orange/amber
+    }
+    
+    const deleteBtn = document.getElementById('btn-delete-sale');
+    if (deleteBtn) deleteBtn.style.display = 'block';
+    
     // Show previous paid in UI
     const prevPaidRow = document.getElementById('prev-paid-row');
     const prevPaidEl = document.getElementById('cart-prev-paid');
@@ -585,7 +674,13 @@ $(document).on('_disabled_keydown', function (e) {
 
 // Tables curtain toggle moved to main.js
 
-// System Settings & Data Management
+window.deleteSaleFromEdit = function() {
+    if (!window.editingSaleId) return;
+    if (typeof deleteSale === 'function') {
+        deleteSale(window.editingSaleId);
+        newBill();
+    }
+}
 
 
 }
