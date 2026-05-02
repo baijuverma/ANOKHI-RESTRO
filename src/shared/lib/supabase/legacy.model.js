@@ -22,8 +22,8 @@ export function initSupabaseLogic() {
                 localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
             }
 
-            // Fetch only the latest 20 sales initially for better performance
-            const { data: salesData } = await db.from('sales_history').select('*').order('date', { ascending: false }).range(0, 19);
+            // Fetch more records for accurate dashboard/monthly stats
+            const { data: salesData } = await db.from('sales_history').select('*').order('date', { ascending: false }).limit(200);
             if (salesData) {
                 window.salesHistory = salesData;
                 localStorage.setItem('anokhi_sales', JSON.stringify(window.salesHistory));
@@ -39,7 +39,7 @@ export function initSupabaseLogic() {
                 localStorage.setItem('anokhi_tables', JSON.stringify(window.tables));
             }
 
-            const { data: expData } = await db.from('expenses').select('*').order('date', { ascending: false }).range(0, 19);
+            const { data: expData } = await db.from('expenses').select('*').order('date', { ascending: false }).limit(200);
             if (expData && expData.length > 0) {
                 window.expensesHistory = expData;
                 localStorage.setItem('anokhi_expenses', JSON.stringify(window.expensesHistory));

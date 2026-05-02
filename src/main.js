@@ -137,14 +137,38 @@ window.renderCart = () => {
 };
 
 window.updateDashboard = () => {
-    const totalSale    = (window.salesHistory    || []).reduce((a, c) => a + (parseFloat(c.total)  || 0), 0);
-    const totalExpense = (window.expensesHistory || []).reduce((a, c) => a + (parseFloat(c.amount) || 0), 0);
-    const totalOrders  = (window.salesHistory    || []).length;
+    const today = new Date();
+    const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : '';
+
+    const todaySales = (window.salesHistory || []).filter(s =>
+        window.getDDMMYYYY && window.getDDMMYYYY(new Date(s.date)) === todayStr
+    );
+    const todayExpenses = (window.expensesHistory || []).filter(e =>
+        window.getDDMMYYYY && window.getDDMMYYYY(new Date(e.date)) === todayStr
+    );
+
+    let totalRevenue = 0, todayCash = 0, todayUpi = 0;
+    todaySales.forEach(s => {
+        totalRevenue += (s.total || 0);
+        if (s.payment_mode === 'UPI' || s.paymentMode === 'UPI') todayUpi += (s.total || 0);
+        else if ((s.payment_mode === 'BOTH' || s.paymentMode === 'BOTH') && (s.split_amounts || s.splitAmounts)) {
+            const split = s.split_amounts || s.splitAmounts;
+            todayUpi += (split.upi || 0);
+            todayCash += (split.cash || 0);
+        } else todayCash += (s.total || 0);
+    });
+
+    const totalExpense = todayExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
 
     renderDashboardStats({
-        totalSale:    totalSale.toFixed(2),
-        totalExpense: totalExpense.toFixed(2),
-        totalOrders:  totalOrders
+        totalRevenue: totalRevenue.toFixed(0),
+        todayCash: todayCash.toFixed(0),
+        todayUpi: todayUpi.toFixed(0),
+        totalExpense: totalExpense.toFixed(0),
+        profit: (totalRevenue - totalExpense).toFixed(0),
+        totalItems: (window.inventory || []).length,
+        lowStock: (window.inventory || []).filter(i => i.quantity <= (i.lowStockThreshold || 5) && i.quantity > 0).length,
+        outOfStock: (window.inventory || []).filter(i => i.quantity === 0).length
     });
 };
 
