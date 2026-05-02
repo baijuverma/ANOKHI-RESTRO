@@ -195,6 +195,7 @@ window.toggleDuesFilter = function() {
 }
 
 // History Logic
+window.renderHistoryCards = renderHistoryCards;
 function renderHistoryCards() {
     if(salesHistory.length === 0) {
         return;

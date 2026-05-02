@@ -124,6 +124,7 @@ window.renderHistory = () => {
         renderSalesHistory('sales-tbody', window.salesHistory, 10);
         renderSalesHistory('history-tbody', window.salesHistory, null);
         updateCalendarData(window.salesHistory);
+        if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
     }
 };
 

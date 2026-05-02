@@ -483,16 +483,21 @@ export const appShellHTML = `
 
             <!-- History View -->
             <section id="history" class="view-section">
-                <header style="display: flex; gap: 12px; align-items: stretch; flex-wrap: nowrap; overflow-x: auto;">
+                <header class="flex-between">
+                    <div>
+                        <h1>Sales History</h1>
+                        <p>Complete record of all transactions</p>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: flex-start;">
                         <!-- Total Dues Card (Clickable to Filter) -->
-                        <div class="glass-panel" onclick="toggleDuesFilter()" style="padding: 12px 20px; border-left: 4px solid #ef4444; flex: 1; min-width: 160px; background: rgba(239, 68, 68, 0.05); cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" id="dues-filter-card">
+                        <div class="glass-panel" onclick="toggleDuesFilter()" style="padding: 12px 20px; border-left: 4px solid #ef4444; min-width: 200px; background: rgba(239, 68, 68, 0.05); cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" id="dues-filter-card">
                             <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #ef4444; margin-bottom: 4px;">Total Dues (Baki)</h3>
                             <p id="history-total-dues" style="font-size: 28px; font-weight: 800; color: #ef4444; margin: 0;">₹0</p>
                             <div id="dues-filter-status" style="font-size: 11px; margin-top: 8px; color: var(--text-secondary); background: rgba(239, 68, 68, 0.1); padding: 2px 8px; border-radius: 4px; display: inline-block;">Click to Filter Dues</div>
                         </div>
                         
                         <!-- Monthly Sale Card -->
-                        <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid var(--accent-color); flex: 1; min-width: 160px;">
+                        <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid var(--accent-color); min-width: 220px;">
                             <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Sales</h3>
                             <p id="monthly-sale-total" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
                             <div style="display: flex; gap: 10px; font-size: 13px; margin-top: 8px; color: var(--text-secondary);">
@@ -502,18 +507,19 @@ export const appShellHTML = `
                         </div>
 
                         <!-- Monthly Expenses Card -->
-                        <div class="glass-panel" onclick="window.showView('expenses')" style="padding: 12px 20px; border-left: 4px solid #f87171; flex: 1; min-width: 160px; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                        <div class="glass-panel" onclick="window.showView('expenses')" style="padding: 12px 20px; border-left: 4px solid #f87171; min-width: 220px; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                             <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Expenses</h3>
                             <p id="monthly-expense-total" style="font-size: 28px; font-weight: 800; color: #f87171; margin: 0;">₹0</p>
                             <div style="font-size: 13px; margin-top: 8px; color: var(--text-secondary); font-weight: 600;">Total Spent This Month</div>
                         </div>
 
                         <!-- Monthly Profit Card -->
-                        <div class="glass-panel" id="monthly-profit-card" style="padding: 12px 20px; border-left: 4px solid #22c55e; flex: 1; min-width: 160px;">
+                        <div class="glass-panel" id="monthly-profit-card" style="padding: 12px 20px; border-left: 4px solid #22c55e; min-width: 220px;">
                             <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Profit / Loss</h3>
                             <p id="monthly-profit-total" style="font-size: 28px; font-weight: 900; color: #22c55e; margin: 0;">₹0</p>
                             <div style="font-size: 13px; margin-top: 8px; color: var(--text-secondary); font-weight: 600;">Net Monthly Gain</div>
                         </div>
+                    </div>
                 </header>
                 <!-- Sales Chart (Calendar) -->
                 <div class="glass-panel mt-4">
