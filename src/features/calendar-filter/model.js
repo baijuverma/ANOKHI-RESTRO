@@ -9,9 +9,14 @@ export const setCurrentCalendarDate = (date) => {
 };
 
 export const updateCalendarView = () => {
-    const m = parseInt(document.getElementById('calendar-month-select').value);
-    const y = parseInt(document.getElementById('calendar-year-select').value);
+    const mSelect = document.getElementById('calendar-month-select');
+    const ySelect = document.getElementById('calendar-year-select');
+    if (!mSelect || !ySelect) return;
+    
+    const m = parseInt(mSelect.value);
+    const y = parseInt(ySelect.value);
     currentCalendarDate = new Date(y, m, 1);
+    window.currentCalendarDate = currentCalendarDate; // Expose to legacy modules
     if (typeof window.refreshUI === 'function') window.refreshUI();
 };
 

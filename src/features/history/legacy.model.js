@@ -197,65 +197,52 @@ window.toggleDuesFilter = function() {
 // History Logic
 window.renderHistoryCards = renderHistoryCards;
 function renderHistoryCards() {
-    if(salesHistory.length === 0) {
-        return;
-    }
+    const sHistory = window.salesHistory || [];
+    const eHistory = window.expensesHistory || [];
 
     // Calculate Monthly Summary for the cards in Header
-    const targetMonth = currentCalendarDate ? currentCalendarDate.getMonth() : new Date().getMonth();
-    const targetYear = currentCalendarDate ? currentCalendarDate.getFullYear() : new Date().getFullYear();
+    const targetMonth = window.currentCalendarDate ? window.currentCalendarDate.getMonth() : new Date().getMonth();
+    const targetYear = window.currentCalendarDate ? window.currentCalendarDate.getFullYear() : new Date().getFullYear();
 
-    const monthlySales = salesHistory.filter(s => {
+    const monthlySales = sHistory.filter(s => {
         const d = new Date(s.date);
         return d.getMonth() === targetMonth && d.getFullYear() === targetYear;
     });
 
-    const monthlyExpenses = expensesHistory.filter(e => {
+    const monthlyExpenses = eHistory.filter(e => {
         const d = new Date(e.date);
         return d.getMonth() === targetMonth && d.getFullYear() === targetYear;
     });
 
     let mTotal = 0, mCash = 0, mUpi = 0;
     monthlySales.forEach(s => {
-        mTotal += s.total;
-        if (s.paymentMode === "UPI") mUpi += s.total;
+        const amt = parseFloat(s.total) || 0;
+        mTotal += amt;
+        if (s.paymentMode === "UPI") mUpi += amt;
         else if (s.paymentMode === "BOTH" && s.splitAmounts) {
-            mUpi += (s.splitAmounts.upi || 0);
-            mCash += (s.splitAmounts.cash || 0);
-        } else mCash += s.total;
+            mUpi += parseFloat(s.splitAmounts.upi) || 0;
+            mCash += parseFloat(s.splitAmounts.cash) || 0;
+        } else mCash += amt;
     });
 
-    const mExpTotal = monthlyExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const mExpTotal = monthlyExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
     const mNetProfit = mTotal - mExpTotal;
 
     // Update UI Cards
-    const mSaleEl = document.getElementById("monthly-sale-total");
-    const mCashEl = document.getElementById("monthly-cash");
-    const mUpiEl = document.getElementById("monthly-upi");
+    const el = (id) => document.getElementById(id);
     
-    if (mSaleEl) mSaleEl.innerText = formatCurrency(mTotal);
-    if (mCashEl) mCashEl.innerText = formatCurrency(mCash);
-    if (mUpiEl) mUpiEl.innerText = formatCurrency(mUpi);
-    
-    const mExpEl = document.getElementById("monthly-expense-total");
-    if (mExpEl) mExpEl.innerText = formatCurrency(mExpTotal);
+    if (el("monthly-sale-total")) el("monthly-sale-total").innerText = formatCurrency(mTotal);
+    if (el("monthly-cash")) el("monthly-cash").innerText = formatCurrency(mCash);
+    if (el("monthly-upi")) el("monthly-upi").innerText = formatCurrency(mUpi);
+    if (el("monthly-expense-total")) el("monthly-expense-total").innerText = formatCurrency(mExpTotal);
+    if (el("monthly-profit-total")) {
+        el("monthly-profit-total").innerText = formatCurrency(mNetProfit);
+        el("monthly-profit-total").style.color = mNetProfit >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
+    }
     
     // Calculate Total Dues from all time
-    const totalDuesHistory = salesHistory.reduce((sum, s) => sum + (parseFloat(s.dues) || 0), 0);
-    const totalDuesHistoryEl = document.getElementById("history-total-dues");
-    if (totalDuesHistoryEl) totalDuesHistoryEl.innerText = formatCurrency(totalDuesHistory);
-
-    const mProfitEl = document.getElementById("monthly-profit-total");
-    if (mProfitEl) {
-        mProfitEl.innerText = formatCurrency(mNetProfit);
-        mProfitEl.style.color = mNetProfit >= 0 ? "#22c55e" : "#ef4444";
-        const mProfitCard = document.getElementById("monthly-profit-card");
-        if (mProfitCard) mProfitCard.style.borderLeft = `4px solid ${mNetProfit >= 0 ? "#22c55e" : "#ef4444"}`;
-    }
-
-    if (typeof window.renderHistory === 'function') {
-        window.renderHistory();
-    }
+    const totalDues = sHistory.reduce((sum, s) => sum + (parseFloat(s.dues) || 0), 0);
+    if (el("history-total-dues")) el("history-total-dues").innerText = formatCurrency(totalDues);
 }
 
 let isLoadingMore = false;
