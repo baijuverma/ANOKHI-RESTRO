@@ -484,10 +484,7 @@ export const appShellHTML = `
             <!-- History View -->
             <section id="history" class="view-section">
                 <header class="flex-between">
-                    <div>
-                        <h1>Sales History</h1>
-                        <p>Complete record of all transactions</p>
-                    </div>
+                    <div></div>
                     <div style="display: flex; gap: 12px; align-items: flex-start;">
                         <!-- Total Dues Card (Clickable to Filter) -->
                         <div class="glass-panel" onclick="toggleDuesFilter()" style="padding: 12px 20px; border-left: 4px solid #ef4444; min-width: 200px; background: rgba(239, 68, 68, 0.05); cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" id="dues-filter-card">
