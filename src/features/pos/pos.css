@@ -103,21 +103,22 @@
 
 .tables-section.collapsed,
 .tables-collapsed {
-    padding-top: 0;
-    padding-bottom: 0;
-    height: 0 !important;
-    max-height: 0 !important;
-    border-bottom: none;
-    opacity: 0;
-    pointer-events: none;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: 160px !important;
+    max-height: 160px !important;
+    opacity: 1;
+    pointer-events: all;
+    overflow-y: hidden; /* Hide scrollbar in collapsed state */
 }
 
 .tables-expanded {
-    height: auto !important;
-    max-height: 500px !important;
+    height: 280px !important;
+    max-height: 280px !important;
     opacity: 1;
-    padding: 15px;
+    padding: 10px;
     border-bottom: 1px solid var(--panel-border);
+    overflow-y: auto; /* Enable scroll if more than 2 rows */
 }
 
 .tables-section::-webkit-scrollbar { width: 4px; }
@@ -381,9 +382,9 @@
 
 .tables-curtain.collapsed,
 .tables-collapsed {
-    height: 0 !important;
-    opacity: 0;
-    pointer-events: none;
+    height: 160px !important;
+    opacity: 1;
+    pointer-events: all;
 }
 
 /* Selected / In-Cart Item Card - White Theme */
