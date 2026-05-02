@@ -525,6 +525,10 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     let finalSaleId = Math.floor(100000 + Math.random() * 900000).toString();
     let finalCustName = custName;
     let finalCustMobile = custMobile;
+    
+    let prevCash = 0;
+    let prevUpi = 0;
+    let prevTotalPaid = 0;
 
     if (window.editingSaleId) {
         const oldSale = (window.salesHistory || []).find(s => s.id == window.editingSaleId);
@@ -539,10 +543,23 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
             if (!finalCustName) finalCustName = oldSale.customerName;
             if (!finalCustMobile) finalCustMobile = oldSale.customerMobile;
             window.salesHistory = window.salesHistory.filter(s => s.id != window.editingSaleId);
+            
+            prevCash = (window.previousSplitAmounts && window.previousSplitAmounts.cash) ? parseFloat(window.previousSplitAmounts.cash) : 0;
+            prevUpi = (window.previousSplitAmounts && window.previousSplitAmounts.upi) ? parseFloat(window.previousSplitAmounts.upi) : 0;
+            prevTotalPaid = window.previousPaidAmount || 0;
+            
+            // Fallback if split amounts weren't tracked but amount was paid
+            if (prevTotalPaid > 0 && prevCash === 0 && prevUpi === 0) {
+                if (oldSale.paymentMode === 'UPI') prevUpi = prevTotalPaid;
+                else prevCash = prevTotalPaid;
+            }
         }
     }
 
-    const finalSplitAmounts = { cash: payCash, upi: payUpi };
+    const finalCash = prevCash + payCash;
+    const finalUpi = prevUpi + payUpi;
+    const finalSplitAmounts = { cash: finalCash, upi: finalUpi };
+    const totalPaidCombined = prevTotalPaid + payCash + payUpi;
 
     // Deduct Inventory
     (window.cart || []).forEach(cartItem => {
@@ -569,7 +586,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
         total: total,
         discount: discount,
         roundOff: roundOff,
-        paymentMode: (payCash > 0 && payUpi > 0) ? 'BOTH' : (payUpi > 0 ? 'UPI' : 'CASH'),
+        paymentMode: (finalCash > 0 && finalUpi > 0) ? 'BOTH' : (finalUpi > 0 ? 'UPI' : 'CASH'),
         splitAmounts: finalSplitAmounts,
         orderType: window.selectedOrderType,
         tableName: tableName,
@@ -577,7 +594,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
         advancePaid: totals.advance,
         customerName: finalCustName,
         customerMobile: finalCustMobile,
-        dues: Math.max(0, total - (payCash + payUpi))
+        dues: Math.max(0, total - totalPaidCombined)
     };
     
     // Clear held table if applicable
@@ -597,6 +614,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     // Reset editing state
     window.editingSaleId = null;
     window.previousPaidAmount = 0;
+    window.previousSplitAmounts = null;
     const prevPaidRow = document.getElementById('prev-paid-row');
     if(prevPaidRow) prevPaidRow.style.display = 'none';
 
