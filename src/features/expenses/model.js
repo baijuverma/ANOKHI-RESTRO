@@ -1,40 +1,55 @@
 export function initExpensesLogic() {
-    window.updateExpenseSubCats = function() {
-        const mainCat = document.getElementById('expense-main-cat').value;
-        const subCatSelect = document.getElementById('expense-sub-cat');
+    // Moved to top level for global access and added defensive logging
+}
 
-        const subCats = {
-            'staff': ['Salary', 'Advance', 'Rent', 'Electricity Bill', 'Water Bill', 'Maintenance'],
-            'material': ['Groceries', 'Vegetables', 'Gas Cylinder', 'Packaging', 'Meat/Chicken', 'Dairy Products']
-        };
-
-        // Reset sub-cat
-        subCatSelect.innerHTML = '';
-
-        if (subCats[mainCat]) {
-            subCatSelect.disabled = false;
-            subCatSelect.style.opacity = '1';
-            // Placeholder
-            const ph = document.createElement('option');
-            ph.value = ''; ph.disabled = true; ph.selected = true;
-            ph.textContent = 'Sub category chuniye...';
-            subCatSelect.appendChild(ph);
-            // Options
-            subCats[mainCat].forEach(sub => {
-                const opt = document.createElement('option');
-                opt.value = sub;
-                opt.textContent = sub;
-                subCatSelect.appendChild(opt);
-            });
-        } else {
-            subCatSelect.disabled = true;
-            subCatSelect.style.opacity = '0.5';
-            const ph = document.createElement('option');
-            ph.value = ''; ph.disabled = true; ph.selected = true;
-            ph.textContent = 'Pehle main category chuniye...';
-            subCatSelect.appendChild(ph);
-        }
+// Global function for sub-category update
+window.updateExpenseSubCats = function() {
+    const mainCatEl = document.getElementById('expense-main-cat');
+    const subCatSelect = document.getElementById('expense-sub-cat');
+    
+    if (!mainCatEl || !subCatSelect) {
+        console.error('Expense elements not found in DOM');
+        return;
     }
+
+    const mainCat = mainCatEl.value;
+    console.log('Main category selected:', mainCat);
+
+    const subCats = {
+        'staff': ['Salary', 'Advance', 'Rent', 'Electricity Bill', 'Water Bill', 'Maintenance'],
+        'material': ['Groceries', 'Vegetables', 'Gas Cylinder', 'Packaging', 'Meat/Chicken', 'Dairy Products']
+    };
+
+    // Reset sub-cat
+    subCatSelect.innerHTML = '';
+
+    if (subCats[mainCat]) {
+        subCatSelect.disabled = false;
+        subCatSelect.style.opacity = '1';
+        
+        // Placeholder
+        const ph = document.createElement('option');
+        ph.value = ''; ph.disabled = true; ph.selected = true;
+        ph.textContent = 'Select sub-category...';
+        subCatSelect.appendChild(ph);
+        
+        // Options
+        subCats[mainCat].forEach(sub => {
+            const opt = document.createElement('option');
+            opt.value = sub;
+            opt.textContent = sub;
+            subCatSelect.appendChild(opt);
+        });
+        console.log('Sub-categories populated for:', mainCat);
+    } else {
+        subCatSelect.disabled = true;
+        subCatSelect.style.opacity = '0.5';
+        const ph = document.createElement('option');
+        ph.value = ''; ph.disabled = true; ph.selected = true;
+        ph.textContent = 'Select main category first...';
+        subCatSelect.appendChild(ph);
+    }
+}
 
     window.handleExpenseSubmit = async function(e) {
         e.preventDefault();
