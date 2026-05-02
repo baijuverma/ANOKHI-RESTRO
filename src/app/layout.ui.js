@@ -220,6 +220,7 @@ export const appShellHTML = `
                                 <label>Main Category</label>
                                 <div class="input-wrapper">
                                     <input type="text" id="expense-main-cat" list="main-cat-list" required placeholder="Select or type category..." oninput="updateExpenseSubCats()" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                                    <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('expense-main-cat')"></i>
                                     <datalist id="main-cat-list">
                                         <option value="Staff & Payroll">
                                         <option value="Raw Material/Ingredients">
@@ -232,6 +233,7 @@ export const appShellHTML = `
                                 <label>Sub Category</label>
                                 <div class="input-wrapper">
                                     <input type="text" id="expense-sub-cat" list="sub-cat-list" required placeholder="Select or type sub-category..." style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                                    <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('expense-sub-cat')"></i>
                                     <datalist id="sub-cat-list"></datalist>
                                 </div>
                             </div>
