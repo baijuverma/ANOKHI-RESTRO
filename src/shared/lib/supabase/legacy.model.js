@@ -334,6 +334,9 @@ export function initSupabaseLogic() {
                     description: e.description
                 })));
             }
+        } catch (err) {
+            console.error('Push Error:', err);
+        }
     };
 
     // Auto-sync on init
