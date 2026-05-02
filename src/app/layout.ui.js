@@ -95,48 +95,36 @@ export const appShellHTML = `
         <main class="main-content">
             <!-- Dashboard View -->
             <section id="dashboard" class="view-section active">
-                <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr); margin-top: 0;">
-                    <div class="stat-card glass-panel" style="cursor: pointer;" onclick="window.showTodaySalesList()">
-                        <div class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-                        <div class="stat-details" style="width: 100%;">
-                            <h3>Total Sale (Today)</h3>
-                            <p id="total-revenue">₹0</p>
-                            <div style="font-size: 12px; margin-top: 5px; color: var(--text-secondary); display: flex; gap: 15px; background: rgba(0,0,0,0.2); padding: 5px 8px; border-radius: 6px;">
-                                <span><i class="fa-solid fa-money-bill-wave" style="color:var(--success-color);"></i> Cash: <span id="today-cash">₹0</span></span>
-                                <span><i class="fa-brands fa-google-pay" style="color:#818cf8;"></i> UPI: <span id="today-upi">₹0</span></span>
-                            </div>
+                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 0;">
+                    <!-- Today Sale Card -->
+                    <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #6366f1; background: rgba(99, 102, 241, 0.05); cursor: pointer;" onclick="window.showTodaySalesList()">
+                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #818cf8; margin-bottom: 4px;">Today Sales</h3>
+                        <p id="total-revenue" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
+                        <div style="font-size: 12px; margin-top: 8px; color: var(--text-secondary); display: flex; gap: 12px;">
+                            <span><i class="fa-solid fa-money-bill-wave" style="color:#22c55e;"></i> <span id="today-cash">₹0</span></span>
+                            <span><i class="fa-brands fa-google-pay" style="color:#818cf8;"></i> <span id="today-upi">₹0</span></span>
                         </div>
                     </div>
-                    <div class="stat-card glass-panel" id="profit-card" style="border-left: 4px solid #22c55e; cursor: pointer;" onclick="window.showView('history')">
-                        <div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div>
-                        <div class="stat-details">
-                            <h3>Profit / Loss (Today)</h3>
-                            <p id="total-profit">₹0</p>
-                            <div style="font-size: 11px; margin-top: 4px; color: var(--text-secondary);">
-                                Today Rev - Today Exp
-                            </div>
-                        </div>
+
+                    <!-- Today Profit Card -->
+                    <div class="glass-panel" id="profit-card" style="padding: 12px 20px; border-left: 4px solid #22c55e; background: rgba(34, 197, 94, 0.05); cursor: pointer;" onclick="window.showView('history')">
+                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #22c55e; margin-bottom: 4px;">Today Profit / Loss</h3>
+                        <p id="total-profit" style="font-size: 28px; font-weight: 800; color: #22c55e; margin: 0;">₹0</p>
+                        <div style="font-size: 11px; margin-top: 8px; color: var(--text-secondary);">Today Revenue - Today Expenses</div>
                     </div>
-                    <div class="stat-card glass-panel" style="cursor: pointer;" onclick="window.showStockList('total')">
-                        <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
-                        <div class="stat-details">
-                            <h3>Total Items Available</h3>
-                            <p id="total-items">0</p>
-                        </div>
+
+                    <!-- Low Stock Card -->
+                    <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.05); cursor: pointer;" onclick="window.showStockList('low')">
+                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #f59e0b; margin-bottom: 4px;">Low Stock Items</h3>
+                        <p id="low-stock" style="font-size: 28px; font-weight: 800; color: #f59e0b; margin: 0;">0</p>
+                        <div style="font-size: 11px; margin-top: 8px; color: var(--text-secondary);">Items needing restock</div>
                     </div>
-                    <div class="stat-card glass-panel warning" style="cursor: pointer;" onclick="window.showStockList('low')">
-                        <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                        <div class="stat-details">
-                            <h3>Low Stock Items</h3>
-                            <p id="low-stock">0</p>
-                        </div>
-                    </div>
-                    <div class="stat-card glass-panel danger" style="cursor: pointer;" onclick="window.showStockList('out')">
-                        <div class="stat-icon"><i class="fa-solid fa-circle-xmark"></i></div>
-                        <div class="stat-details">
-                            <h3>Out of Stock</h3>
-                            <p id="out-of-stock">0</p>
-                        </div>
+
+                    <!-- Out of Stock Card -->
+                    <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer;" onclick="window.showStockList('out')">
+                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #ef4444; margin-bottom: 4px;">Out of Stock</h3>
+                        <p id="out-of-stock" style="font-size: 28px; font-weight: 800; color: #ef4444; margin: 0;">0</p>
+                        <div style="font-size: 11px; margin-top: 8px; color: var(--text-secondary);">Critical stock levels</div>
                     </div>
                 </div>
 

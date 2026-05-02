@@ -14,17 +14,20 @@ export const renderDashboardStats = (stats) => {
     const elOutStock = document.getElementById('out-of-stock');
 
     // Update Today Revenue & Breakdown
-    if (elRevenue) elRevenue.textContent = `₹${stats.totalRevenue || 0}`;
-    if (elCash) elCash.textContent = `₹${stats.todayCash || 0}`;
-    if (elUpi) elUpi.textContent = `₹${stats.todayUpi || 0}`;
+    if (elRevenue) elRevenue.textContent = window.formatCurrency ? window.formatCurrency(stats.totalRevenue || 0) : `₹${stats.totalRevenue || 0}`;
+    if (elCash) elCash.textContent = window.formatCurrency ? window.formatCurrency(stats.todayCash || 0) : `₹${stats.todayCash || 0}`;
+    if (elUpi) elUpi.textContent = window.formatCurrency ? window.formatCurrency(stats.todayUpi || 0) : `₹${stats.todayUpi || 0}`;
 
     // Update Today Profit
     if (elProfit) {
-        const profit = stats.profit || 0;
-        elProfit.textContent = `₹${profit}`;
+        const profit = parseFloat(stats.profit || 0);
+        elProfit.textContent = window.formatCurrency ? window.formatCurrency(profit) : `₹${profit}`;
+        elProfit.style.color = profit >= 0 ? '#22c55e' : '#ef4444';
+        
         const profitCard = document.getElementById('profit-card');
         if (profitCard) {
             profitCard.style.borderLeft = `4px solid ${profit >= 0 ? '#22c55e' : '#ef4444'}`;
+            profitCard.style.background = profit >= 0 ? 'rgba(34, 197, 94, 0.05)' : 'rgba(239, 68, 68, 0.05)';
         }
     }
 
@@ -32,8 +35,4 @@ export const renderDashboardStats = (stats) => {
     if (elItems) elItems.textContent = stats.totalItems || 0;
     if (elLowStock) elLowStock.textContent = stats.lowStock || 0;
     if (elOutStock) elOutStock.textContent = stats.outOfStock || 0;
-
-    // Backward compatibility for old IDs if they exist
-    const oldTotalSale = document.getElementById('total-sale-amount');
-    if (oldTotalSale) oldTotalSale.textContent = `₹${stats.totalRevenue || 0}`;
 };
