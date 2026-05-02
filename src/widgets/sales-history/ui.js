@@ -77,7 +77,7 @@ export const renderSalesHistory = (containerId, orders, limit = null) => {
             <td style="color: inherit;">${formatDateTime(displayDate)}</td>
             <td style="color: inherit;"><div style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${itemsStr}">${itemsStr}</div></td>
             <td>${pModeBadge}</td>
-            <td style="color:${(sale.status || sale.dues > 0) ? '#1e293b' : 'var(--success-color)'}; font-weight:bold;">${formatCurrency(sale.total)}</td>
+            <td style="font-weight:bold; color: var(--text-primary);">${formatCurrency(sale.total)}</td>
             <td>
                 <div style="display: flex; gap: 5px;">
                     <button class="btn-primary" style="padding: 6px 16px; font-size:12px; background: var(--accent-color); border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="editSale('${sale.id}')">
