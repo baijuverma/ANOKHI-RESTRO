@@ -262,9 +262,24 @@ window.processSale = function() {
 
     if (dues > 0.01) {
         // CREDIT SALE: Require customer details
-        document.getElementById('modal-dues-amount').innerText = formatCurrency(dues);
-        document.getElementById('cust-name').value = '';
-        document.getElementById('cust-mobile').value = '';
+        const modalDues = document.getElementById('modal-dues-amount');
+        if (modalDues) modalDues.innerText = formatCurrency(dues);
+        
+        const nameInput = document.getElementById('cust-name');
+        const mobileInput = document.getElementById('cust-mobile');
+        
+        if (window.editingSaleId) {
+            const sale = (window.salesHistory || []).find(s => s.id == window.editingSaleId);
+            if (sale) {
+                if (nameInput) nameInput.value = sale.customerName || '';
+                if (mobileInput) mobileInput.value = sale.customerMobile || '';
+            }
+        } else {
+            // New Sale: Clear fields unless already filled
+            if (nameInput && !nameInput.value) nameInput.value = '';
+            if (mobileInput && !mobileInput.value) mobileInput.value = '';
+        }
+        
         window.openModal('customerModal');
     } else {
         // NORMAL SALE: Just confirm
@@ -628,6 +643,12 @@ window.editSale = function(id) {
 
     const type = sale.orderType || 'COUNTER';
     window.currentSelectedTable = sale.tableId || sale.tableName || null;
+
+    // Pre-fill customer details if available
+    const nameInput = document.getElementById('cust-name');
+    const mobileInput = document.getElementById('cust-mobile');
+    if (nameInput) nameInput.value = sale.customerName || '';
+    if (mobileInput) mobileInput.value = sale.customerMobile || '';
     
     // Update UI
     window.showView('pos');
