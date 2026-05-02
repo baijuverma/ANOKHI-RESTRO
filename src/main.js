@@ -73,6 +73,7 @@ window.addToCart      = addToCart;
 window.updateCartQty  = updateCartQty;
 window.setCart        = setCart;
 window.setPOSFilter   = setFilter;
+window.setOrderType   = setOrderType;
 window.updateCalendarView = updateCalendarView;
 
 window.renderTableGrid = () => {
