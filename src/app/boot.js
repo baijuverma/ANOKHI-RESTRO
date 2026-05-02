@@ -31,63 +31,80 @@ export function initBoot() {
             // Skip if login screen visible
             if (login && login.style.display !== 'none' && !login.classList.contains('hide')) return;
 
-            // Handle open modals
-            if (activeModal) {
-                if (e.key === 'Escape') { if (typeof closeModal === 'function') closeModal(activeModal.id); return; }
-                if (e.key === 'Enter')  {
-                    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName)) return;
+            // 1. ESCAPE: Close modals, suggestions, or clear search
+            if (e.key === 'Escape') {
+                // Hide suggestion panels
+                document.querySelectorAll('.suggestions-panel').forEach(p => {
+                    p.classList.add('hidden');
+                    p.style.display = 'none';
+                });
+
+                if (activeModal) {
                     if (typeof closeModal === 'function') closeModal(activeModal.id);
                     return;
                 }
-                return;
-            }
-
-            // Ignore if user is in another input
-            const isOtherInput = active &&
-                ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName) &&
-                active !== searchInput;
-
-            if (isOtherInput) {
-                if (e.key === 'Enter' && window.cart?.length > 0 &&
-                    (active.id === 'pay-cash-amount' || active.id === 'pay-upi-amount')) {
-                    if (typeof processSale === 'function') processSale();
-                }
-                return;
-            }
-
-            if (e.ctrlKey || e.altKey || e.metaKey) return;
-
-            // ESC
-            if (e.key === 'Escape') {
+                
                 if (active === searchInput) {
                     searchInput.value = '';
                     searchInput.dispatchEvent(new Event('input', { bubbles: true }));
                     searchInput.blur();
                     return;
                 }
+                
                 if (typeof newBill === 'function') newBill();
+                return;
             }
 
-            // ENTER → Process Sale
-            if (e.key === 'Enter') {
-                if (window.cart?.length > 0) {
+            // 2. ENTER → Process Sale (if not in a modal)
+            if (e.key === 'Enter' && !activeModal) {
+                // If in payment inputs, process sale
+                if (active && (active.id === 'pay-cash-amount' || active.id === 'pay-upi-amount')) {
                     if (typeof processSale === 'function') processSale();
+                    return;
+                }
+                
+                // If in search input and cart has items, process sale?
+                // Actually, usually Enter in search just keeps focus. 
+                // But if cart has items and search is focused, maybe process?
+                // Let's keep it safe.
+                if (active === searchInput && window.cart?.length > 0) {
+                     // if (typeof processSale === 'function') processSale();
                 }
             }
 
-            // Type to Search
-            if (!searchInput) return;
-            if (e.key.length === 1) {
+            // 3. IGNORE: System keys, Modals, Other Inputs
+            if (e.ctrlKey || e.altKey || e.metaKey) return;
+            
+            const isOtherInput = active &&
+                ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName) &&
+                active !== searchInput &&
+                !active.classList.contains('searchable-dropdown-input'); // Allow if it's our own search
+
+            if (isOtherInput) return;
+
+            // 4. TYPE TO SEARCH: Redirect to POS and Focus Search
+            if (e.key.length === 1 && !activeModal) {
+                // Redirect if not on POS
                 if (posView && !posView.classList.contains('active')) {
                     if (typeof showView === 'function') showView('pos');
                 }
-                if (active !== searchInput) {
+
+                // Focus and Append
+                if (searchInput && active !== searchInput) {
                     e.preventDefault();
                     searchInput.focus();
-                    searchInput.value += e.key;
+                    
+                    // Clear search if it was just redirected? No, keep it.
+                    const startValue = searchInput.value;
+                    searchInput.value = startValue + e.key;
+                    
+                    // Trigger real-time filtering
                     searchInput.dispatchEvent(new Event('input', { bubbles: true }));
                 }
-            } else if (e.key === 'Backspace' && active !== searchInput) {
+            } 
+            
+            // 5. BACKSPACE REDIRECTION: If on POS but not focused, focus search
+            else if (e.key === 'Backspace' && active !== searchInput && !activeModal) {
                 if (posView && posView.classList.contains('active')) {
                     e.preventDefault();
                     searchInput.focus();
@@ -96,7 +113,10 @@ export function initBoot() {
                         searchInput.dispatchEvent(new Event('input', { bubbles: true }));
                     }
                 }
-            } else if (e.key === 'F4') {
+            } 
+            
+            // 6. FUNCTION KEYS
+            else if (e.key === 'F4') {
                 e.preventDefault();
                 if (typeof openAdvanceModal === 'function') openAdvanceModal();
             } else if (e.key === 'F8') {

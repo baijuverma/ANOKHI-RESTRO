@@ -9,7 +9,6 @@ export const renderPOSGrid = (container, search = '', filterType = 'all') => {
 
     const currentInventory = window.inventory || inventory;
     const filtered = filterItems(currentInventory, search, filterType).filter(item => item.quantity > 0);
-    console.log(`Grid Rendered: Filter=${filterType}, Search="${search}", TotalItems=${currentInventory.length}, FilteredItems=${filtered.length}`);
 
     filtered.forEach(item => {
         const currentCart = window.cart || cart;

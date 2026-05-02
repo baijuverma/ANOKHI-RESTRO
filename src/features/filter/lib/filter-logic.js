@@ -26,10 +26,7 @@ export const matchesFilterType = (item, filterType) => {
     const rawType = item.itemType || item.item_type || 'Veg';
     const itemType = normalizeType(rawType);
     
-    const isMatch = itemType === filter;
-    console.log(`Filtering: ${item.name} | ItemType: ${itemType} | Filter: ${filter} | Match: ${isMatch}`);
-    
-    return isMatch;
+    return itemType === filter;
 };
 
 /**

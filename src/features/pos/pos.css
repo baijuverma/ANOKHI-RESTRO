@@ -40,7 +40,7 @@
 }
 
 /* POS Layout - Fixed Class Names to match pos.html */
-.pos-container {
+.pos-layout {
     display: grid;
     grid-template-columns: 1fr 400px;
     gap: 12px;
@@ -49,14 +49,14 @@
     overflow: hidden;
 }
 
-.pos-left-panel {
+.pos-left-pane {
     display: flex;
     flex-direction: column;
     gap: 12px;
     overflow: hidden;
 }
 
-.pos-right-panel {
+.pos-right-pane {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -65,7 +65,7 @@
 
 /* Mobile Responsiveness for POS */
 @media (max-width: 1024px) {
-    .pos-container {
+    .pos-layout {
         grid-template-columns: 1fr;
         overflow-y: auto !important;
         height: auto !important;
@@ -74,13 +74,13 @@
         padding-bottom: 80px;
     }
 
-    .pos-left-panel, .pos-right-panel {
+    .pos-left-pane, .pos-right-pane {
         overflow: visible !important;
         height: auto !important;
         width: 100% !important;
     }
 
-    .pos-right-panel {
+    .pos-right-pane {
         order: 2;
     }
 }
