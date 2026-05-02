@@ -94,8 +94,19 @@ let inventoryPagination = null;
 window.renderInventory = (isLoadMore = false) => {
     if (!window.inventory) return;
     
+    // Apply Veg/Non-Veg Filtering
+    let filtered = window.inventory;
+    const currentFilter = window.inventoryTypeFilter || 'all';
+    
+    if (currentFilter !== 'all') {
+        filtered = window.inventory.filter(item => {
+            const type = (item.itemType || '').toLowerCase().replace(/[- ]/g, '');
+            return type === currentFilter;
+        });
+    }
+
     if (!inventoryPagination || !isLoadMore) {
-        inventoryPagination = new LocalPagination(window.inventory, 20);
+        inventoryPagination = new LocalPagination(filtered, 20);
     }
     
     const visibleItems = inventoryPagination.getVisibleItems();

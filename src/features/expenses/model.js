@@ -13,9 +13,11 @@ export function initExpensesLogic() {
     window.showSuggestions = function(inputId, panelId) {
         const input = document.getElementById(inputId);
         const panel = document.getElementById(panelId);
-        if (!input || !panel) return;
+        if (!input || !panel) {
+            console.error('Suggestions elements not found:', inputId, panelId);
+            return;
+        }
 
-        // Populate panel based on input type
         let items = [];
         if (inputId === 'expense-main-cat') {
             items = expenseData.main;
@@ -24,14 +26,16 @@ export function initExpensesLogic() {
             items = expenseData.sub[mainValue] || [];
         }
 
+        console.log(`Showing ${items.length} suggestions for ${inputId}`);
         renderSuggestions(items, input, panel);
         panel.classList.remove('hidden');
+        panel.style.display = 'block'; // Force display
     };
 
     window.handleSearchableInput = function(inputId, panelId) {
         const input = document.getElementById(inputId);
         const panel = document.getElementById(panelId);
-        const query = input.value.toLowerCase();
+        const query = (input.value || '').toLowerCase();
 
         let items = [];
         if (inputId === 'expense-main-cat') {
@@ -43,14 +47,16 @@ export function initExpensesLogic() {
 
         renderSuggestions(items, input, panel);
         panel.classList.remove('hidden');
+        panel.style.display = 'block';
     };
 
     window.toggleSuggestions = function(inputId, panelId) {
         const panel = document.getElementById(panelId);
-        if (panel.classList.contains('hidden')) {
+        if (panel.classList.contains('hidden') || panel.style.display === 'none') {
             window.showSuggestions(inputId, panelId);
         } else {
             panel.classList.add('hidden');
+            panel.style.display = 'none';
         }
     };
 
@@ -59,7 +65,9 @@ export function initExpensesLogic() {
         if (items.length === 0) {
             const div = document.createElement('div');
             div.className = 'suggestion-item empty';
-            div.textContent = 'No suggestions (Type custom)';
+            div.textContent = input.id === 'expense-sub-cat' && !document.getElementById('expense-main-cat').value 
+                ? 'Pehle main category chuniye' 
+                : 'No matches found';
             panel.appendChild(div);
             return;
         }
@@ -68,23 +76,32 @@ export function initExpensesLogic() {
             const div = document.createElement('div');
             div.className = 'suggestion-item';
             div.textContent = item;
-            div.onclick = () => {
+            // Use mousedown to trigger before the input blur/document click
+            div.onmousedown = (e) => {
+                e.preventDefault();
                 input.value = item;
                 panel.classList.add('hidden');
-                // Trigger sub-cat update if main cat was selected
+                panel.style.display = 'none';
+                
                 if (input.id === 'expense-main-cat') {
                     const subInput = document.getElementById('expense-sub-cat');
-                    if (subInput) subInput.value = '';
+                    if (subInput) {
+                        subInput.value = '';
+                        // Pre-populate sub-cat datalist for better UX
+                        window.showSuggestions('expense-sub-cat', 'sub-suggestions');
+                    }
                 }
             };
             panel.appendChild(div);
         });
     }
 
-    // Hide panels on click outside
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.searchable-dropdown')) {
-            document.querySelectorAll('.suggestions-panel').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.suggestions-panel').forEach(p => {
+                p.classList.add('hidden');
+                p.style.display = 'none';
+            });
         }
     });
 
