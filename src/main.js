@@ -47,7 +47,9 @@ import { renderCartWidget }      from './widgets/cart/ui.js';
 import { renderTableGrid as renderTableWidget } from './widgets/table-grid/ui.js';
 import { renderOrderTypeWidget } from './widgets/order-type/ui.js';
 import { renderInventoryTable }  from './widgets/inventory-table/ui.js';
-import { renderSalesHistory, updateCalendarData }    from './widgets/sales-history/ui.js';
+import { renderSalesHistory }    from './widgets/sales-history/ui.js';
+import { updateCalendarData }    from './widgets/sales-calendar/ui.js';
+import { updateCalendarView }    from './features/calendar-filter/model.js';
 import { renderExpenseTable }    from './widgets/expense-table/ui.js';
 import { renderDashboardStats }  from './widgets/dashboard-stats/ui.js';
 // import { initSettingsWidgets }   from './widgets/settings-cards/ui.js'; // Moved up
@@ -71,6 +73,7 @@ window.addToCart      = addToCart;
 window.updateCartQty  = updateCartQty;
 window.setCart        = setCart;
 window.setPOSFilter   = setFilter;
+window.updateCalendarView = updateCalendarView;
 
 window.renderTableGrid = () => {
     renderTableWidget('pos-tables-container', window.currentSelectedTable, (id) => {
