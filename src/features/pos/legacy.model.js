@@ -130,7 +130,7 @@ window.calculateTotal = function() {
         const tableIndicator = document.getElementById('total-table-indicator');
         if (tableIndicator) {
             if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
-                const tbl = (window.tables || []).find(t => t.id === window.currentSelectedTable);
+                const tbl = (window.tables || []).find(t => String(t.id) === String(window.currentSelectedTable));
                 const tblName = tbl ? tbl.name : window.currentSelectedTable;
                 tableIndicator.textContent = `(${tblName})`;
             } else {
@@ -535,10 +535,12 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
         }
     });
 
-    // Determine Table Name
+    // Determine Table Name and ID
     let tableName = null;
+    let tableId = null;
     if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
-        const table = (window.tables || []).find(t => t.id === window.currentSelectedTable);
+        tableId = window.currentSelectedTable;
+        const table = (window.tables || []).find(t => String(t.id) === String(window.currentSelectedTable));
         tableName = table ? table.name : window.currentSelectedTable;
     }
 
@@ -554,6 +556,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
         splitAmounts: finalSplitAmounts,
         orderType: window.selectedOrderType,
         tableName: tableName,
+        tableId: tableId,
         advancePaid: totals.advance,
         customerName: finalCustName,
         customerMobile: finalCustMobile,
@@ -562,7 +565,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     
     // Clear held table if applicable
     if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
-        const tableIndex = (window.tables || []).findIndex(t => t.id === window.currentSelectedTable);
+        const tableIndex = (window.tables || []).findIndex(t => String(t.id) === String(window.currentSelectedTable));
         if (tableIndex > -1) {
             window.tables[tableIndex].cart = [];
             window.tables[tableIndex].advance = 0;
@@ -601,20 +604,20 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
 
 
 window.editSale = function(id) {
-    const sale = salesHistory.find(s => s.id == id);
+    const sale = (window.salesHistory || []).find(s => s.id == id);
     if (!sale) return;
     
-    if (cart.length > 0) {
+    if ((window.cart || []).length > 0) {
         if (!confirm('Current cart items will be cleared. Do you want to edit this sale?')) return;
     }
     
     // Store editing state
-    editingSaleId = sale.id;
-    previousPaidAmount = sale.total - (sale.dues || 0);
+    window.editingSaleId = sale.id;
+    window.previousPaidAmount = sale.total - (sale.dues || 0);
     
     // Load sale data into cart
-    cart = sale.items.map(saleItem => {
-        const invItem = inventory.find(i => i.name.trim().toLowerCase() === saleItem.name.trim().toLowerCase());
+    window.cart = sale.items.map(saleItem => {
+        const invItem = (window.inventory || []).find(i => i.name.trim().toLowerCase() === saleItem.name.trim().toLowerCase());
         if (invItem) {
             return { ...saleItem, id: invItem.id };
         }
@@ -622,7 +625,7 @@ window.editSale = function(id) {
     });
 
     const type = sale.orderType || 'COUNTER';
-    currentSelectedTable = sale.tableId || null;
+    window.currentSelectedTable = sale.tableId || sale.tableName || null;
     
     // Update UI
     window.showView('pos');
@@ -642,7 +645,7 @@ window.editSale = function(id) {
     const prevPaidEl = document.getElementById('cart-prev-paid');
     if (prevPaidRow && prevPaidEl) {
         prevPaidRow.style.display = 'flex';
-        prevPaidEl.innerText = formatCurrency(previousPaidAmount);
+        prevPaidEl.innerText = window.formatCurrency ? window.formatCurrency(window.previousPaidAmount) : `₹${window.previousPaidAmount}`;
     }
     
     // Clear search so items are visible
@@ -653,13 +656,13 @@ window.editSale = function(id) {
     const targetBtn = Array.from(document.querySelectorAll('.order-type-btn')).find(btn => 
         btn.innerText.toUpperCase().includes(type)
     );
-    if (targetBtn) setOrderType(type, targetBtn);
+    if (targetBtn && typeof window.setOrderType === 'function') window.setOrderType(type, targetBtn);
     
-    calculateTotal(); // Refresh total and dues
-    setOrderType(type, targetBtn, true);
+    if (typeof window.calculateTotal === 'function') window.calculateTotal(); // Refresh total and dues
+    if (typeof window.setOrderType === 'function') window.setOrderType(type, targetBtn, true);
 
-    window.renderCart();
-    if (typeof renderPOSItems === 'function') renderPOSItems(); 
+    if (typeof window.renderCart === 'function') window.renderCart();
+    if (typeof window.renderPOSItems === 'function') window.renderPOSItems(); 
 }
 
 // Global Keyboard Shortcuts
