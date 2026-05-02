@@ -602,24 +602,22 @@ export const appShellHTML = `
                         <option value="Raw Material">
                     </datalist>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Price (₹)</label>
-                        <input type="number" id="item-price" required min="0" step="0.01">
+                <div class="form-row" style="grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px;">
+                    <div class="input-group-floating">
+                        <input type="number" id="item-price" required min="0" step="0.01" placeholder=" ">
+                        <label for="item-price">Price (₹)</label>
                     </div>
-                    <div class="form-group">
-                        <label>Quantity in Stock</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="item-quantity" required min="0">
-                            <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('item-quantity')"></i>
-                        </div>
+                    <div class="input-group-floating">
+                        <input type="number" id="item-quantity" required min="0" placeholder=" ">
+                        <label for="item-quantity">Quantity in Stock</label>
+                        <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('item-quantity')" style="right: 12px; top: 50%; transform: translateY(-50%);"></i>
                     </div>
                 </div>
-                <div class="form-group mt-2">
-                    <label>Low Stock Alert At (Min Quantity)</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="item-low-stock" required min="1" value="5">
-                        <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('item-low-stock')"></i>
+                <div class="form-group mt-3">
+                    <div class="input-group-floating">
+                        <input type="number" id="item-low-stock" required min="1" value="5" placeholder=" ">
+                        <label for="item-low-stock">Low Stock Alert At (Min Quantity)</label>
+                        <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('item-low-stock')" style="right: 12px; top: 50%; transform: translateY(-50%);"></i>
                     </div>
                 </div>
                 <div style="display: flex; gap: 12px; margin-top: 16px;">
