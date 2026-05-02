@@ -260,6 +260,7 @@ window.renderPOSItems = (search = '') => {
 
 window.toggleCartDetails = () => {
     const cartContainer  = document.querySelector('.cart-items-container');
+    const posCart        = document.querySelector('.pos-cart');
     const detailsCurtain = document.getElementById('cart-details-curtain');
     const roundOffRow    = document.getElementById('round-off-row');
     const toggleBtn      = document.querySelector('.curtain-toggle');
@@ -267,6 +268,7 @@ window.toggleCartDetails = () => {
 
     if (cartContainer && detailsCurtain) {
         cartContainer.classList.toggle('expanded');
+        if (posCart) posCart.classList.toggle('cart-expanded');
         detailsCurtain.classList.toggle('hidden-details');
         if (roundOffRow) {
             if (cartContainer.classList.contains('expanded')) {
