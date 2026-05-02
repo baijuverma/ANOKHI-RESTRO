@@ -1,33 +1,47 @@
 export function initExpensesLogic() {
     window.updateExpenseSubCats = function() {
-        const mainCatRaw = document.getElementById('expense-main-cat').value;
-        const mainCat = mainCatRaw.trim().toLowerCase();
-        const subCatInput = document.getElementById('expense-sub-cat');
-        const subCatList = document.getElementById('sub-cat-list');
+        const mainCat = document.getElementById('expense-main-cat').value.trim().toLowerCase();
+        const subCatSelect = document.getElementById('expense-sub-cat');
         
-        // Clear and hide sub category initially
-        subCatList.innerHTML = '';
-
         const subCats = {
             'staff': ['Salary', 'Advance', 'Rent', 'Electricity Bill', 'Water Bill', 'Maintenance'],
             'material': ['Groceries', 'Vegetables', 'Gas Cylinder', 'Packaging', 'Meat/Chicken', 'Dairy Products']
         };
 
-        // Flexible matching
         let matchedKey = null;
         if (mainCat.includes('staff') || mainCat.includes('operation')) matchedKey = 'staff';
         else if (mainCat.includes('material')) matchedKey = 'material';
 
+        // Reset sub-cat
+        subCatSelect.innerHTML = '';
+
         if (matchedKey) {
-            subCatInput.disabled = false;
+            subCatSelect.disabled = false;
+            subCatSelect.style.opacity = '1';
+            subCatSelect.style.cursor = 'pointer';
+            // Add default placeholder option
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.disabled = true;
+            placeholder.selected = true;
+            placeholder.textContent = 'Select sub category...';
+            subCatSelect.appendChild(placeholder);
+            // Add actual options
             subCats[matchedKey].forEach(sub => {
                 const opt = document.createElement('option');
                 opt.value = sub;
-                subCatList.appendChild(opt);
+                opt.textContent = sub;
+                subCatSelect.appendChild(opt);
             });
         } else {
-            subCatInput.disabled = true;
-            subCatInput.value = ''; // Only clear if invalid
+            subCatSelect.disabled = true;
+            subCatSelect.style.opacity = '0.5';
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.disabled = true;
+            placeholder.selected = true;
+            placeholder.textContent = 'Select main category first...';
+            subCatSelect.appendChild(placeholder);
         }
     }
 
