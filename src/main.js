@@ -351,12 +351,20 @@ const init = async () => {
     document.addEventListener('keydown', (e) => {
         const activeModal = document.querySelector('.modal.active');
         
-        // 1. ESCAPE: Close modal or Reset POS (Deselect Table/Cart)
+        // 1. ESCAPE: Close all modals and suggestion panels
         if (e.key === 'Escape') {
-            if (activeModal) {
-                activeModal.classList.remove('active');
+            // Close suggestion panels (Expenses)
+            document.querySelectorAll('.suggestions-panel').forEach(p => {
+                p.classList.add('hidden');
+                p.style.display = 'none';
+            });
+
+            // Close modals (Inventory, Stock List, etc.)
+            const activeModals = document.querySelectorAll('.modal.active');
+            if (activeModals.length > 0) {
+                activeModals.forEach(modal => modal.classList.remove('active'));
             } else {
-                e.preventDefault();
+                // If no modal, reset POS (Deselect Table/Cart)
                 if (typeof window.newBill === 'function') window.newBill();
             }
             return;
