@@ -301,7 +301,7 @@ export const appShellHTML = `
                             </div>
                         </div>
 
-                        <div class="pos-items glass-panel" style="position: relative; padding-top: 35px;">
+                        <div class="pos-items glass-panel" style="position: relative; padding-top: 25px;">
                             <!-- Tables Toggle Arrow (Absolute Top Center) -->
                             <div id="tables-curtain-toggle-btn" class="tables-curtain-toggle top-center-toggle" onclick="toggleTablesCurtain()" style="position: absolute; top: -5px; left: 50%; transform: translateX(-50%); z-index: 500; cursor: pointer;">
                                 <i id="tables-curtain-icon" class="fa-solid fa-chevron-up" style="color: var(--accent-color); font-size: 16px;"></i>

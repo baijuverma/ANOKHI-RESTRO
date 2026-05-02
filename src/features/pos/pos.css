@@ -52,7 +52,7 @@
 .pos-left-pane {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 4px; /* Reduced from 12px */
     overflow: hidden;
 }
 
@@ -87,7 +87,7 @@
 
 .pos-items {
     flex: 1;
-    padding: 20px;
+    padding: 15px 20px; /* Reduced top/bottom padding */
     display: flex;
     flex-direction: column;
     overflow: hidden;
