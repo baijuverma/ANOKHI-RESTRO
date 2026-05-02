@@ -308,7 +308,10 @@ export function initSupabaseLogic() {
                     split_amounts: s.splitAmounts,
                     order_type: s.orderType,
                     table_name: s.tableName,
-                    advance_paid: s.advancePaid
+                    advance_paid: s.advancePaid,
+                    dues: s.dues,
+                    customer_name: s.customerName,
+                    customer_mobile: s.customerMobile
                 })));
             }
         } catch (err) {
