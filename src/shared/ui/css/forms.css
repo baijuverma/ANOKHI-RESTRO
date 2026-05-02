@@ -207,7 +207,6 @@ input:focus, select:focus {
 .order-type-btn:hover {
     background: rgba(99, 102, 241, 0.1);
     border-color: rgba(99, 102, 241, 0.3);
-    transform: translateY(-2px);
     color: var(--text-primary);
 }
 

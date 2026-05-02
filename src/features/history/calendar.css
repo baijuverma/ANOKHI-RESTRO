@@ -28,8 +28,8 @@
     transition: transform 0.2s, border-color 0.2s;
 }
 .calendar-day:hover {
-    transform: translateY(-2px);
     border-color: var(--accent-color);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
 }
 .calendar-day.empty {
     background: transparent;

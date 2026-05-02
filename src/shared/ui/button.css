@@ -15,7 +15,7 @@
 
 .base-button:hover {
     background: var(--accent-hover);
-    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .base-button .btn-icon {
