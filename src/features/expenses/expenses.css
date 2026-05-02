@@ -32,8 +32,10 @@
 }
 
 .searchable-dropdown { position: relative; width: 100%; }
-.dropdown-arrow { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none; transition: transform 0.2s; font-size: 12px; }
-.searchable-dropdown input:focus + .dropdown-arrow { transform: translateY(-50%) rotate(180deg); color: var(--accent-color); }
+.dropdown-arrow { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); cursor: pointer; transition: transform 0.2s; font-size: 12px; z-index: 10; }
+.clear-dropdown-btn { position: absolute; right: 30px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); cursor: pointer; transition: color 0.2s; font-size: 14px; z-index: 10; opacity: 0.6; }
+.clear-dropdown-btn:hover { color: var(--danger-color); opacity: 1; }
+.searchable-dropdown input:focus + .clear-dropdown-btn + .dropdown-arrow { transform: translateY(-50%) rotate(180deg); color: var(--accent-color); }
 
 .suggestions-panel { 
     position: absolute; top: calc(100% + 5px); left: 0; width: 100%; 

@@ -47,6 +47,22 @@ window.handleSearchableInput = function(inputId, panelId) {
     panel.style.display = 'block';
 };
 
+window.clearSearchableInput = function(inputId, panelId) {
+    const input = document.getElementById(inputId);
+    const panel = document.getElementById(panelId);
+    if (input) {
+        input.value = '';
+        if (inputId === 'expense-main-cat') {
+            const subInput = document.getElementById('expense-sub-cat');
+            if (subInput) subInput.value = '';
+        }
+    }
+    if (panel) {
+        panel.classList.add('hidden');
+        panel.style.display = 'none';
+    }
+};
+
 window.toggleSuggestions = function(inputId, panelId) {
     const panel = document.getElementById(panelId);
     if (!panel) return;
