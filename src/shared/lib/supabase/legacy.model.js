@@ -30,7 +30,9 @@ export function initSupabaseLogic() {
                     paymentMode: s.payment_mode,
                     splitAmounts: s.split_amounts,
                     roundOff: s.round_off,
+                    orderType: s.order_type,
                     tableName: s.table_name,
+                    tableId: s.table_id,
                     advancePaid: s.advance_paid,
                     // dues should be calculated if not in DB, but let's assume it might be there or needs calculation
                     dues: s.dues ?? (parseFloat(s.total || 0) - parseFloat(s.advance_paid || 0)) // fallback if dues column missing
