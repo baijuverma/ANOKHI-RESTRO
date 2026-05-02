@@ -118,43 +118,51 @@ document.addEventListener('mousedown', (e) => {
     }
 });
 
-export function initExpensesLogic() {
-    window.handleExpenseSubmit = async function(e) {
-        e.preventDefault();
-        const mainCat = document.getElementById('expense-main-cat').value;
-        const subCat = document.getElementById('expense-sub-cat').value;
-        const desc = document.getElementById('expense-desc').value;
+window.handleExpenseSubmit = async function(e) {
+    e.preventDefault();
+    const mainCat = document.getElementById('expense-main-cat').value;
+    const subCat = document.getElementById('expense-sub-cat').value;
+    const desc = document.getElementById('expense-desc').value;
 
-        const cash = parseFloat(document.getElementById('expense-cash').value) || 0;
-        const upi = parseFloat(document.getElementById('expense-upi').value) || 0;
-        const udhar = parseFloat(document.getElementById('expense-udhar').value) || 0;
+    const cash = parseFloat(document.getElementById('expense-cash').value) || 0;
+    const upi = parseFloat(document.getElementById('expense-upi').value) || 0;
+    const udhar = parseFloat(document.getElementById('expense-udhar').value) || 0;
 
-        if (cash === 0 && upi === 0 && udhar === 0) {
-            return alert('Please enter an amount.');
+    if (cash === 0 && upi === 0 && udhar === 0) {
+        return alert('Please enter an amount.');
+    }
+
+    const modes = [{ n: 'Cash', v: cash }, { n: 'UPI', v: upi }, { n: 'Udhar', v: udhar }];
+    modes.forEach(m => {
+        if (m.v > 0) {
+            window.expensesHistory.unshift({
+                id: Date.now().toString() + Math.random(),
+                date: new Date().toISOString(),
+                main_category: mainCat,
+                sub_category: subCat,
+                amount: m.v,
+                payment_mode: m.n,
+                description: desc
+            });
         }
+    });
 
-        const modes = [{ n: 'Cash', v: cash }, { n: 'UPI', v: upi }, { n: 'Udhar', v: udhar }];
-        modes.forEach(m => {
-            if (m.v > 0) {
-                window.expensesHistory.unshift({
-                    id: Date.now().toString() + Math.random(),
-                    date: new Date().toISOString(),
-                    main_category: mainCat,
-                    sub_category: subCat,
-                    amount: m.v,
-                    payment_mode: m.n,
-                    description: desc
-                });
-            }
-        });
+    if (typeof window.saveData === 'function') window.saveData();
+    e.target.reset();
+    if (typeof window.renderExpenses === 'function') window.renderExpenses();
+    if (typeof window.updateExpenseStats === 'function') window.updateExpenseStats();
+    if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
+    if (typeof window.updateDashboard === 'function') window.updateDashboard();
+    
+    alert('Expense saved!');
+};
 
-        window.saveData();
-        e.target.reset();
-        window.renderExpenses();
-        window.updateExpenseStats();
-        if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
-        alert('Expense saved!');
-    };
+export function initExpensesLogic() {
+    const form = document.getElementById('expense-form');
+    if (form) {
+        form.addEventListener('submit', window.handleExpenseSubmit);
+    }
+
 
     window.renderExpenses = function() {
         const tbody = document.getElementById('expenses-tbody');
@@ -189,5 +197,5 @@ export function initExpensesLogic() {
     };
 
     // Initial render
-    window.renderExpenses();
+    if (typeof window.renderExpenses === 'function') window.renderExpenses();
 }

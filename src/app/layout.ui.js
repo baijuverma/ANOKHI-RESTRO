@@ -202,7 +202,7 @@ export const appShellHTML = `
                 </header>
 
                 <div class="glass-panel mt-4" style="padding: 24px;">
-                    <form id="expense-form" class="expense-entry-form" onsubmit="handleExpenseSubmit(event); return false;">
+                    <form id="expense-form" class="expense-entry-form">
                         <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                             <div class="form-group">
                                 <label>Main Category</label>

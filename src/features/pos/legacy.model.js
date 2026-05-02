@@ -691,12 +691,12 @@ window.editSale = function(id) {
 }
 
 // Global Keyboard Shortcuts
-$(document).on('_disabled_keydown', function (e) {
+document.addEventListener('keydown', function (e) {
     // Close Receipt Modal with Enter or Escape
     const receiptModal = document.getElementById('receiptModal');
     if (receiptModal && receiptModal.classList.contains('active')) {
         if (e.key === 'Enter' || e.key === 'Escape') {
-            closeModal('receiptModal');
+            if (typeof closeModal === 'function') closeModal('receiptModal');
             e.preventDefault();
         }
     }

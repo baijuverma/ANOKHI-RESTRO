@@ -287,17 +287,28 @@ window.toggleCartDetails = () => {
 };
 
 // 3. Database & Feature logic (depends on window bridge being ready)
-initSupabaseLogic();
-initAuthLogic();
-initInventoryLogic();
-initPosLogic();
-initHistoryLogic();
-initExpensesLogic();
-initSettingsLogic();
-initReceiptLogic();
-initDashboardLogic();
-initTablesLogic();
-initNotificationsLogic();
+const features = [
+    { name: 'Supabase', init: initSupabaseLogic },
+    { name: 'Auth', init: initAuthLogic },
+    { name: 'Inventory', init: initInventoryLogic },
+    { name: 'POS', init: initPosLogic },
+    { name: 'History', init: initHistoryLogic },
+    { name: 'Expenses', init: initExpensesLogic },
+    { name: 'Settings', init: initSettingsLogic },
+    { name: 'Receipt', init: initReceiptLogic },
+    { name: 'Dashboard', init: initDashboardLogic },
+    { name: 'Tables', init: initTablesLogic },
+    { name: 'Notifications', init: initNotificationsLogic }
+];
+
+features.forEach(f => {
+    try {
+        f.init();
+        console.log(`Initialized: ${f.name}`);
+    } catch (e) {
+        console.error(`Failed to initialize ${f.name}:`, e);
+    }
+});
 
 // 4. Widget Logic
 initSidebar();
