@@ -289,7 +289,7 @@ export function initSupabaseLogic() {
             }
 
             if (window.activeOrders && window.activeOrders.length > 0) {
-                await db.from('active_orders').upsert(window.activeOrders.map(o => ({
+                const mapActive = o => ({
                     id: o.id,
                     order_type: o.orderType,
                     items: o.items,
@@ -297,14 +297,23 @@ export function initSupabaseLogic() {
                     discount: o.discount,
                     round_off: o.roundOff,
                     customer_name: o.customerName,
-                    customer_mobile: o.customer_mobile,
+                    customer_mobile: o.customer_mobile || o.customerMobile,
                     table_name: o.tableName,
                     created_at: o.createdAt
-                })));
+                });
+                const { error: activeErr } = await db.from('active_orders').upsert(window.activeOrders.map(mapActive));
+                if (activeErr) {
+                    console.error('Bulk Active Orders Push Error:', activeErr);
+                    const newest = window.activeOrders[0];
+                    if (newest) {
+                        const { error: singleErr } = await db.from('active_orders').upsert(mapActive(newest));
+                        if (singleErr) console.error('Single Active Order Push Error:', singleErr);
+                    }
+                }
             }
 
             if (window.salesHistory && window.salesHistory.length > 0) {
-                await db.from('sales_history').upsert(window.salesHistory.map(s => ({
+                const mapSale = s => ({
                     id: s.id,
                     date: s.date,
                     items: s.items,
@@ -320,7 +329,20 @@ export function initSupabaseLogic() {
                     customer_name: s.customerName,
                     customer_mobile: s.customerMobile,
                     dues: s.dues || 0
-                })));
+                });
+                
+                // Try bulk upsert first
+                const { error: bulkErr } = await db.from('sales_history').upsert(window.salesHistory.map(mapSale));
+                
+                if (bulkErr) {
+                    console.error('Bulk Sales Push Error:', bulkErr);
+                    // Fallback: try to just save the newest one so it doesn't get lost
+                    const newest = window.salesHistory[0];
+                    if (newest) {
+                        const { error: singleErr } = await db.from('sales_history').upsert(mapSale(newest));
+                        if (singleErr) console.error('Single Sale Push Error:', singleErr);
+                    }
+                }
             }
 
             if (window.expensesHistory && window.expensesHistory.length > 0) {
