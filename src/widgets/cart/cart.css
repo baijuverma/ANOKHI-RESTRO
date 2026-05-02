@@ -1,13 +1,14 @@
 /* Widget: Cart - Items, Expansion, Totals */
 
-.cart-items {
+.cart-items-modern {
     background: #ffffff !important;
     color: #000000 !important;
     flex: 1;
     overflow-y: auto;
+    border-radius: 12px;
 }
 
-.cart-header {
+.cart-header-modern {
     display: grid !important;
     grid-template-columns: 30px 1.5fr 80px 70px 35px !important;
     gap: 4px !important;
@@ -26,7 +27,7 @@
     border-bottom: 2px solid #cbd5e1 !important;
 }
 
-.cart-item {
+.cart-item-modern {
     display: grid !important;
     grid-template-columns: 30px 1.5fr 80px 70px 35px !important;
     gap: 4px !important;
