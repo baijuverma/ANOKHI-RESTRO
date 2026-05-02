@@ -3,9 +3,14 @@ export function initExpensesLogic() {
         const mainCatEl = document.getElementById('expense-main-cat');
         const subCatSelect = document.getElementById('expense-sub-cat');
         
-        if (!mainCatEl || !subCatSelect) return;
+        if (!mainCatEl || !subCatSelect) {
+            console.warn('Expense category elements not found');
+            return;
+        }
 
         const mainCat = mainCatEl.value;
+        console.log('Main Category Changed To:', mainCat);
+
         const subCats = {
             'staff': ['Staff Salary', 'Staff Advance', 'Incentives/Bonus', 'Staff Meals', 'Uniforms', 'Training'],
             'material': ['Groceries & Spices', 'Vegetables & Fruits', 'Meat, Fish & Poultry', 'Dairy & Eggs', 'Oil & Ghee', 'Flour/Rice/Dal', 'Beverages/Soft Drinks', 'Water Cans'],
@@ -36,6 +41,7 @@ export function initExpensesLogic() {
                 opt.textContent = sub;
                 subCatSelect.appendChild(opt);
             });
+            console.log(`Populated ${subCats[mainCat].length} sub-categories for ${mainCat}`);
         } else {
             subCatSelect.disabled = true;
             subCatSelect.style.opacity = '0.5';
@@ -49,6 +55,15 @@ export function initExpensesLogic() {
             subCatSelect.appendChild(placeholder);
         }
     };
+
+    // Add direct event listener as fallback/reinforcement
+    setTimeout(() => {
+        const mainCatEl = document.getElementById('expense-main-cat');
+        if (mainCatEl) {
+            mainCatEl.addEventListener('change', window.updateExpenseSubCats);
+            console.log('Expense sub-category event listener attached');
+        }
+    }, 500);
 
     window.handleExpenseSubmit = async function(e) {
         e.preventDefault();
