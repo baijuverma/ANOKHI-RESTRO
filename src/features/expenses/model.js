@@ -15,7 +15,7 @@ export function initExpensesLogic() {
 
         // Flexible matching
         let matchedKey = null;
-        if (mainCat.includes('staff')) matchedKey = 'staff';
+        if (mainCat.includes('staff') || mainCat.includes('operation')) matchedKey = 'staff';
         else if (mainCat.includes('material')) matchedKey = 'material';
 
         if (matchedKey) {

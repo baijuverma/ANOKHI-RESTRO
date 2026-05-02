@@ -219,7 +219,7 @@ export const appShellHTML = `
                             <div class="form-group">
                                 <label>Main Category</label>
                                 <div class="input-wrapper">
-                                    <input type="text" id="expense-main-cat" list="main-cat-list" placeholder="Select or type..." required oninput="updateExpenseSubCats()">
+                                    <input type="text" id="expense-main-cat" list="main-cat-list" placeholder="Select or type..." required oninput="updateExpenseSubCats()" onchange="updateExpenseSubCats()">
                                     <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('expense-main-cat')"></i>
                                 </div>
                                 <datalist id="main-cat-list">
