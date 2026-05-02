@@ -347,43 +347,7 @@ const init = async () => {
 
     if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        const activeModal = document.querySelector('.modal.active');
-        
-        // 1. ESCAPE: Close all modals and suggestion panels
-        if (e.key === 'Escape') {
-            // Close suggestion panels (Expenses)
-            document.querySelectorAll('.suggestions-panel').forEach(p => {
-                p.classList.add('hidden');
-                p.style.display = 'none';
-            });
-
-            // Close modals (Inventory, Stock List, etc.)
-            const activeModals = document.querySelectorAll('.modal.active');
-            if (activeModals.length > 0) {
-                activeModals.forEach(modal => modal.classList.remove('active'));
-            } else {
-                // If no modal, reset POS (Deselect Table/Cart)
-                if (typeof window.newBill === 'function') window.newBill();
-            }
-            return;
-        }
-
-        // 2. SEARCH: Type anywhere to focus search (only if not already in an input)
-        if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
-            const active = document.activeElement;
-            const isInput = active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable;
-            
-            if (!isInput && !activeModal) {
-                const searchInput = document.getElementById('pos-search');
-                if (searchInput) {
-                    searchInput.focus();
-                    // Character will be typed naturally into the focused input
-                }
-            }
-        }
-    });
+    initRealtime();
 
     // Global Timer
     setInterval(() => {
@@ -399,9 +363,41 @@ const init = async () => {
                 : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         });
     }, 1000);
-
-    initRealtime();
 };
+
+// --- GLOBAL KEYBOARD SHORTCUTS ---
+document.addEventListener('keydown', (e) => {
+    // 1. ESCAPE: Close all modals and suggestion panels
+    if (e.key === 'Escape') {
+        console.log('Esc pressed: Closing UI');
+        
+        // Hide suggestion panels
+        document.querySelectorAll('.suggestions-panel').forEach(p => {
+            p.classList.add('hidden');
+            p.style.display = 'none';
+        });
+
+        // Close modals
+        const activeModals = document.querySelectorAll('.modal.active');
+        if (activeModals.length > 0) {
+            activeModals.forEach(m => m.classList.remove('active'));
+        } else {
+            if (typeof window.newBill === 'function') window.newBill();
+        }
+    }
+
+    // 2. SEARCH: Type to focus search
+    if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        const active = document.activeElement;
+        const isInput = active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable;
+        const activeModal = document.querySelector('.modal.active');
+        
+        if (!isInput && !activeModal) {
+            const searchInput = document.getElementById('pos-search');
+            if (searchInput) searchInput.focus();
+        }
+    }
+});
 
 // Start
 if (document.readyState === 'loading') {
