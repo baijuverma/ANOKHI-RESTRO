@@ -575,23 +575,27 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     if (typeof window.saveData === 'function') window.saveData();
 
     // Reset editing state
-    editingSaleId = null;
-    previousPaidAmount = 0;
+    window.editingSaleId = null;
+    window.previousPaidAmount = 0;
     const prevPaidRow = document.getElementById('prev-paid-row');
     if(prevPaidRow) prevPaidRow.style.display = 'none';
 
     // Show Receipt Modal
-    showReceipt(sale);
+    if (typeof window.showReceipt === 'function') window.showReceipt(sale);
 
     // Reset UI
-    currentSelectedTable = null;
-    document.getElementById('current-table-name').innerText = 'No Table Selected';
-    document.getElementById('advance-paid-info').style.display = 'none';
-    clearCart();
-    if (typeof renderInventory === 'function') renderInventory();
-    if (typeof renderPOSItems === 'function') renderPOSItems();
-    if (typeof updateDashboard === 'function') updateDashboard();
-    if (typeof renderTableGrid === 'function') renderTableGrid();
+    window.currentSelectedTable = null;
+    const tableNameDisplay = document.getElementById('current-table-name');
+    if (tableNameDisplay) tableNameDisplay.innerText = 'No Table Selected';
+    
+    const advanceInfo = document.getElementById('advance-paid-info');
+    if (advanceInfo) advanceInfo.style.display = 'none';
+    
+    window.clearCart();
+    if (typeof window.renderInventory === 'function') window.renderInventory();
+    if (typeof window.renderPOSItems === 'function') window.renderPOSItems();
+    if (typeof window.updateDashboard === 'function') window.updateDashboard();
+    if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
     if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
 }
 

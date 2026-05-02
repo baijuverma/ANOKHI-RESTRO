@@ -1,4 +1,5 @@
 export function initReceiptLogic() {
+window.showReceipt = showReceipt;
 function showReceipt(sale) {
     const details = document.getElementById('receipt-details');
     let itemsHtml = sale.items.map(i => `
