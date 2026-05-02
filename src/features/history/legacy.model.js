@@ -13,78 +13,141 @@ window.showStockList = function(type) {
         list = inventory.filter(i => i.quantity === 0);
         title = 'Out of Stock Items';
     }
-
-    const modal = document.getElementById('inventory-list-modal');
-    const titleEl = document.getElementById('inventory-list-title');
-    const tbody = document.getElementById('inventory-list-tbody');
     
-    if (!modal || !tbody) return;
-
-    titleEl.innerText = title;
-    tbody.innerHTML = list.map(item => `
-        <tr>
-            <td>${item.name}</td>
-            <td>${item.category || 'General'}</td>
-            <td><span class="stock-badge ${item.quantity === 0 ? 'out' : (item.quantity <= (item.lowStockThreshold || 5) ? 'low' : 'ok')}">${item.quantity} ${item.unit || ''}</span></td>
-        </tr>
-    `).join('') || '<tr><td colspan="3" style="text-align:center">No items found</td></tr>';
-
-    window.openModal('inventory-list-modal');
+    document.getElementById('stock-list-title').innerText = title;
+    const tbody = document.getElementById('stock-list-tbody');
+    tbody.innerHTML = '';
+    
+    if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No items found in this category.</td></tr>';
+    } else {
+        list.forEach(item => {
+            let statusColor = 'var(--success-color)';
+            if (item.quantity === 0) statusColor = 'var(--danger-color)';
+            else if (item.quantity <= (item.lowStockThreshold || 5)) statusColor = 'var(--warning-color)';
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${truncateName(item.name)}</td>
+                <td>${item.category}</td>
+                <td style="color: ${statusColor}; font-weight: bold;">${item.quantity}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+    
+    openModal('stockListModal');
 }
 
-// Calendar View Logic
-function updateCalendarView(sales) {
-    const wrapper = document.getElementById('sales-calendar-wrapper');
-    if (!wrapper) return;
-
-    const date = window.currentCalendarDate || new Date();
-    const month = date.getMonth();
-    const year = date.getFullYear();
+window.showTodaySalesList = function() {
+    const todayStr = getDDMMYYYY(new Date());
+    let todaySales = salesHistory.filter(s => getDDMMYYYY(new Date(s.date)) === todayStr);
     
-    // Header
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    document.getElementById('calendar-month-year').innerText = `${monthNames[month]} ${year}`;
+    // aggregate items
+    let itemsSold = {};
+    todaySales.forEach(sale => {
+        sale.items.forEach(item => {
+            if(!itemsSold[item.id]) {
+                itemsSold[item.id] = { name: item.name, qty: 0, total: 0 };
+            }
+            itemsSold[item.id].qty += item.cartQty;
+            itemsSold[item.id].total += item.price * item.cartQty;
+        });
+    });
+    
+    const tbody = document.getElementById('today-sales-tbody');
+    tbody.innerHTML = '';
+    
+    const itemIds = Object.keys(itemsSold);
+    if (itemIds.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No items sold today.</td></tr>';
+    } else {
+        itemIds.forEach(id => {
+            const data = itemsSold[id];
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${truncateName(data.name)}</td>
+                <td style="font-weight:bold; color:var(--accent-color);">${data.qty}</td>
+                <td>${formatCurrency(data.total)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+    
+    openModal('todaySalesModal');
+}
 
-    const firstDay = new Date(year, month, 1).getDay();
+// Dashboard Logic
+
+window.updateCalendarView = function() {
+    const m = parseInt(document.getElementById('calendar-month-select').value);
+    const y = parseInt(document.getElementById('calendar-year-select').value);
+    window.currentCalendarDate = new Date(y, m, 1);
+    
+    renderHistory();
+}
+
+function renderCalendarChart(dailyTotals) {
+    const wrapper = document.getElementById('calendar-wrapper');
+    if(!wrapper) return;
+
+    let targetDate = new Date();
+    if (window.currentCalendarDate) {
+        targetDate = window.currentCalendarDate;
+    } else {
+        window.currentCalendarDate = targetDate;
+    }
+    
+    const year = targetDate.getFullYear();
+    const month = targetDate.getMonth();
+    
+    const firstDay = new Date(year, month, 1).getDay(); // 0-6 (Sun-Sat)
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
-    let html = `<div class="calendar-grid">`;
-    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    weekdays.forEach(wd => html += `<div class="calendar-weekday">${wd}</div>`);
-
-    // Empty slots
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    
+    let monthOptions = monthNames.map((m, idx) => `<option value="${idx}" ${idx === month ? 'selected' : ''}>${m}</option>`).join('');
+    
+    let currentYearObj = new Date().getFullYear();
+    let years = [];
+    for(let y = currentYearObj - 5; y <= currentYearObj + 5; y++) {
+        years.push(y);
+    }
+    let yearOptions = years.map(y => `<option value="${y}" ${y === year ? 'selected' : ''}>${y}</option>`).join('');
+    
+    let html = `
+        <div style="text-align: center; margin-bottom: 16px; display: flex; justify-content: center; gap: 10px;">
+            <select id="calendar-month-select" style="width: auto; padding: 6px 16px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--panel-border); border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;" onchange="updateCalendarView()">
+                ${monthOptions}
+            </select>
+            <select id="calendar-year-select" style="width: auto; padding: 6px 16px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--panel-border); border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;" onchange="updateCalendarView()">
+                ${yearOptions}
+            </select>
+        </div>
+        <div class="calendar-header">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+        </div>
+        <div class="calendar-chart">
+    `;
+    
     for (let i = 0; i < firstDay; i++) {
         html += `<div class="calendar-day empty"></div>`;
     }
-
-    // Days
+    
     for (let day = 1; day <= daysInMonth; day++) {
-        const dStr = `${String(day).padStart(2,'0')}-${String(month+1).padStart(2,'0')}-${year}`;
-        const daySales = sales.filter(s => {
-            const sd = new Date(s.date);
-            return sd.getDate() === day && sd.getMonth() === month && sd.getFullYear() === year;
-        });
-
-        const total = daySales.reduce((sum, s) => sum + (s.total || 0), 0);
-        const orders = daySales.length;
+        const dStr = String(day).padStart(2, '0') + '/' + String(month + 1).padStart(2, '0') + '/' + year;
+        const total = dailyTotals[dStr] ? dailyTotals[dStr].total : 0;
+        const orders = dailyTotals[dStr] ? dailyTotals[dStr].orders : 0;
+        const cashAmt = dailyTotals[dStr] ? dailyTotals[dStr].cash : 0;
+        const upiAmt = dailyTotals[dStr] ? dailyTotals[dStr].upi : 0;
         
-        // Cash/UPI split for calendar hover or detail
-        let cashAmt = daySales.reduce((sum, s) => {
-            const pMode = s.payment_mode || s.paymentMode || 'CASH';
-            const split = s.split_amounts || s.splitAmounts;
-            if (pMode === 'CASH') return sum + (s.total || 0);
-            if (pMode === 'BOTH' && split) return sum + (parseFloat(split.cash) || 0);
-            return sum;
-        }, 0);
-        let upiAmt = total - cashAmt;
-
         let extraClass = total > 0 ? 'has-sales' : '';
         let displayTotal = total > 0 ? formatCurrency(total) : '-';
         let displayOrders = orders > 0 ? `${orders} order(s)` : '';
         let breakdownHtml = total > 0 ? `
             <div style="display:flex; justify-content:space-between; font-size:10px; margin-top:4px; padding-top:4px; border-top:1px solid rgba(255,255,255,0.1);">
-                <span style="color:var(--success-color);" title="Cash Sale">Cash: ${cashAmt.toFixed(0)}</span>
-                <span style="color:#818cf8;" title="UPI Sale">UPI: ${upiAmt.toFixed(0)}</span>
+                <span style="color:var(--success-color);" title="Cash Sale">Cash: ${cashAmt}</span>
+                <span style="color:#818cf8;" title="UPI Sale">UPI: ${upiAmt}</span>
             </div>
         ` : '';
 
@@ -142,29 +205,34 @@ function renderHistoryCards() {
     const targetYear = window.currentCalendarDate ? window.currentCalendarDate.getFullYear() : new Date().getFullYear();
 
     const monthlySales = sHistory.filter(s => {
-        const d = new Date(s.date || s.timestamp);
-        return !isNaN(d.getTime()) && d.getMonth() === targetMonth && d.getFullYear() === targetYear;
+        if (!s.date) return false;
+        const d = new Date(s.date);
+        return d.getMonth() === targetMonth && d.getFullYear() === targetYear;
     });
 
     const monthlyExpenses = eHistory.filter(e => {
-        const d = new Date(e.date || e.timestamp);
-        return !isNaN(d.getTime()) && d.getMonth() === targetMonth && d.getFullYear() === targetYear;
+        if (!e.date) return false;
+        const d = new Date(e.date);
+        return d.getMonth() === targetMonth && d.getFullYear() === targetYear;
     });
 
     let mTotal = 0, mCash = 0, mUpi = 0;
     monthlySales.forEach(s => {
-        mTotal += (s.total || 0);
+        mTotal += parseFloat(s.total || 0);
         const pMode = s.payment_mode || s.paymentMode || 'CASH';
         const split = s.split_amounts || s.splitAmounts;
-        
-        if (pMode === "UPI") mUpi += (s.total || 0);
-        else if (pMode === "BOTH" && split) {
-            mUpi += (parseFloat(split.upi) || 0);
-            mCash += (parseFloat(split.cash) || 0);
-        } else mCash += (s.total || 0);
+
+        if (pMode === "UPI") {
+            mUpi += parseFloat(s.total || 0);
+        } else if (pMode === "BOTH" && split) {
+            mUpi += parseFloat(split.upi || 0);
+            mCash += parseFloat(split.cash || 0);
+        } else {
+            mCash += parseFloat(s.total || 0);
+        }
     });
 
-    const mExpTotal = monthlyExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+    const mExpTotal = monthlyExpenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
     const mNetProfit = mTotal - mExpTotal;
 
     // Update UI Cards
@@ -180,7 +248,7 @@ function renderHistoryCards() {
     if (mExpEl) mExpEl.innerText = window.formatCurrency ? window.formatCurrency(mExpTotal) : `₹${mExpTotal.toFixed(2)}`;
     
     // Calculate Total Dues from all time
-    const totalDuesHistory = sHistory.reduce((sum, s) => sum + (parseFloat(s.dues) || 0), 0);
+    const totalDuesHistory = sHistory.reduce((sum, s) => sum + (parseFloat(s.dues || s.due_amount || 0)), 0);
     const totalDuesHistoryEl = document.getElementById("history-total-dues");
     if (totalDuesHistoryEl) totalDuesHistoryEl.innerText = window.formatCurrency ? window.formatCurrency(totalDuesHistory) : `₹${totalDuesHistory.toFixed(2)}`;
 
@@ -199,7 +267,6 @@ window.loadMoreSales = async function() {
     isLoadingMore = true;
     
     const status = document.getElementById('load-more-status');
-    const btn = document.getElementById('load-more-btn');
     if (btn) {
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
         btn.disabled = true;
@@ -281,5 +348,7 @@ window.deleteSale = async function(saleId) {
 
 // --- Expenses Logic ---
 // Expense logic moved to src/features/expenses/model.js
+
+
 
 }

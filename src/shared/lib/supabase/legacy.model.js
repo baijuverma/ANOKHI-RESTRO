@@ -25,7 +25,16 @@ export function initSupabaseLogic() {
             // Fetch more records for accurate dashboard/monthly stats
             const { data: salesData } = await db.from('sales_history').select('*').order('date', { ascending: false }).limit(200);
             if (salesData) {
-                window.salesHistory = salesData;
+                window.salesHistory = salesData.map(s => ({
+                    ...s,
+                    paymentMode: s.payment_mode,
+                    splitAmounts: s.split_amounts,
+                    roundOff: s.round_off,
+                    tableName: s.table_name,
+                    advancePaid: s.advance_paid,
+                    // dues should be calculated if not in DB, but let's assume it might be there or needs calculation
+                    dues: s.dues || (parseFloat(s.total || 0) - parseFloat(s.advance_paid || 0)) // fallback if dues column missing
+                }));
                 localStorage.setItem('anokhi_sales', JSON.stringify(window.salesHistory));
             }
 
@@ -308,10 +317,7 @@ export function initSupabaseLogic() {
                     split_amounts: s.splitAmounts,
                     order_type: s.orderType,
                     table_name: s.tableName,
-                    advance_paid: s.advancePaid,
-                    dues: s.dues,
-                    customer_name: s.customerName,
-                    customer_mobile: s.customerMobile
+                    advance_paid: s.advancePaid
                 })));
             }
         } catch (err) {
