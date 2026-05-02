@@ -221,8 +221,10 @@ export const appShellHTML = `
                                 <div class="input-wrapper">
                                     <select id="expense-main-cat" required onchange="updateExpenseSubCats()" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px; cursor: pointer;">
                                         <option value="" disabled selected>-- Category Chuniye --</option>
-                                        <option value="staff">Staff &amp; Operation</option>
-                                        <option value="material">Material</option>
+                                        <option value="staff">Staff &amp; Payroll</option>
+                                        <option value="material">Raw Material/Ingredients</option>
+                                        <option value="operation">Operations &amp; Maintenance</option>
+                                        <option value="other">Other Expenses</option>
                                     </select>
                                 </div>
                             </div>

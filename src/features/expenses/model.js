@@ -1,55 +1,54 @@
 export function initExpensesLogic() {
-    // Moved to top level for global access and added defensive logging
-}
+    window.updateExpenseSubCats = function() {
+        const mainCatEl = document.getElementById('expense-main-cat');
+        const subCatSelect = document.getElementById('expense-sub-cat');
+        
+        if (!mainCatEl || !subCatSelect) return;
 
-// Global function for sub-category update
-window.updateExpenseSubCats = function() {
-    const mainCatEl = document.getElementById('expense-main-cat');
-    const subCatSelect = document.getElementById('expense-sub-cat');
-    
-    if (!mainCatEl || !subCatSelect) {
-        console.error('Expense elements not found in DOM');
-        return;
-    }
+        const mainCat = mainCatEl.value;
+        const subCats = {
+            'staff': ['Staff Salary', 'Staff Advance', 'Incentives/Bonus', 'Staff Meals', 'Uniforms', 'Training'],
+            'material': ['Groceries & Spices', 'Vegetables & Fruits', 'Meat, Fish & Poultry', 'Dairy & Eggs', 'Oil & Ghee', 'Flour/Rice/Dal', 'Beverages/Soft Drinks', 'Water Cans'],
+            'operation': ['Rent', 'Electricity Bill', 'Water Bill', 'Gas/Fuel', 'Internet/Phone', 'Marketing/Ads', 'Repairs & Maintenance', 'Cleaning Supplies', 'Packaging Material', 'Software/POS Subscription', 'Waste Management', 'License/Legal'],
+            'other': ['Miscellaneous', 'Petty Cash', 'Transport/Delivery', 'Taxes', 'Others']
+        };
 
-    const mainCat = mainCatEl.value;
-    console.log('Main category selected:', mainCat);
+        // Clear existing options
+        subCatSelect.innerHTML = '';
 
-    const subCats = {
-        'staff': ['Salary', 'Advance', 'Rent', 'Electricity Bill', 'Water Bill', 'Maintenance'],
-        'material': ['Groceries', 'Vegetables', 'Gas Cylinder', 'Packaging', 'Meat/Chicken', 'Dairy Products']
+        if (mainCat && subCats[mainCat]) {
+            subCatSelect.disabled = false;
+            subCatSelect.style.opacity = '1';
+            subCatSelect.style.cursor = 'pointer';
+
+            // Default Option
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = '-- Sub Category Chuniye --';
+            placeholder.disabled = true;
+            placeholder.selected = true;
+            subCatSelect.appendChild(placeholder);
+
+            // Populate Sub-Categories
+            subCats[mainCat].forEach(sub => {
+                const opt = document.createElement('option');
+                opt.value = sub;
+                opt.textContent = sub;
+                subCatSelect.appendChild(opt);
+            });
+        } else {
+            subCatSelect.disabled = true;
+            subCatSelect.style.opacity = '0.5';
+            subCatSelect.style.cursor = 'not-allowed';
+            
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = 'Pehle main category chuniye...';
+            placeholder.disabled = true;
+            placeholder.selected = true;
+            subCatSelect.appendChild(placeholder);
+        }
     };
-
-    // Reset sub-cat
-    subCatSelect.innerHTML = '';
-
-    if (subCats[mainCat]) {
-        subCatSelect.disabled = false;
-        subCatSelect.style.opacity = '1';
-        
-        // Placeholder
-        const ph = document.createElement('option');
-        ph.value = ''; ph.disabled = true; ph.selected = true;
-        ph.textContent = 'Select sub-category...';
-        subCatSelect.appendChild(ph);
-        
-        // Options
-        subCats[mainCat].forEach(sub => {
-            const opt = document.createElement('option');
-            opt.value = sub;
-            opt.textContent = sub;
-            subCatSelect.appendChild(opt);
-        });
-        console.log('Sub-categories populated for:', mainCat);
-    } else {
-        subCatSelect.disabled = true;
-        subCatSelect.style.opacity = '0.5';
-        const ph = document.createElement('option');
-        ph.value = ''; ph.disabled = true; ph.selected = true;
-        ph.textContent = 'Select main category first...';
-        subCatSelect.appendChild(ph);
-    }
-}
 
     window.handleExpenseSubmit = async function(e) {
         e.preventDefault();
