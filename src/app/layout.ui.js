@@ -375,9 +375,11 @@ export const appShellHTML = `
 
                                  <!-- Always Visible Total -->
                                  <div class="summary-row total" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                                     <span id="cart-total-label" style="flex: 0 0 auto;">Total</span>
-                                     <span id="total-table-indicator" style="flex: 1; text-align: center; font-size: 0.75em; color: var(--accent-color); font-weight: 700; opacity: 0.9;"></span>
-                                     <span id="cart-total" style="flex: 0 0 auto; text-align: right;">₹0</span>
+                                     <div style="display: flex; align-items: baseline; gap: 8px; flex: 1;">
+                                         <span id="cart-total-label" style="font-weight: 800;">Total</span>
+                                         <span id="total-table-indicator" style="font-size: 0.75em; color: var(--accent-color); font-weight: 700; background: rgba(99, 102, 241, 0.1); padding: 1px 6px; border-radius: 4px;"></span>
+                                     </div>
+                                     <span id="cart-total" style="flex: 0 0 auto; text-align: right; font-size: 1.2em; font-weight: 800;">₹0</span>
                                  </div>
                                  <div id="dues-row" class="summary-row" style="display: none; color: var(--danger-color); font-weight: 700; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 5px; margin-top: 5px;">
                                      <span>Dues (Baki)</span>

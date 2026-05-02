@@ -133,8 +133,10 @@ window.calculateTotal = function() {
                 const tbl = (window.tables || []).find(t => String(t.id) === String(window.currentSelectedTable));
                 const tblName = tbl ? tbl.name : window.currentSelectedTable;
                 tableIndicator.textContent = `(${tblName})`;
+                tableIndicator.style.display = 'inline-block';
             } else {
                 tableIndicator.textContent = '';
+                tableIndicator.style.display = 'none';
             }
         }
 
@@ -660,8 +662,10 @@ window.editSale = function(id) {
     
     if (typeof window.calculateTotal === 'function') window.calculateTotal(); // Refresh total and dues
     if (typeof window.setOrderType === 'function') window.setOrderType(type, targetBtn, true);
-
+    
+    // Explicitly refresh UI components
     if (typeof window.renderCart === 'function') window.renderCart();
+    if (typeof window.calculateTotal === 'function') window.calculateTotal(); 
     if (typeof window.renderPOSItems === 'function') window.renderPOSItems(); 
 }
 
