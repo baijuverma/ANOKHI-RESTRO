@@ -1,33 +1,26 @@
 export function initExpensesLogic() {
     window.updateExpenseSubCats = function() {
-        const mainCat = document.getElementById('expense-main-cat').value.trim().toLowerCase();
+        const mainCat = document.getElementById('expense-main-cat').value;
         const subCatSelect = document.getElementById('expense-sub-cat');
-        
+
         const subCats = {
             'staff': ['Salary', 'Advance', 'Rent', 'Electricity Bill', 'Water Bill', 'Maintenance'],
             'material': ['Groceries', 'Vegetables', 'Gas Cylinder', 'Packaging', 'Meat/Chicken', 'Dairy Products']
         };
 
-        let matchedKey = null;
-        if (mainCat.includes('staff') || mainCat.includes('operation')) matchedKey = 'staff';
-        else if (mainCat.includes('material')) matchedKey = 'material';
-
         // Reset sub-cat
         subCatSelect.innerHTML = '';
 
-        if (matchedKey) {
+        if (subCats[mainCat]) {
             subCatSelect.disabled = false;
             subCatSelect.style.opacity = '1';
-            subCatSelect.style.cursor = 'pointer';
-            // Add default placeholder option
-            const placeholder = document.createElement('option');
-            placeholder.value = '';
-            placeholder.disabled = true;
-            placeholder.selected = true;
-            placeholder.textContent = 'Select sub category...';
-            subCatSelect.appendChild(placeholder);
-            // Add actual options
-            subCats[matchedKey].forEach(sub => {
+            // Placeholder
+            const ph = document.createElement('option');
+            ph.value = ''; ph.disabled = true; ph.selected = true;
+            ph.textContent = 'Sub category chuniye...';
+            subCatSelect.appendChild(ph);
+            // Options
+            subCats[mainCat].forEach(sub => {
                 const opt = document.createElement('option');
                 opt.value = sub;
                 opt.textContent = sub;
@@ -36,18 +29,17 @@ export function initExpensesLogic() {
         } else {
             subCatSelect.disabled = true;
             subCatSelect.style.opacity = '0.5';
-            const placeholder = document.createElement('option');
-            placeholder.value = '';
-            placeholder.disabled = true;
-            placeholder.selected = true;
-            placeholder.textContent = 'Select main category first...';
-            subCatSelect.appendChild(placeholder);
+            const ph = document.createElement('option');
+            ph.value = ''; ph.disabled = true; ph.selected = true;
+            ph.textContent = 'Pehle main category chuniye...';
+            subCatSelect.appendChild(ph);
         }
     }
 
     window.handleExpenseSubmit = async function(e) {
         e.preventDefault();
-        const mainCat = document.getElementById('expense-main-cat').value;
+        const mainCatEl = document.getElementById('expense-main-cat');
+        const mainCat = mainCatEl.options[mainCatEl.selectedIndex]?.text || mainCatEl.value;
         const subCat = document.getElementById('expense-sub-cat').value;
         const desc = document.getElementById('expense-desc').value;
 
