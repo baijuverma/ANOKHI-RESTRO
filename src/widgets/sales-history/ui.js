@@ -12,8 +12,14 @@ export const renderSalesHistory = (containerId, orders, limit = null) => {
         return;
     }
 
+    // Filter by dues if applicable
+    let activeOrders = orders;
+    if (window.showOnlyDues) {
+        activeOrders = activeOrders.filter(s => (s.dues || 0) > 0.01);
+    }
+
     // Sort by date (descending)
-    let sortedOrders = [...orders].sort((a, b) => new Date(b.date) - new Date(a.date));
+    let sortedOrders = [...activeOrders].sort((a, b) => new Date(b.date) - new Date(a.date));
     
     // Apply limit if provided
     if (limit) {

@@ -188,42 +188,17 @@ window.toggleDuesFilter = function() {
         if(card) card.style.background = 'rgba(239, 68, 68, 0.05)';
     }
     
-    renderHistory();
+    renderHistoryCards();
+    if (typeof window.renderHistory === 'function') {
+        window.renderHistory();
+    }
 }
 
 // History Logic
-function renderHistory() {
-    const tbody = document.querySelector('#history-table tbody');
-    tbody.innerHTML = '';
-
+function renderHistoryCards() {
     if(salesHistory.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No sales history found.</td></tr>';
-        renderCalendarChart({});
         return;
     }
-
-    // Calculate Monthly Calendar Totals
-    const calendarTotals = {};
-    salesHistory.forEach(sale => {
-        const dateStr = getDDMMYYYY(new Date(sale.date));
-        if(!calendarTotals[dateStr]) {
-            calendarTotals[dateStr] = { orders: 0, total: 0, cash: 0, upi: 0 };
-        }
-        calendarTotals[dateStr].orders += 1;
-        calendarTotals[dateStr].total += sale.total;
-        
-        const pMode = sale.paymentMode || 'CASH';
-        if(pMode === 'UPI') {
-            calendarTotals[dateStr].upi += sale.total;
-        } else if (pMode === 'BOTH' && sale.splitAmounts) {
-            calendarTotals[dateStr].upi += (sale.splitAmounts.upi || 0);
-            calendarTotals[dateStr].cash += (sale.splitAmounts.cash || 0);
-        } else {
-            calendarTotals[dateStr].cash += sale.total;
-        }
-    });
-
-    renderCalendarChart(calendarTotals);
 
     // Calculate Monthly Summary for the cards in Header
     const targetMonth = currentCalendarDate ? currentCalendarDate.getMonth() : new Date().getMonth();
@@ -277,96 +252,8 @@ function renderHistory() {
         if (mProfitCard) mProfitCard.style.borderLeft = `4px solid ${mNetProfit >= 0 ? "#22c55e" : "#ef4444"}`;
     }
 
-    const sortedHistory = showOnlyDues 
-        ? salesHistory.filter(s => (s.dues || 0) > 0.01) 
-        : salesHistory;
-
-    sortedHistory.forEach((sale, index) => {
-        if (!sale) return;
-        const items = sale.items || [];
-        const itemsStr = items.map(i => `${i.name || 'Unknown'} (x${i.cartQty || 0})`).join(', ');
-        
-        const tr = document.createElement('tr');
-        
-        const pMode = sale.paymentMode || 'CASH';
-        let pModeBadge = '';
-        
-        if (sale.status === 'HELD') {
-            pModeBadge = '<span class="status-badge" style="background: #334155; color: white; font-weight: 800;">HELD</span>';
-        } else if (sale.status === 'ADVANCE') {
-            pModeBadge = '<span class="status-badge" style="background: var(--warning-color); color: white; font-weight: 800;">ADVANCE</span>';
-        } else if (sale.dues > 0) {
-            pModeBadge = '<span class="status-badge" style="background: #ef4444; color: white; font-weight: 800;">CREDIT</span>';
-            pModeBadge += `<div style="font-size: 11px; color: #ef4444; margin-top: 4px; font-weight: 700;">Dues: ${formatCurrency(sale.dues)}</div>`;
-        } else if (pMode === 'UPI') {
-            pModeBadge = '<span class="status-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">UPI</span>';
-        } else if (pMode === 'BOTH') {
-            pModeBadge = '<span class="status-badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">SPLIT</span>';
-        } else {
-            pModeBadge = '<span class="status-badge status-instock">CASH</span>';
-        }
-
-        // Highlight Row for Credit/Held/Advance
-        if (sale.status === 'HELD' || sale.status === 'ADVANCE') {
-            tr.style.background = '#fef9c3'; 
-            tr.style.color = '#1e293b';      
-            tr.style.borderLeft = '4px solid #f59e0b';
-        } else if (sale.dues > 0) {
-            tr.style.background = 'rgba(239, 68, 68, 0.05)'; 
-            tr.style.borderLeft = '4px solid #ef4444';
-        }
-
-        const typeBadge = `
-            <span style="font-size: 11px; display: block; color: ${sale.status ? '#475569' : 'var(--text-secondary)'}; margin-top: 4px;">
-                ${sale.orderType === 'DINE_IN' ? 'Dine-In' : sale.orderType === 'TAKEAWAY' ? 'Takeaway' : 'Counter'}
-            </span>
-        `;
-
-        const displayDate = sale.date || sale.timestamp || new Date();
-
-        tr.innerHTML = `
-            <td style="color: var(--text-secondary); font-size: 11px;">${index + 1}</td>
-            <td style="color: inherit;">
-                <strong>#${sale.id.toString().slice(-6)}</strong>
-                ${typeBadge}
-                ${sale.customerName ? `<div style="font-size: 11px; color: var(--warning-color); font-weight: 700; margin-top: 4px;"><i class="fa-solid fa-user"></i> ${sale.customerName}</div>` : ''}
-            </td>
-            <td style="color: inherit;">${formatDateTime(displayDate)}</td>
-            <td style="color: inherit;"><div style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${itemsStr}">${itemsStr}</div></td>
-            <td>${pModeBadge}</td>
-            <td style="color:${(sale.status || sale.dues > 0) ? '#1e293b' : 'var(--success-color)'}; font-weight:bold;">${formatCurrency(sale.total)}</td>
-            <td>
-                <div style="display: flex; gap: 5px;">
-                    <button class="btn-primary" style="padding: 6px 16px; font-size:12px; background: var(--accent-color); border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="editSale('${sale.id}')">
-                        <i class="fa-solid fa-pen-to-square"></i> Edit
-                    </button>
-
-
-                </div>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-
-    // Add Load More button if there are potentially more records
-    if (salesHistory.length >= 20) {
-        const sentinelRow = document.createElement('tr');
-        sentinelRow.id = 'load-more-sentinel';
-        sentinelRow.innerHTML = `
-            <td colspan="6" style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 13px;">
-                <button id="load-more-btn" class="btn-primary" style="background: rgba(255,255,255,0.05); border: 1px solid var(--panel-border); width: 200px;" onclick="loadMoreSales()">
-                    Scrolling for more...
-                </div>
-            </td>
-        `;
-        tbody.appendChild(sentinelRow);
-
-        // Setup IntersectionObserver
-        setTimeout(() => {
-            if (typeof window.setupInfiniteScroll === 'function') {
-                window.setupInfiniteScroll('load-more-sentinel', window.loadMoreSales);
-            }
-        }, 100);
+    if (typeof window.renderHistory === 'function') {
+        window.renderHistory();
     }
 }
 

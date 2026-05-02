@@ -122,6 +122,7 @@ window.renderInventory = (isLoadMore = false) => {
 window.renderHistory = () => {
     if (window.salesHistory) {
         renderSalesHistory('sales-tbody', window.salesHistory, 10);
+        renderSalesHistory('history-tbody', window.salesHistory, null);
         updateCalendarData(window.salesHistory);
     }
 };
