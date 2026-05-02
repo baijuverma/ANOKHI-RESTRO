@@ -1,16 +1,21 @@
 export function initExpensesLogic() {
     window.updateExpenseSubCats = function() {
         const mainCatEl = document.getElementById('expense-main-cat');
-        const subCatSelect = document.getElementById('expense-sub-cat');
+        const subCatList = document.getElementById('sub-cat-list');
         
-        if (!mainCatEl || !subCatSelect) {
-            console.warn('Expense category elements not found');
-            return;
-        }
+        if (!mainCatEl || !subCatList) return;
 
-        const mainCat = mainCatEl.value;
-        console.log('Main Category Changed To:', mainCat);
+        const mainCatValue = mainCatEl.value;
+        
+        // Map Display Names to internal keys
+        const categoryMap = {
+            'Staff & Payroll': 'staff',
+            'Raw Material/Ingredients': 'material',
+            'Operations & Maintenance': 'operation',
+            'Other Expenses': 'other'
+        };
 
+        const key = categoryMap[mainCatValue];
         const subCats = {
             'staff': ['Staff Salary', 'Staff Advance', 'Incentives/Bonus', 'Staff Meals', 'Uniforms', 'Training'],
             'material': ['Groceries & Spices', 'Vegetables & Fruits', 'Meat, Fish & Poultry', 'Dairy & Eggs', 'Oil & Ghee', 'Flour/Rice/Dal', 'Beverages/Soft Drinks', 'Water Cans'],
@@ -18,50 +23,24 @@ export function initExpensesLogic() {
             'other': ['Miscellaneous', 'Petty Cash', 'Transport/Delivery', 'Taxes', 'Others']
         };
 
-        // Clear existing options
-        subCatSelect.innerHTML = '';
+        // Clear existing list
+        subCatList.innerHTML = '';
 
-        if (mainCat && subCats[mainCat]) {
-            subCatSelect.disabled = false;
-            subCatSelect.style.opacity = '1';
-            subCatSelect.style.cursor = 'pointer';
-
-            // Default Option
-            const placeholder = document.createElement('option');
-            placeholder.value = '';
-            placeholder.textContent = '-- Sub Category Chuniye --';
-            placeholder.disabled = true;
-            placeholder.selected = true;
-            subCatSelect.appendChild(placeholder);
-
-            // Populate Sub-Categories
-            subCats[mainCat].forEach(sub => {
+        if (key && subCats[key]) {
+            subCats[key].forEach(sub => {
                 const opt = document.createElement('option');
                 opt.value = sub;
-                opt.textContent = sub;
-                subCatSelect.appendChild(opt);
+                subCatList.appendChild(opt);
             });
-            console.log(`Populated ${subCats[mainCat].length} sub-categories for ${mainCat}`);
-        } else {
-            subCatSelect.disabled = true;
-            subCatSelect.style.opacity = '0.5';
-            subCatSelect.style.cursor = 'not-allowed';
-            
-            const placeholder = document.createElement('option');
-            placeholder.value = '';
-            placeholder.textContent = 'Pehle main category chuniye...';
-            placeholder.disabled = true;
-            placeholder.selected = true;
-            subCatSelect.appendChild(placeholder);
         }
     };
 
-    // Add direct event listener as fallback/reinforcement
+    // Add direct event listener as reinforcement
     setTimeout(() => {
         const mainCatEl = document.getElementById('expense-main-cat');
         if (mainCatEl) {
-            mainCatEl.addEventListener('change', window.updateExpenseSubCats);
-            console.log('Expense sub-category event listener attached');
+            mainCatEl.addEventListener('input', window.updateExpenseSubCats);
+            console.log('Expense sub-category input listener attached');
         }
     }, 500);
 

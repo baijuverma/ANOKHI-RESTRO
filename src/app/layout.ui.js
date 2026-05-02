@@ -219,21 +219,20 @@ export const appShellHTML = `
                             <div class="form-group">
                                 <label>Main Category</label>
                                 <div class="input-wrapper">
-                                    <select id="expense-main-cat" required onchange="updateExpenseSubCats()" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px; cursor: pointer;">
-                                        <option value="" disabled selected>-- Category Chuniye --</option>
-                                        <option value="staff">Staff &amp; Payroll</option>
-                                        <option value="material">Raw Material/Ingredients</option>
-                                        <option value="operation">Operations &amp; Maintenance</option>
-                                        <option value="other">Other Expenses</option>
-                                    </select>
+                                    <input type="text" id="expense-main-cat" list="main-cat-list" required placeholder="Select or type category..." oninput="updateExpenseSubCats()" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                                    <datalist id="main-cat-list">
+                                        <option value="Staff & Payroll">
+                                        <option value="Raw Material/Ingredients">
+                                        <option value="Operations & Maintenance">
+                                        <option value="Other Expenses">
+                                    </datalist>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label>Sub Category</label>
                                 <div class="input-wrapper">
-                                    <select id="expense-sub-cat" required disabled style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px; cursor: pointer; opacity: 0.5;">
-                                        <option value="" disabled selected>Select main category first...</option>
-                                    </select>
+                                    <input type="text" id="expense-sub-cat" list="sub-cat-list" required placeholder="Select or type sub-category..." style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                                    <datalist id="sub-cat-list"></datalist>
                                 </div>
                             </div>
                             <!-- Floating Label Expense Fields -->
