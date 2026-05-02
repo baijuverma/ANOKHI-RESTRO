@@ -216,6 +216,22 @@ function handleRestockSubmit(e) {
     }
 }
 
+// Bind event listeners to forms immediately
+window.handleItemSubmit = handleItemSubmit;
+window.handleRestockSubmit = handleRestockSubmit;
+
+setTimeout(() => {
+    const itemForm = document.getElementById('item-form');
+    if (itemForm) {
+        itemForm.onsubmit = handleItemSubmit;
+    }
+    
+    const restockForm = document.getElementById('restock-form');
+    if (restockForm) {
+        restockForm.onsubmit = handleRestockSubmit;
+    }
+}, 500);
+
 window.editItem = function(id) {
     const item = inventory.find(i => i.id === id);
     if(item) {
