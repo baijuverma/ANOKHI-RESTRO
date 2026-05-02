@@ -535,8 +535,10 @@ export const appShellHTML = `
                 </header>
                 <!-- Sales Chart (Calendar) -->
                 <div class="glass-panel mt-4">
-                    <h2 style="padding: 20px; font-size: 18px; border-bottom: 1px solid var(--panel-border);">Sales
-                        Chart</h2>
+                    <h2 style="padding: 20px; font-size: 18px; border-bottom: 1px solid var(--panel-border); display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleCalendarChart()">
+                        <span>Sales Chart</span>
+                        <i id="calendar-toggle-icon" class="fa-solid fa-chevron-up"></i>
+                    </h2>
                     <div id="calendar-wrapper" style="padding: 20px;">
                         <!-- Calendar will go here -->
                     </div>

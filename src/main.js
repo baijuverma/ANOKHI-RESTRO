@@ -183,6 +183,20 @@ window.toggleTablesCurtain = () => {
     }
 };
 
+window.toggleCalendarChart = () => {
+    const wrapper = document.getElementById('calendar-wrapper');
+    const icon    = document.getElementById('calendar-toggle-icon');
+    if (!wrapper || !icon) return;
+
+    if (wrapper.style.display === 'none') {
+        wrapper.style.display = 'block';
+        icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+    } else {
+        wrapper.style.display = 'none';
+        icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+    }
+};
+
 window.renderPOSItems = (search = '') => {
     const gridContainer = document.getElementById('pos-item-grid');
     if (gridContainer) renderPOSGrid(gridContainer, search, filterState.current);
