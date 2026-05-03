@@ -17,7 +17,11 @@ window.newBill = function() {
         const allTables = window.tables || [];
         const tableIndex = allTables.findIndex(t => t.id === window.currentSelectedTable);
         if (tableIndex > -1) {
-            allTables[tableIndex].cart = [];
+            if (typeof window.setCart === 'function') {
+                window.setCart([], tableIndex);
+            } else {
+                allTables[tableIndex].cart = [];
+            }
             allTables[tableIndex].advance = 0;
             if (typeof saveData === 'function') saveData();
         }
@@ -626,13 +630,26 @@ window.editSale = function(id) {
     window.previousPaidAmount = sale.total - (sale.dues || 0);
     
     // Load sale data into cart
-    window.cart = sale.items.map(saleItem => {
-        const invItem = (window.inventory || []).find(i => i.name.trim().toLowerCase() === saleItem.name.trim().toLowerCase());
-        if (invItem) {
-            return { ...saleItem, id: invItem.id };
-        }
-        return { ...saleItem };
+    const newCartItems = sale.items.map(saleItem => {
+        // Try to find in inventory to get latest stock/price info, but preserve original ID
+        const invItem = (window.inventory || []).find(i => 
+            (saleItem.id && String(i.id) === String(saleItem.id)) || 
+            (i.name.trim().toLowerCase() === saleItem.name.trim().toLowerCase())
+        );
+        
+        return {
+            ...saleItem,
+            id: invItem ? invItem.id : (saleItem.id || `legacy-${Date.now()}-${Math.random()}`)
+        };
     });
+
+    console.log(`Editing Sale #${id}. Loading ${newCartItems.length} items into cart.`);
+
+    if (typeof window.setCart === 'function') {
+        window.setCart(newCartItems);
+    } else {
+        window.cart = newCartItems;
+    }
 
     const type = sale.orderType || 'COUNTER';
     window.currentSelectedTable = sale.tableId || sale.tableName || null;

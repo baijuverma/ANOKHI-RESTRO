@@ -10,6 +10,11 @@ const syncWithWindow = () => {
 };
 
 export const addToCart = (item) => {
+    // Ensure item has an ID to prevent merging with other undefined-id items
+    if (!item.id) {
+        item.id = `tmp-${Date.now()}-${Math.random()}`;
+    }
+
     const existing = cart.find(c => String(c.id) === String(item.id));
     if (existing) {
         if (existing.cartQty < item.quantity) {
