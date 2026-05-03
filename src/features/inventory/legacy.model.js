@@ -170,6 +170,17 @@ function handleItemSubmit(e) {
         }
     } else {
         // Add
+        if (!name || name.trim() === '') {
+            alert('Item name cannot be empty.');
+            return;
+        }
+
+        const duplicateItem = inventory.find(i => i.name.trim().toLowerCase() === name.trim().toLowerCase());
+        if (duplicateItem) {
+            alert(`Duplicate Entry Rejected: An item named "${name}" already exists in the "${duplicateItem.category}" category. Please use a unique name.`);
+            return;
+        }
+
         const newItem = {
             id: Date.now().toString(),
             name, category, itemType, price, quantity, lowStockThreshold
