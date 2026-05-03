@@ -4,6 +4,7 @@
 .table-container {
     padding: 20px;
     overflow-x: auto;
+    min-height: 500px;
 }
 
 table {
