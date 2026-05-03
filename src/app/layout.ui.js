@@ -98,7 +98,7 @@ export const appShellHTML = `
                 <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 0;">
                     <!-- Today Sale Card -->
                     <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #6366f1; background: rgba(99, 102, 241, 0.05); cursor: pointer;" onclick="window.showTodaySalesList()">
-                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #818cf8; margin-bottom: 4px;">Month Sales</h3>
+                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #818cf8; margin-bottom: 4px;">Today Sales</h3>
                         <p id="total-revenue" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
                         <div style="font-size: 12px; margin-top: 8px; color: var(--text-secondary); display: flex; gap: 12px;">
                             <span><i class="fa-solid fa-money-bill-wave" style="color:#22c55e;"></i> <span id="today-cash">₹0</span></span>

@@ -199,11 +199,9 @@ window.updateDashboard = () => {
     const totalExpenseToday = todayExpenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
 
     renderDashboardStats({
-        // We pass month stats to the main card if requested, but let's pass both
-        totalRevenue: monthRevenue.toFixed(2),
-        todayCash: monthCash.toFixed(2),
-        todayUpi: monthUpi.toFixed(2),
-        // Profit is still today-based usually, or we can change it
+        totalRevenue: todayRevenue.toFixed(2),
+        todayCash: todayCash.toFixed(2),
+        todayUpi: todayUpi.toFixed(2),
         totalExpense: totalExpenseToday.toFixed(2),
         profit: (todayRevenue - totalExpenseToday).toFixed(2),
         totalItems: (window.inventory || []).length,
