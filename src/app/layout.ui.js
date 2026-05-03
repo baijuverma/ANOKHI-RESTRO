@@ -97,34 +97,30 @@ export const appShellHTML = `
             <section id="dashboard" class="view-section active">
                 <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 0;">
                     <!-- Today Sale Card -->
-                    <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #6366f1; background: rgba(99, 102, 241, 0.05); cursor: pointer;" onclick="window.showTodaySalesList()">
-                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #818cf8; margin-bottom: 4px;">Today Sales</h3>
-                        <p id="total-revenue" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
+                    <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #6366f1; background: rgba(99, 102, 241, 0.05); cursor: pointer;" onclick="if(window.downloadTodaySalesReport) window.downloadTodaySalesReport()">
+                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #818cf8; margin-bottom: 4px;">Today Sales <i class="fa-solid fa-file-pdf" style="margin-left:5px; font-size:10px; opacity:0.6;"></i></h3>
+                        <p id="today-revenue-card" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
                         <div style="font-size: 12px; margin-top: 8px; color: var(--text-secondary); display: flex; gap: 12px;">
-                            <span><i class="fa-solid fa-money-bill-wave" style="color:#22c55e;"></i> <span id="today-cash">₹0</span></span>
-                            <span><i class="fa-brands fa-google-pay" style="color:#818cf8;"></i> <span id="today-upi">₹0</span></span>
+                            <span><i class="fa-solid fa-money-bill-wave" style="color:#22c55e;"></i> <span id="today-cash-card">₹0</span></span>
+                            <span><i class="fa-brands fa-google-pay" style="color:#818cf8;"></i> <span id="today-upi-card">₹0</span></span>
                         </div>
                     </div>
 
-                    <!-- Today Profit Card -->
-                    <div class="glass-panel" id="profit-card" style="padding: 12px 20px; border-left: 4px solid #22c55e; background: rgba(34, 197, 94, 0.05); cursor: pointer;" onclick="window.showView('history')">
-                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #22c55e; margin-bottom: 4px;">Today Profit / Loss</h3>
-                        <p id="total-profit" style="font-size: 28px; font-weight: 800; color: #22c55e; margin: 0;">₹0</p>
-                        <div style="font-size: 11px; margin-top: 8px; color: var(--text-secondary);">Today Revenue - Today Expenses</div>
+                    <!-- Month Sale Card -->
+                    <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #22c55e; background: rgba(34, 197, 94, 0.05); cursor: pointer;" onclick="if(window.downloadMonthSalesReport) window.downloadMonthSalesReport()">
+                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #22c55e; margin-bottom: 4px;">Month Sales <i class="fa-solid fa-file-pdf" style="margin-left:5px; font-size:10px; opacity:0.6;"></i></h3>
+                        <p id="month-revenue-card" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
+                        <div style="font-size: 12px; margin-top: 8px; color: var(--text-secondary); display: flex; gap: 12px;">
+                            <span><i class="fa-solid fa-money-bill-wave" style="color:#22c55e;"></i> <span id="month-cash-card">₹0</span></span>
+                            <span><i class="fa-brands fa-google-pay" style="color:#818cf8;"></i> <span id="month-upi-card">₹0</span></span>
+                        </div>
                     </div>
 
-                    <!-- Low Stock Card -->
-                    <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.05); cursor: pointer;" onclick="window.showStockList('low')">
-                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #f59e0b; margin-bottom: 4px;">Low Stock Items</h3>
-                        <p id="low-stock" style="font-size: 28px; font-weight: 800; color: #f59e0b; margin: 0;">0</p>
-                        <div style="font-size: 11px; margin-top: 8px; color: var(--text-secondary);">Items needing restock</div>
-                    </div>
-
-                    <!-- Out of Stock Card -->
-                    <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer;" onclick="window.showStockList('out')">
-                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #ef4444; margin-bottom: 4px;">Out of Stock</h3>
-                        <p id="out-of-stock" style="font-size: 28px; font-weight: 800; color: #ef4444; margin: 0;">0</p>
-                        <div style="font-size: 11px; margin-top: 8px; color: var(--text-secondary);">Critical stock levels</div>
+                    <!-- Month Expense Card -->
+                    <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer;" onclick="if(window.downloadMonthExpensesReport) window.downloadMonthExpensesReport()">
+                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #ef4444; margin-bottom: 4px;">Month Expenses <i class="fa-solid fa-file-pdf" style="margin-left:5px; font-size:10px; opacity:0.6;"></i></h3>
+                        <p id="month-expense-card" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
+                        <div style="font-size: 11px; margin-top: 8px; color: var(--text-secondary);">Total expenses for this month</div>
                     </div>
                 </div>
 

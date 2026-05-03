@@ -28,6 +28,7 @@ import { syncTables }    from './entities/table/model.js';
 // ── Layer 3: Features (business logic) ──────────────────────
 import { initAuthLogic }     from './features/auth/legacy.model.js';
 import { initInventoryLogic} from './features/inventory/legacy.model.js';
+import { initPdfReports }    from './features/dashboard/pdf-reports.js';
 import { initPosLogic }      from './features/pos/legacy.model.js';
 import { initHistoryLogic }  from './features/history/legacy.model.js';
 import { initExpensesLogic } from './features/expenses/model.js';
@@ -198,15 +199,23 @@ window.updateDashboard = () => {
     });
     const totalExpenseToday = todayExpenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
 
+    const monthExpenses = (window.expensesHistory || []).filter(e => {
+        if (!e.date) return false;
+        const eDate = new Date(e.date);
+        return eDate.getMonth() === currentMonth && eDate.getFullYear() === currentYear;
+    });
+    const totalExpenseMonth = monthExpenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+
     renderDashboardStats({
-        totalRevenue: todayRevenue.toFixed(2),
+        todayRevenue: todayRevenue.toFixed(2),
         todayCash: todayCash.toFixed(2),
         todayUpi: todayUpi.toFixed(2),
-        totalExpense: totalExpenseToday.toFixed(2),
-        profit: (todayRevenue - totalExpenseToday).toFixed(2),
-        totalItems: (window.inventory || []).length,
-        lowStock: (window.inventory || []).filter(i => i.quantity <= (i.lowStockThreshold || 5) && i.quantity > 0).length,
-        outOfStock: (window.inventory || []).filter(i => i.quantity === 0).length
+        monthRevenue: monthRevenue.toFixed(2),
+        monthCash: monthCash.toFixed(2),
+        monthUpi: monthUpi.toFixed(2),
+        monthExpense: totalExpenseMonth.toFixed(2),
+        totalExpenseToday: totalExpenseToday.toFixed(2),
+        profitToday: (todayRevenue - totalExpenseToday).toFixed(2)
     });
 };
 
@@ -354,6 +363,7 @@ const initRealtime = () => {
 // ============================================================
 const init = async () => {
     console.log('Anokhi Restro POS — FSD Architecture Active');
+    initPdfReports();
 
     // Initial render from local cache
     window.refreshUI();
