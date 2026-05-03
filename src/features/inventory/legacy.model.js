@@ -31,8 +31,8 @@ window.handleModalDelete = function() {
 
 function populateItemNameDatalist() {
     const dl = document.getElementById('item-name-list');
-    if (!dl) return;
-    dl.innerHTML = inventory.map(i => `<option value="${i.name}"></option>`).join('');
+    if (!dl || !window.inventory) return;
+    dl.innerHTML = window.inventory.map(i => `<option value="${i.name}"></option>`).join('');
 }
 
 function openModal(id) {
@@ -155,29 +155,45 @@ window.showTodaySalesList = function() {
 function handleItemSubmit(e) {
     e.preventDefault();
     const id = document.getElementById('item-id').value;
-    const name = document.getElementById('item-name').value;
+    const name = document.getElementById('item-name').value ? document.getElementById('item-name').value.trim() : '';
     const category = document.getElementById('item-category').value;
     const itemType = document.querySelector('input[name="item-type"]:checked')?.value || 'Veg';
-    const price = parseFloat(document.getElementById('item-price').value);
-    const quantity = parseInt(document.getElementById('item-quantity').value);
+    const price = parseFloat(document.getElementById('item-price').value) || 0;
+    const quantity = parseInt(document.getElementById('item-quantity').value) || 0;
     const lowStockThreshold = parseInt(document.getElementById('item-low-stock').value) || 5;
 
+    if (!window.inventory) window.inventory = [];
+
     if (id) {
-        // Update
-        const index = inventory.findIndex(i => i.id == id);
+        // Update mode
+        const index = window.inventory.findIndex(i => String(i.id) === String(id));
         if(index > -1) {
-            inventory[index] = { ...inventory[index], name, category, itemType, price, quantity, lowStockThreshold };
+            // Check if name changed to another existing item's name
+            const otherDuplicate = window.inventory.find(i => 
+                String(i.id) !== String(id) && 
+                i.name.trim().toLowerCase() === name.toLowerCase()
+            );
+            
+            if (otherDuplicate) {
+                alert(`Cannot rename: An item named "${name}" already exists in "${otherDuplicate.category}".`);
+                return;
+            }
+
+            window.inventory[index] = { 
+                ...window.inventory[index], 
+                name, category, itemType, price, quantity, lowStockThreshold 
+            };
         }
     } else {
-        // Add
-        if (!name || name.trim() === '') {
+        // Add mode
+        if (!name) {
             alert('Item name cannot be empty.');
             return;
         }
 
-        const duplicateItem = inventory.find(i => i.name.trim().toLowerCase() === name.trim().toLowerCase());
+        const duplicateItem = window.inventory.find(i => i.name.trim().toLowerCase() === name.toLowerCase());
         if (duplicateItem) {
-            alert(`Duplicate Entry Rejected: An item named "${name}" already exists in the "${duplicateItem.category}" category. Please use a unique name.`);
+            alert(`Duplicate Entry Rejected: An item named "${name}" already exists in the "${duplicateItem.category}" category.`);
             return;
         }
 
@@ -185,13 +201,13 @@ function handleItemSubmit(e) {
             id: Date.now().toString(),
             name, category, itemType, price, quantity, lowStockThreshold
         };
-        inventory.push(newItem);
+        window.inventory.push(newItem);
     }
 
-    saveData();
+    if (typeof window.saveData === 'function') window.saveData();
     closeModal('addItemModal');
-    if (typeof renderInventory === 'function') renderInventory();
-    if (typeof updateDashboard === 'function') updateDashboard();
+    if (typeof window.renderInventory === 'function') window.renderInventory();
+    if (typeof window.updateDashboard === 'function') window.updateDashboard();
 }
 
 // Inventory Table Logic (Now handled by widgets/inventory-table)
@@ -266,13 +282,13 @@ window.editItem = function(id) {
 
 window.deleteItem = async function(id) {
     if(confirm('Are you sure you want to delete this item?')) {
-        inventory = inventory.filter(i => i.id !== id);
-        saveData();
-        if (typeof renderInventory === 'function') renderInventory();
-        if (typeof updateDashboard === 'function') updateDashboard();
+        window.inventory = (window.inventory || []).filter(i => String(i.id) !== String(id));
+        if (typeof window.saveData === 'function') window.saveData();
+        if (typeof window.renderInventory === 'function') window.renderInventory();
+        if (typeof window.updateDashboard === 'function') window.updateDashboard();
         
         // Explicit delete from Supabase
-        await db.from('inventory').delete().eq('id', id);
+        if (window.db) await window.db.from('inventory').delete().eq('id', id);
     }
 }
 
