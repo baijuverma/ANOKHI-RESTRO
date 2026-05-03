@@ -412,6 +412,9 @@ export const appShellHTML = `
                                     <button id="btn-process-sale" class="btn-success" style="padding: 10px 5px; font-size: 11px; flex: 1.5;" onclick="processSale()" title="Shortcut: Enter">
                                         <i class="fa-solid fa-check"></i> Sale [Ent]
                                     </button>
+                                    <button id="btn-delete-sale" class="btn-danger" style="display: none; padding: 10px 5px; font-size: 11px; flex: 1; background: #ef4444;" onclick="window.deleteSaleFromEdit()" title="Delete this sale">
+                                        <i class="fa-solid fa-trash"></i> Del
+                                    </button>
                                     <button id="btn-new-bill" class="btn-danger" style="padding: 10px 5px; font-size: 11px; flex: 1;" onclick="newBill()" title="Shortcut: Esc">
                                         <i class="fa-solid fa-xmark"></i> Can [Esc]
                                     </button>

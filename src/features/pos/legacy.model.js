@@ -2,24 +2,6 @@ export function initPosLogic() {
 // renderCart (Now handled by widgets/cart in main.js)
 
 window.newBill = function() {
-    // Inject Delete Button if missing
-    if (!document.getElementById('btn-delete-sale')) {
-        const canBtn = document.getElementById('btn-new-bill') || document.querySelector('button[onclick="newBill()"]');
-        if (canBtn && canBtn.parentElement) {
-            const delBtn = document.createElement('button');
-            delBtn.id = 'btn-delete-sale';
-            delBtn.className = 'btn-danger';
-            delBtn.style.cssText = 'display: none; padding: 10px 5px; font-size: 11px; flex: 1; background: #ef4444; border: none; border-radius: 6px; cursor: pointer; color: white;';
-            delBtn.onclick = () => window.deleteSaleFromEdit();
-            delBtn.innerHTML = '<i class="fa-solid fa-trash"></i> Del';
-            canBtn.parentElement.insertBefore(delBtn, canBtn);
-            
-            // Also ensure process button has an ID
-            const procBtn = document.querySelector('button[onclick="processSale()"]');
-            if (procBtn) procBtn.id = 'btn-process-sale';
-            if (canBtn) canBtn.id = 'btn-new-bill';
-        }
-    }
     console.log('newBill() called. Resetting POS state.');
     const currentCart = window.cart || [];
     
