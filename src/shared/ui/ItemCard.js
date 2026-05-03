@@ -13,7 +13,7 @@ export const createItemCard = (item, cartQty, onAdd, onUpdateQty) => {
         ${inCart ? `
             <div class="pos-item-overlay-bottom">
                 <button class="overlay-btn-small minus" data-id="${item.id}">-</button>
-                <div class="overlay-qty-small">${cartQty}</div>
+                <input type="number" class="overlay-qty-small-input" value="${cartQty}" min="0" data-id="${item.id}" />
                 <button class="overlay-btn-small plus" data-id="${item.id}">+</button>
             </div>
         ` : ''}
@@ -28,6 +28,24 @@ export const createItemCard = (item, cartQty, onAdd, onUpdateQty) => {
     if (inCart) {
         div.querySelector('.minus').onclick = (e) => { e.stopPropagation(); onUpdateQty(item.id, -1); };
         div.querySelector('.plus').onclick = (e) => { e.stopPropagation(); onUpdateQty(item.id, 1); };
+        
+        const qtyInput = div.querySelector('.overlay-qty-small-input');
+        if (qtyInput) {
+            qtyInput.onclick = (e) => e.stopPropagation(); // prevent clicking input from adding item
+            qtyInput.onchange = (e) => {
+                e.stopPropagation();
+                const newQty = parseInt(e.target.value);
+                if (!isNaN(newQty)) {
+                    const delta = newQty - cartQty;
+                    if (delta !== 0) onUpdateQty(item.id, delta);
+                } else {
+                    e.target.value = cartQty; // revert if invalid
+                }
+            };
+            qtyInput.onkeyup = (e) => {
+                if (e.key === 'Enter') qtyInput.blur();
+            };
+        }
     }
 
     // Main Card Click

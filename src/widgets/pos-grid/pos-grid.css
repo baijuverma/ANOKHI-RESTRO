@@ -113,9 +113,21 @@
     color: var(--accent-color);
 }
 
-.overlay-qty-small {
+.overlay-qty-small-input {
+    width: 40px;
+    background: transparent;
+    border: none;
+    color: white;
     font-size: 16px;
     font-weight: 900;
-    color: white;
+    text-align: center;
+    outline: none;
+    -moz-appearance: textfield;
+}
+
+.overlay-qty-small-input::-webkit-outer-spin-button,
+.overlay-qty-small-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
