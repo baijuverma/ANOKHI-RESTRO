@@ -3,7 +3,7 @@
  * Renders the inventory list with stock status and actions.
  */
 
-export const renderInventoryTable = (containerId, inventory, onEdit, onDelete) => {
+export const renderInventoryTable = (containerId, inventory, offset = 0) => {
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -19,7 +19,7 @@ export const renderInventoryTable = (containerId, inventory, onEdit, onDelete) =
 
         return `
             <tr>
-                <td style="color: var(--text-secondary); font-size: 11px;">${index + 1}</td>
+                <td style="color: var(--text-secondary); font-size: 11px;">${offset + index + 1}</td>
                 <td>${item.name}</td>
                 <td>${item.category}</td>
                 <td>${item.itemType || 'Veg'}</td>

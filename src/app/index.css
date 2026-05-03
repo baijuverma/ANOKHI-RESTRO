@@ -12,6 +12,7 @@
 @import '../shared/ui/css/tables.css';
 @import '../shared/ui/css/utilities.css';
 @import '../shared/ui/css/ui.css';
+@import '../shared/ui/css/pagination.css';
 
 /* Layer 2: Widgets */
 @import '../widgets/sidebar/sidebar.css';

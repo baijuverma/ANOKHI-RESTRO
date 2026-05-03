@@ -97,21 +97,15 @@ function buildSaleRow(sale, index) {
 }
 
 
-function appendSentinel(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const sentinel = document.createElement('tr');
-    sentinel.id = 'history-load-more-sentinel';
-    sentinel.innerHTML = `<td colspan="7" style="text-align:center; padding:20px; color:var(--text-secondary); font-size:13px;">
-        <i class="fa-solid fa-spinner fa-spin"></i> Loading more...
-    </td>`;
-    container.appendChild(sentinel);
-    setTimeout(() => {
-        if (typeof window.setupInfiniteScroll === 'function') {
-            window.setupInfiniteScroll('history-load-more-sentinel', window.loadMoreSales);
-        }
-    }, 100);
-}
+
+
+window.changeSalesPage = (page) => {
+    if (salesHistoryPagination && salesHistoryPagination.goToPage(page)) {
+        // Find the active container ID
+        const containerId = document.getElementById('history-tbody') ? 'history-tbody' : 'sales-tbody';
+        renderSalesHistory(containerId, salesHistoryPagination.fullArray);
+    }
+};
 
 export const renderSalesHistory = (containerId, orders, limit = null) => {
     const container = document.getElementById(containerId);
@@ -137,34 +131,20 @@ export const renderSalesHistory = (containerId, orders, limit = null) => {
         return;
     }
 
-    // History page: use LocalPagination + infinite scroll
+    // History page: use LocalPagination
     if (typeof window.LocalPagination !== 'undefined') {
-        salesHistoryPagination = new window.LocalPagination(sortedOrders, PAGE_SIZE);
-        const visible = salesHistoryPagination.getVisibleItems();
-        container.innerHTML = visible.map((sale, i) => buildSaleRow(sale, i)).join('');
-
-        if (salesHistoryPagination.hasMore()) {
-            appendSentinel(containerId);
+        if (!salesHistoryPagination || salesHistoryPagination.fullArray.length !== sortedOrders.length) {
+            salesHistoryPagination = new window.LocalPagination(sortedOrders, PAGE_SIZE);
         }
+        
+        const pageItems = salesHistoryPagination.getPageItems();
+        const offset = (salesHistoryPagination.currentPage - 1) * salesHistoryPagination.pageSize;
+        container.innerHTML = pageItems.map((sale, i) => buildSaleRow(sale, offset + i)).join('');
 
-        // Expose loadMore globally
-        window.loadMoreSales = () => {
-            if (salesHistoryPagination && salesHistoryPagination.loadMore()) {
-                const existingSentinel = document.getElementById('history-load-more-sentinel');
-                if (existingSentinel) existingSentinel.remove();
-
-                const allVisible = salesHistoryPagination.getVisibleItems();
-                const prevCount = (salesHistoryPagination.currentPage - 1) * salesHistoryPagination.pageSize;
-                const newRows = allVisible.slice(prevCount);
-                
-                const rowsHtml = newRows.map((sale, i) => buildSaleRow(sale, prevCount + i)).join('');
-                container.insertAdjacentHTML('beforeend', rowsHtml);
-
-                if (salesHistoryPagination.hasMore()) {
-                    appendSentinel(containerId);
-                }
-            }
-        };
+        // Render Pagination Controls
+        if (typeof renderPaginationControls === 'function') {
+            renderPaginationControls('history-pagination', salesHistoryPagination, 'changeSalesPage');
+        }
     } else {
         // Fallback if LocalPagination not loaded
         container.innerHTML = sortedOrders.map((sale, i) => buildSaleRow(sale, i)).join('');

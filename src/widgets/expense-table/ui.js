@@ -24,21 +24,11 @@ function buildExpenseRow(exp) {
     `;
 }
 
-function appendExpenseSentinel(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const sentinel = document.createElement('tr');
-    sentinel.id = 'expense-load-more-sentinel';
-    sentinel.innerHTML = `<td colspan="7" style="text-align:center; padding:16px; color:var(--text-secondary); font-size:13px;">
-        <i class="fa-solid fa-spinner fa-spin"></i> Loading more...
-    </td>`;
-    container.appendChild(sentinel);
-    setTimeout(() => {
-        if (typeof window.setupInfiniteScroll === 'function') {
-            window.setupInfiniteScroll('expense-load-more-sentinel', window.loadMoreExpenses);
-        }
-    }, 100);
-}
+window.changeExpensePage = (page) => {
+    if (expensePagination && expensePagination.goToPage(page)) {
+        renderExpenseTable('expenses-tbody', expensePagination.fullArray);
+    }
+};
 
 export const renderExpenseTable = (containerId, expenses) => {
     const container = document.getElementById(containerId);
@@ -53,31 +43,17 @@ export const renderExpenseTable = (containerId, expenses) => {
     const sorted = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
 
     if (typeof window.LocalPagination !== 'undefined') {
-        expensePagination = new window.LocalPagination(sorted, EXPENSE_PAGE_SIZE);
-        const visible = expensePagination.getVisibleItems();
-        container.innerHTML = visible.map(exp => buildExpenseRow(exp)).join('');
-
-        if (expensePagination.hasMore()) {
-            appendExpenseSentinel(containerId);
+        if (!expensePagination || expensePagination.fullArray.length !== sorted.length) {
+            expensePagination = new window.LocalPagination(sorted, EXPENSE_PAGE_SIZE);
         }
+        
+        const pageItems = expensePagination.getPageItems();
+        container.innerHTML = pageItems.map(exp => buildExpenseRow(exp)).join('');
 
-        window.loadMoreExpenses = () => {
-            if (expensePagination && expensePagination.loadMore()) {
-                const existingSentinel = document.getElementById('expense-load-more-sentinel');
-                if (existingSentinel) existingSentinel.remove();
-
-                const allVisible = expensePagination.getVisibleItems();
-                const prevCount = (expensePagination.currentPage - 1) * expensePagination.pageSize;
-                const newRows = allVisible.slice(prevCount);
-                
-                const rowsHtml = newRows.map(exp => buildExpenseRow(exp)).join('');
-                container.insertAdjacentHTML('beforeend', rowsHtml);
-
-                if (expensePagination.hasMore()) {
-                    appendExpenseSentinel(containerId);
-                }
-            }
-        };
+        // Render Pagination Controls
+        if (typeof renderPaginationControls === 'function') {
+            renderPaginationControls('expenses-pagination', expensePagination, 'changeExpensePage');
+        }
     } else {
         // Fallback
         container.innerHTML = sorted.map(exp => buildExpenseRow(exp)).join('');

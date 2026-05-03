@@ -189,6 +189,7 @@ export const appShellHTML = `
                             </tbody>
                         </table>
                     </div>
+                    <div id="inventory-pagination"></div>
                 </div>
             </section>
 
@@ -269,6 +270,7 @@ export const appShellHTML = `
                             </tbody>
                         </table>
                     </div>
+                    <div id="expenses-pagination"></div>
                 </div>
             </section>
 
@@ -540,6 +542,7 @@ export const appShellHTML = `
                             </tbody>
                         </table>
                     </div>
+                    <div id="history-pagination"></div>
                 </div>
             </section>
         </main>

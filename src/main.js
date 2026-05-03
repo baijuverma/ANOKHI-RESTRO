@@ -92,7 +92,13 @@ window.renderOrderType = () => {
 };
 
 let inventoryPagination = null;
-window.renderInventory = (isLoadMore = false) => {
+window.changeInventoryPage = (page) => {
+    if (inventoryPagination && inventoryPagination.goToPage(page)) {
+        window.renderInventory();
+    }
+};
+
+window.renderInventory = () => {
     if (!window.inventory) return;
     
     // Apply Veg/Non-Veg Filtering
@@ -106,28 +112,16 @@ window.renderInventory = (isLoadMore = false) => {
         });
     }
 
-    if (!inventoryPagination || !isLoadMore) {
-        inventoryPagination = new LocalPagination(filtered, 20);
+    if (!inventoryPagination || (inventoryPagination.fullArray.length !== filtered.length)) {
+        inventoryPagination = new LocalPagination(filtered, 15);
     }
     
-    const visibleItems = inventoryPagination.getVisibleItems();
-    renderInventoryTable('inventory-tbody', visibleItems);
+    const pageItems = inventoryPagination.getPageItems();
+    renderInventoryTable('inventory-tbody', pageItems, (inventoryPagination.currentPage - 1) * inventoryPagination.pageSize);
     
-    // Add sentinel for infinite scroll if more items exist
-    if (inventoryPagination.hasMore()) {
-        const tbody = document.getElementById('inventory-tbody');
-        const sentinelRow = document.createElement('tr');
-        sentinelRow.id = 'inventory-sentinel';
-        sentinelRow.innerHTML = `<td colspan="7" style="text-align:center; padding:20px; color:var(--text-secondary); opacity:0.6;"><i class="fa-solid fa-spinner fa-spin"></i> Loading more items...</td>`;
-        tbody.appendChild(sentinelRow);
-        
-        setTimeout(() => {
-            setupInfiniteScroll('inventory-sentinel', () => {
-                if (inventoryPagination.loadMore()) {
-                    window.renderInventory(true);
-                }
-            });
-        }, 100);
+    // Render Pagination Controls
+    if (typeof renderPaginationControls === 'function') {
+        renderPaginationControls('inventory-pagination', inventoryPagination, 'changeInventoryPage');
     }
 };
 
