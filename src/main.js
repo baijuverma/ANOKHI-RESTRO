@@ -140,6 +140,38 @@ window.renderHistory = () => {
     }
 };
 
+window.focusInventoryItem = (id) => {
+    if (!window.inventory || !inventoryPagination) return;
+    
+    // 1. Find item index in current filtered list
+    let filtered = window.inventory;
+    const currentFilter = window.inventoryTypeFilter || 'all';
+    if (currentFilter !== 'all') {
+        filtered = window.inventory.filter(item => {
+            const type = (item.itemType || '').toLowerCase().replace(/[- ]/g, '');
+            return type === currentFilter;
+        });
+    }
+
+    const index = filtered.findIndex(i => String(i.id) === String(id));
+    if (index === -1) return;
+
+    // 2. Calculate and switch page
+    const page = Math.floor(index / inventoryPagination.pageSize) + 1;
+    inventoryPagination.currentPage = page;
+    window.renderInventory();
+
+    // 3. Highlight after DOM update
+    setTimeout(() => {
+        const row = document.querySelector(`tr[data-item-id="${id}"]`);
+        if (row) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            row.classList.add('highlight-flash');
+            setTimeout(() => row.classList.remove('highlight-flash'), 3000);
+        }
+    }, 100);
+};
+
 window.renderExpenses = () => {
     if (window.expensesHistory) renderExpenseTable('expenses-tbody', window.expensesHistory);
 };

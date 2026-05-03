@@ -194,6 +194,12 @@ function handleItemSubmit(e) {
         const duplicateItem = window.inventory.find(i => i.name.trim().toLowerCase() === name.toLowerCase());
         if (duplicateItem) {
             alert(`Duplicate Entry Rejected: An item named "${name}" already exists in the "${duplicateItem.category}" category.`);
+            
+            // Highlight the duplicate item
+            closeModal('addItemModal');
+            if (typeof window.focusInventoryItem === 'function') {
+                window.focusInventoryItem(duplicateItem.id);
+            }
             return;
         }
 
