@@ -86,11 +86,16 @@ function formatDateLabel(isoString) {
 window.clearInput = function(id) {
     const input = document.getElementById(id);
     if (input) {
+        input._isClearing = true; // Prevent autofill loop
         input.value = '';
         input.focus();
         // Trigger both input and change events to ensure dependency logic runs
         input.dispatchEvent(new Event('input', { bubbles: true }));
         input.dispatchEvent(new Event('change', { bubbles: true }));
+        
+        setTimeout(() => {
+            input._isClearing = false;
+        }, 50);
     }
 }
 

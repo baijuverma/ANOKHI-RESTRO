@@ -181,6 +181,9 @@ window.autoFillPayment = function(type) {
     // If either field has a value, do not auto-fill
     if (cashInput.value !== '' || upiInput.value !== '') return;
 
+    if (type === 'cash' && cashInput._isClearing) return;
+    if (type === 'upi' && upiInput._isClearing) return;
+
     const totalEl = document.getElementById('cart-total');
     if (!totalEl) return;
     
