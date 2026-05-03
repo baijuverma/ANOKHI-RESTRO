@@ -366,11 +366,11 @@ export const appShellHTML = `
                                      </div>
                                      <div class="discount-container" style="display: flex; gap: 8px; margin-bottom: 10px; margin-top: 5px;">
                                          <div class="input-group-floating" style="flex: 1;">
-                                             <input type="number" id="cart-discount-percent" min="0" max="100" oninput="calculateDues()" placeholder=" ">
+                                             <input type="number" id="cart-discount-percent" min="0" max="100" oninput="calculateTotal()" placeholder=" ">
                                              <label for="cart-discount-percent">Discount %</label>
                                          </div>
                                          <div class="input-group-floating" style="flex: 1;">
-                                             <input type="number" id="cart-discount-fixed" min="0" oninput="calculateDues()" placeholder=" ">
+                                             <input type="number" id="cart-discount-fixed" min="0" oninput="calculateTotal()" placeholder=" ">
                                              <label for="cart-discount-fixed">Discount ₹</label>
                                          </div>
                                      </div>
