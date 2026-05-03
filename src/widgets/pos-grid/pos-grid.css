@@ -53,9 +53,9 @@
     font-weight: 700;
     margin: 8px 0 4px;
     color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    overflow: visible;
+    word-break: break-word;
 }
 
 .item-price {
@@ -67,7 +67,8 @@
 .stock-badge-top {
     position: absolute;
     top: 6px;
-    left: 6px;
+    left: 8px;
+    transform: none;
     font-size: 9px;
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-secondary);

@@ -19,7 +19,7 @@ export const createItemCard = (item, cartQty, onAdd, onUpdateQty) => {
         ` : ''}
         <div class="card-content">
             <div class="stock-badge-top">STK: ${item.quantity}</div>
-            <h4 class="item-name">${item.name.length > 10 ? item.name.substring(0, 8) + '..' : item.name}</h4>
+            <h4 class="item-name">${item.name}</h4>
             <div class="item-price">${formatCurrency(item.price)}</div>
         </div>
     `;

@@ -29,7 +29,6 @@ export const addToCart = (item) => {
         cart.unshift({ ...item, cartQty: 1 });
     }
 
-    reorderInventory(item.id);
     syncWithWindow();
     if (window.refreshUI) window.refreshUI();
 };
