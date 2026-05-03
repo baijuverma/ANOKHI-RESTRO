@@ -148,53 +148,64 @@ window.renderCart = () => {
 };
 
 window.updateDashboard = () => {
-    const today = new Date();
-    const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : '';
+    const now = new Date();
+    const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(now) : '';
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
 
-    const todaySales = (window.salesHistory || []).filter(s => {
-        if (!s.date) return false;
-        try {
-            return window.getDDMMYYYY && window.getDDMMYYYY(new Date(s.date)) === todayStr;
-        } catch (e) {
-            return false;
-        }
-    });
-    
-    const todayExpenses = (window.expensesHistory || []).filter(e => {
-        if (!e.date) return false;
-        try {
-            return window.getDDMMYYYY && window.getDDMMYYYY(new Date(e.date)) === todayStr;
-        } catch (e) {
-            return false;
-        }
-    });
+    let todayRevenue = 0, todayCash = 0, todayUpi = 0;
+    let monthRevenue = 0, monthCash = 0, monthUpi = 0;
 
-    let totalRevenue = 0, todayCash = 0, todayUpi = 0;
-    todaySales.forEach(s => {
-        const total = parseFloat(s.total || 0);
-        totalRevenue += total;
-        
-        const pMode = s.payment_mode || s.paymentMode || 'CASH';
+    (window.salesHistory || []).forEach(s => {
+        if (!s.date) return;
+        const sDate = new Date(s.date);
+        const sDateStr = window.getDDMMYYYY ? window.getDDMMYYYY(sDate) : '';
+        const isToday = sDateStr === todayStr;
+        const isThisMonth = sDate.getMonth() === currentMonth && sDate.getFullYear() === currentYear;
+
+        if (!isToday && !isThisMonth) return;
+
+        const totalPaid = parseFloat(s.total || 0) - parseFloat(s.dues || 0);
+        const pMode = (s.payment_mode || s.paymentMode || 'CASH').toUpperCase();
         const split = s.split_amounts || s.splitAmounts;
 
+        let sCash = 0, sUpi = 0;
+
         if (pMode === 'UPI') {
-            todayUpi += total;
-        } else if (pMode === 'BOTH' && split) {
-            todayUpi += parseFloat(split.upi || 0);
-            todayCash += parseFloat(split.cash || 0);
+            sUpi = totalPaid;
+        } else if ((pMode === 'BOTH' || pMode === 'SPLIT') && split) {
+            sCash = parseFloat(split.cash || 0);
+            sUpi = parseFloat(split.upi || 0);
         } else {
-            todayCash += total;
+            sCash = totalPaid;
+        }
+
+        if (isToday) {
+            todayCash += sCash;
+            todayUpi += sUpi;
+            todayRevenue += (sCash + sUpi);
+        }
+        if (isThisMonth) {
+            monthCash += sCash;
+            monthUpi += sUpi;
+            monthRevenue += (sCash + sUpi);
         }
     });
 
-    const totalExpense = todayExpenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+    const todayExpenses = (window.expensesHistory || []).filter(e => {
+        if (!e.date) return false;
+        return window.getDDMMYYYY && window.getDDMMYYYY(new Date(e.date)) === todayStr;
+    });
+    const totalExpenseToday = todayExpenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
 
     renderDashboardStats({
-        totalRevenue: totalRevenue.toFixed(0),
-        todayCash: todayCash.toFixed(0),
-        todayUpi: todayUpi.toFixed(0),
-        totalExpense: totalExpense.toFixed(0),
-        profit: (totalRevenue - totalExpense).toFixed(0),
+        // We pass month stats to the main card if requested, but let's pass both
+        totalRevenue: monthRevenue.toFixed(2),
+        todayCash: monthCash.toFixed(2),
+        todayUpi: monthUpi.toFixed(2),
+        // Profit is still today-based usually, or we can change it
+        totalExpense: totalExpenseToday.toFixed(2),
+        profit: (todayRevenue - totalExpenseToday).toFixed(2),
         totalItems: (window.inventory || []).length,
         lowStock: (window.inventory || []).filter(i => i.quantity <= (i.lowStockThreshold || 5) && i.quantity > 0).length,
         outOfStock: (window.inventory || []).filter(i => i.quantity === 0).length
