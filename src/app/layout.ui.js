@@ -98,7 +98,7 @@ export const appShellHTML = `
                 <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 0;">
                     <!-- Today Sale Card -->
                     <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #6366f1; background: rgba(99, 102, 241, 0.05); cursor: pointer; position: relative;" onclick="if(window.downloadTodaySalesReport) window.downloadTodaySalesReport()">
-                        <div style="position: absolute; top: 12px; right: 15px; width: 24px; height: 24px; background: rgba(255,255,255,0.05); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 14px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                             <i class="fa-solid fa-file-pdf"></i>
                         </div>
                         <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #818cf8; margin-bottom: 4px;">Today Sales</h3>
@@ -111,7 +111,7 @@ export const appShellHTML = `
 
                     <!-- Today Profit/Loss Card -->
                     <div class="glass-panel" id="profit-card-wrapper" style="padding: 12px 20px; border-left: 4px solid #22c55e; background: rgba(34, 197, 94, 0.05); cursor: pointer; position: relative;" onclick="if(window.downloadProfitReport) window.downloadProfitReport()">
-                        <div style="position: absolute; top: 12px; right: 15px; width: 24px; height: 24px; background: rgba(255,255,255,0.05); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 14px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                             <i class="fa-solid fa-file-pdf"></i>
                         </div>
                         <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #22c55e; margin-bottom: 4px;">Today Profit & Loss</h3>
@@ -121,7 +121,7 @@ export const appShellHTML = `
 
                     <!-- Today Expense Card -->
                     <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer; position: relative;" onclick="if(window.downloadTodayExpensesReport) window.downloadTodayExpensesReport()">
-                        <div style="position: absolute; top: 12px; right: 15px; width: 24px; height: 24px; background: rgba(255,255,255,0.05); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 14px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                             <i class="fa-solid fa-file-pdf"></i>
                         </div>
                         <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #ef4444; margin-bottom: 4px;">Today Expenses</h3>
@@ -491,7 +491,7 @@ export const appShellHTML = `
                         
                         <!-- Monthly Sale Card -->
                         <div class="glass-panel" onclick="if(window.downloadMonthSalesReport) window.downloadMonthSalesReport()" style="padding: 12px 20px; border-left: 4px solid var(--accent-color); cursor: pointer; transition: transform 0.2s; position: relative;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                            <div style="position: absolute; top: 12px; right: 15px; width: 24px; height: 24px; background: rgba(255,255,255,0.05); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 14px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                                 <i class="fa-solid fa-file-pdf"></i>
                             </div>
                             <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Sales</h3>
@@ -504,7 +504,7 @@ export const appShellHTML = `
 
                         <!-- Monthly Expenses Card -->
                         <div class="glass-panel" onclick="if(window.downloadMonthExpensesReport) window.downloadMonthExpensesReport()" style="padding: 12px 20px; border-left: 4px solid #f87171; cursor: pointer; transition: transform 0.2s; position: relative;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                            <div style="position: absolute; top: 12px; right: 15px; width: 24px; height: 24px; background: rgba(255,255,255,0.05); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 14px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                                 <i class="fa-solid fa-file-pdf"></i>
                             </div>
                             <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Expenses</h3>
@@ -514,7 +514,7 @@ export const appShellHTML = `
 
                         <!-- Monthly Profit Card -->
                         <div class="glass-panel" id="monthly-profit-card" onclick="if(window.downloadMonthProfitReport) window.downloadMonthProfitReport()" style="padding: 12px 20px; border-left: 4px solid #22c55e; cursor: pointer; transition: transform 0.2s; position: relative;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                            <div style="position: absolute; top: 12px; right: 15px; width: 24px; height: 24px; background: rgba(255,255,255,0.05); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 14px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                                 <i class="fa-solid fa-file-pdf"></i>
                             </div>
                             <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Profit / Loss</h3>
