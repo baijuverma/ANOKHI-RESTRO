@@ -478,8 +478,8 @@ export const appShellHTML = `
                         </div>
                         
                         <!-- Monthly Sale Card -->
-                        <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid var(--accent-color);">
-                            <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Sales</h3>
+                        <div class="glass-panel" onclick="if(window.downloadMonthSalesReport) window.downloadMonthSalesReport()" style="padding: 12px 20px; border-left: 4px solid var(--accent-color); cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Sales <i class="fa-solid fa-file-pdf" style="margin-left:5px; font-size:10px; opacity:0.6;"></i></h3>
                             <p id="monthly-sale-total" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
                             <div style="display: flex; gap: 10px; font-size: 13px; margin-top: 8px; color: var(--text-secondary);">
                                 <span><i class="fa-solid fa-money-bill-wave" style="color:var(--success-color);"></i> <span id="monthly-cash">₹0</span></span>
@@ -488,15 +488,15 @@ export const appShellHTML = `
                         </div>
 
                         <!-- Monthly Expenses Card -->
-                        <div class="glass-panel" onclick="window.showView('expenses')" style="padding: 12px 20px; border-left: 4px solid #f87171; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                            <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Expenses</h3>
+                        <div class="glass-panel" onclick="if(window.downloadMonthExpensesReport) window.downloadMonthExpensesReport()" style="padding: 12px 20px; border-left: 4px solid #f87171; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Expenses <i class="fa-solid fa-file-pdf" style="margin-left:5px; font-size:10px; opacity:0.6;"></i></h3>
                             <p id="monthly-expense-total" style="font-size: 28px; font-weight: 800; color: #f87171; margin: 0;">₹0</p>
                             <div style="font-size: 13px; margin-top: 8px; color: var(--text-secondary); font-weight: 600;">Total Spent This Month</div>
                         </div>
 
                         <!-- Monthly Profit Card -->
-                        <div class="glass-panel" id="monthly-profit-card" style="padding: 12px 20px; border-left: 4px solid #22c55e;">
-                            <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Profit / Loss</h3>
+                        <div class="glass-panel" id="monthly-profit-card" onclick="if(window.downloadMonthProfitReport) window.downloadMonthProfitReport()" style="padding: 12px 20px; border-left: 4px solid #22c55e; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Profit / Loss <i class="fa-solid fa-file-pdf" style="margin-left:5px; font-size:10px; opacity:0.6;"></i></h3>
                             <p id="monthly-profit-total" style="font-size: 28px; font-weight: 900; color: #22c55e; margin: 0;">₹0</p>
                             <div style="font-size: 13px; margin-top: 8px; color: var(--text-secondary); font-weight: 600;">Net Monthly Gain</div>
                         </div>

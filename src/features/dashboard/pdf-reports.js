@@ -39,6 +39,53 @@ export function initPdfReports() {
 
         generateExpensesReport(`Today's Expenses Report (${todayStr})`, data);
     };
+
+    window.downloadMonthSalesReport = () => {
+        const now = new Date();
+        const monthName = now.toLocaleString('default', { month: 'long' });
+        const year = now.getFullYear();
+        const currentMonth = now.getMonth();
+
+        const data = (window.salesHistory || []).filter(s => {
+            const d = new Date(s.date);
+            return d.getMonth() === currentMonth && d.getFullYear() === year;
+        });
+
+        generateSalesReport(`Monthly Sales Report (${monthName} ${year})`, data);
+    };
+
+    window.downloadMonthExpensesReport = () => {
+        const now = new Date();
+        const monthName = now.toLocaleString('default', { month: 'long' });
+        const year = now.getFullYear();
+        const currentMonth = now.getMonth();
+
+        const data = (window.expensesHistory || []).filter(e => {
+            const d = new Date(e.date);
+            return d.getMonth() === currentMonth && d.getFullYear() === year;
+        });
+
+        generateExpensesReport(`Monthly Expenses Report (${monthName} ${year})`, data);
+    };
+
+    window.downloadMonthProfitReport = () => {
+        const now = new Date();
+        const monthName = now.toLocaleString('default', { month: 'long' });
+        const year = now.getFullYear();
+        const currentMonth = now.getMonth();
+
+        const sales = (window.salesHistory || []).filter(s => {
+            const d = new Date(s.date);
+            return d.getMonth() === currentMonth && d.getFullYear() === year;
+        });
+
+        const expenses = (window.expensesHistory || []).filter(e => {
+            const d = new Date(e.date);
+            return d.getMonth() === currentMonth && d.getFullYear() === year;
+        });
+
+        generateProfitReport(`Monthly Profit & Loss Statement (${monthName} ${year})`, sales, expenses);
+    };
 }
 
 function generateProfitReport(title, sales, expenses) {
