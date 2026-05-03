@@ -95,7 +95,8 @@ window.renderOrderType = () => {
 let inventoryPagination = null;
 window.changeInventoryPage = (page) => {
     if (inventoryPagination) {
-        inventoryPagination.goToPage(page);
+        if (page === undefined) inventoryPagination.loadMore();
+        else inventoryPagination.goToPage(page);
         window.renderInventory();
     }
 };
@@ -137,20 +138,30 @@ window.renderInventory = () => {
     // Apply Veg/Non-Veg Filtering
     let filtered = window.inventory;
     const currentFilter = window.inventoryTypeFilter || 'all';
+    const searchVal = document.getElementById('inventory-search')?.value?.toLowerCase() || '';
     
     if (currentFilter !== 'all') {
-        filtered = window.inventory.filter(item => {
+        filtered = filtered.filter(item => {
             const type = (item.itemType || '').toLowerCase().replace(/[- ]/g, '');
             return type === currentFilter;
         });
     }
 
-    if (!inventoryPagination || (inventoryPagination.fullArray.length !== filtered.length)) {
-        inventoryPagination = new LocalPagination(filtered, 15);
+    if (searchVal) {
+        filtered = filtered.filter(item => 
+            (item.name || '').toLowerCase().includes(searchVal) ||
+            (item.category || '').toLowerCase().includes(searchVal)
+        );
+    }
+
+    if (!inventoryPagination || inventoryPagination._lastFilter !== currentFilter || inventoryPagination._lastSearch !== searchVal || inventoryPagination.fullArray.length !== filtered.length) {
+        inventoryPagination = new window.LocalPagination(filtered, 15);
+        inventoryPagination._lastFilter = currentFilter;
+        inventoryPagination._lastSearch = searchVal;
     }
     
     const pageItems = inventoryPagination.getPageItems();
-    renderInventoryTable('inventory-tbody', pageItems, (inventoryPagination.currentPage - 1) * inventoryPagination.pageSize);
+    renderInventoryTable('inventory-tbody', pageItems, 0);
     
     // Render Pagination Controls
     if (typeof renderPaginationControls === 'function') {

@@ -35,13 +35,12 @@ export class LocalPagination {
     }
 
     getPageItems() {
-        const start = (this.currentPage - 1) * this.pageSize;
-        return this.fullArray.slice(start, start + this.pageSize);
+        // Return cumulative visible items for Load More
+        return this.fullArray.slice(0, this.currentPage * this.pageSize);
     }
 
     getVisibleItems() {
-        // Kept for backward compatibility if needed during transition
-        return this.fullArray.slice(0, this.currentPage * this.pageSize);
+        return this.getPageItems();
     }
 
     loadMore() {
@@ -89,27 +88,10 @@ export function renderPaginationControls(containerId, pagination, onPageChange) 
     const current = pagination.currentPage;
     
     let html = `
-        <div class="pagination-container">
-            <button class="page-btn" ${current === 1 ? 'disabled' : ''} onclick="window.${onPageChange}(${current - 1})" title="Previous">
-                <i class="fa-solid fa-chevron-left"></i>
+        <div class="pagination-container" style="display: flex; justify-content: center; margin-top: 15px;">
+            <button class="btn-primary" onclick="window.${onPageChange}()" style="border-radius: 20px; padding: 10px 30px; font-weight: 700;">
+                <i class="fa-solid fa-arrow-down"></i> Load More
             </button>
-    `;
-
-    // Page Numbers (Smart display)
-    const range = 2; // Show 2 pages before and after
-    for (let i = 1; i <= totalPages; i++) {
-        if (i === 1 || i === totalPages || (i >= current - range && i <= current + range)) {
-            html += `<button class="page-btn ${i === current ? 'active' : ''}" onclick="window.${onPageChange}(${i})">${i}</button>`;
-        } else if (i === current - range - 1 || i === current + range + 1) {
-            html += `<span class="page-info">...</span>`;
-        }
-    }
-
-    html += `
-            <button class="page-btn" ${current === totalPages ? 'disabled' : ''} onclick="window.${onPageChange}(${current + 1})" title="Next">
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
-            <span class="page-info">Page ${current} of ${totalPages}</span>
         </div>
     `;
 

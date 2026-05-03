@@ -25,7 +25,9 @@ function buildExpenseRow(exp) {
 }
 
 window.changeExpensePage = (page) => {
-    if (expensePagination && expensePagination.goToPage(page)) {
+    if (expensePagination) {
+        if (page === undefined) expensePagination.loadMore();
+        else expensePagination.goToPage(page);
         renderExpenseTable('expenses-tbody', expensePagination.fullArray);
     }
 };

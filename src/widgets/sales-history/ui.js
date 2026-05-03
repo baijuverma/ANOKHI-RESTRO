@@ -100,8 +100,9 @@ function buildSaleRow(sale, index) {
 
 
 window.changeSalesPage = (page) => {
-    if (salesHistoryPagination && salesHistoryPagination.goToPage(page)) {
-        // Find the active container ID
+    if (salesHistoryPagination) {
+        if (page === undefined) salesHistoryPagination.loadMore();
+        else salesHistoryPagination.goToPage(page);
         const containerId = document.getElementById('history-tbody') ? 'history-tbody' : 'sales-tbody';
         renderSalesHistory(containerId, salesHistoryPagination.fullArray);
     }
@@ -138,7 +139,7 @@ export const renderSalesHistory = (containerId, orders, limit = null) => {
         }
         
         const pageItems = salesHistoryPagination.getPageItems();
-        const offset = (salesHistoryPagination.currentPage - 1) * salesHistoryPagination.pageSize;
+        const offset = 0;
         container.innerHTML = pageItems.map((sale, i) => buildSaleRow(sale, offset + i)).join('');
 
         // Render Pagination Controls

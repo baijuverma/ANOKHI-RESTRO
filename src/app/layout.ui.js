@@ -161,6 +161,10 @@ export const appShellHTML = `
                         <p>Manage your ingredients and products</p>
                     </div>
                     <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <div class="search-bar" style="margin: 0; max-width: 200px;">
+                            <i class="fa-solid fa-search"></i>
+                            <input type="text" id="inventory-search" placeholder="Search items..." oninput="window.renderInventory()" style="width: 100%;">
+                        </div>
                         <div style="display:flex; gap:8px; align-items:center;">
                             <button id="filter-all" onclick="filterInventoryByType('all')" style="padding:6px 14px; border-radius:20px; border:2px solid var(--accent-color); background:var(--accent-color); color:white; cursor:pointer; font-size:12px; font-weight:700;">All</button>
                             <button id="filter-veg" onclick="filterInventoryByType('veg')" style="padding:6px 14px; border-radius:20px; border:2px solid #22c55e; background:transparent; color:#22c55e; cursor:pointer; font-size:12px; font-weight:700;">&#9632; Veg</button>
