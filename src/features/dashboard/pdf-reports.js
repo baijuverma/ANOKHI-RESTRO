@@ -14,33 +14,60 @@ export function initPdfReports() {
         generateSalesReport(`Today's Sales Report (${todayStr})`, data);
     };
 
-    window.downloadMonthSalesReport = () => {
-        const now = new Date();
-        const monthName = now.toLocaleString('default', { month: 'long' });
-        const year = now.getFullYear();
-        const currentMonth = now.getMonth();
-
-        const data = (window.salesHistory || []).filter(s => {
-            const d = new Date(s.date);
-            return d.getMonth() === currentMonth && d.getFullYear() === year;
+    window.downloadProfitReport = () => {
+        const today = new Date();
+        const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : today.toDateString();
+        
+        const sales = (window.salesHistory || []).filter(s => {
+            return window.getDDMMYYYY && window.getDDMMYYYY(new Date(s.date)) === todayStr;
         });
 
-        generateSalesReport(`Monthly Sales Report (${monthName} ${year})`, data);
+        const expenses = (window.expensesHistory || []).filter(e => {
+            return window.getDDMMYYYY && window.getDDMMYYYY(new Date(e.date)) === todayStr;
+        });
+
+        generateProfitReport(`Today's Profit & Loss Statement (${todayStr})`, sales, expenses);
     };
 
-    window.downloadMonthExpensesReport = () => {
-        const now = new Date();
-        const monthName = now.toLocaleString('default', { month: 'long' });
-        const year = now.getFullYear();
-        const currentMonth = now.getMonth();
+    window.downloadTodayExpensesReport = () => {
+        const today = new Date();
+        const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : today.toDateString();
 
         const data = (window.expensesHistory || []).filter(e => {
-            const d = new Date(e.date);
-            return d.getMonth() === currentMonth && d.getFullYear() === year;
+            return window.getDDMMYYYY && window.getDDMMYYYY(new Date(e.date)) === todayStr;
         });
 
-        generateExpensesReport(`Monthly Expenses Report (${monthName} ${year})`, data);
+        generateExpensesReport(`Today's Expenses Report (${todayStr})`, data);
     };
+}
+
+function generateProfitReport(title, sales, expenses) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const margin = 10;
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    doc.setFontSize(18);
+    doc.text(title, margin, margin + 10);
+    
+    const totalSales = sales.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
+    const totalExp = expenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+    const profit = totalSales - totalExp;
+
+    doc.autoTable({
+        head: [['Type', 'Description', 'Amount']],
+        body: [
+            ['Income', 'Total Sales Revenue', `Rs. ${totalSales.toFixed(2)}`],
+            ['Expense', 'Total Operational Expenses', `Rs. ${totalExp.toFixed(2)}`],
+            [{ content: 'Net Profit / Loss', styles: { fontStyle: 'bold' } }, '', { content: `Rs. ${profit.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: profit >= 0 ? [34, 197, 94] : [239, 68, 68] } }]
+        ],
+        startY: margin + 25,
+        margin: { left: margin, right: margin },
+        headStyles: { fillColor: [99, 102, 241] }
+    });
+
+    addFooter(doc, 1);
+    doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
 }
 
 function generateSalesReport(title, data) {

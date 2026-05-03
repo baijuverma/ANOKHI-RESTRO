@@ -106,21 +106,18 @@ export const appShellHTML = `
                         </div>
                     </div>
 
-                    <!-- Month Sale Card -->
-                    <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #22c55e; background: rgba(34, 197, 94, 0.05); cursor: pointer;" onclick="if(window.downloadMonthSalesReport) window.downloadMonthSalesReport()">
-                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #22c55e; margin-bottom: 4px;">Month Sales <i class="fa-solid fa-file-pdf" style="margin-left:5px; font-size:10px; opacity:0.6;"></i></h3>
-                        <p id="month-revenue-card" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
-                        <div style="font-size: 12px; margin-top: 8px; color: var(--text-secondary); display: flex; gap: 12px;">
-                            <span><i class="fa-solid fa-money-bill-wave" style="color:#22c55e;"></i> <span id="month-cash-card">₹0</span></span>
-                            <span><i class="fa-brands fa-google-pay" style="color:#818cf8;"></i> <span id="month-upi-card">₹0</span></span>
-                        </div>
+                    <!-- Today Profit/Loss Card -->
+                    <div class="glass-panel" id="profit-card-wrapper" style="padding: 12px 20px; border-left: 4px solid #22c55e; background: rgba(34, 197, 94, 0.05); cursor: pointer;" onclick="if(window.downloadProfitReport) window.downloadProfitReport()">
+                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #22c55e; margin-bottom: 4px;">Today Profit & Loss <i class="fa-solid fa-file-pdf" style="margin-left:5px; font-size:10px; opacity:0.6;"></i></h3>
+                        <p id="today-profit-card" style="font-size: 28px; font-weight: 800; color: #22c55e; margin: 0;">₹0</p>
+                        <div style="font-size: 11px; margin-top: 8px; color: var(--text-secondary);">Today Sales - Today Expenses</div>
                     </div>
 
-                    <!-- Month Expense Card -->
-                    <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer;" onclick="if(window.downloadMonthExpensesReport) window.downloadMonthExpensesReport()">
-                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #ef4444; margin-bottom: 4px;">Month Expenses <i class="fa-solid fa-file-pdf" style="margin-left:5px; font-size:10px; opacity:0.6;"></i></h3>
-                        <p id="month-expense-card" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
-                        <div style="font-size: 11px; margin-top: 8px; color: var(--text-secondary);">Total expenses for this month</div>
+                    <!-- Today Expense Card -->
+                    <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer;" onclick="if(window.downloadTodayExpensesReport) window.downloadTodayExpensesReport()">
+                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #ef4444; margin-bottom: 4px;">Today Expenses <i class="fa-solid fa-file-pdf" style="margin-left:5px; font-size:10px; opacity:0.6;"></i></h3>
+                        <p id="today-expense-card" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
+                        <div style="font-size: 11px; margin-top: 8px; color: var(--text-secondary);">Total expenses recorded today</div>
                     </div>
                 </div>
 
