@@ -191,22 +191,12 @@ function handleItemSubmit(e) {
             return;
         }
 
-        console.log('Checking for duplicate name:', name);
-        const duplicateItem = window.inventory.find(i => {
-            const existingName = (i.name || '').trim().toLowerCase();
-            const newName = name.toLowerCase();
-            const isMatch = existingName === newName;
-            if (isMatch) console.log(`Match found with ID: ${i.id}, Name: ${i.name}`);
-            return isMatch;
-        });
-
+        const duplicateItem = window.inventory.find(i => i.name.trim().toLowerCase() === name.toLowerCase());
         if (duplicateItem) {
             alert(`Duplicate Entry Rejected: An item named "${name}" already exists in the "${duplicateItem.category}" category.`);
-            
-            // Highlight the duplicate item
-            closeModal('addItemModal');
-            if (typeof window.focusInventoryItem === 'function') {
-                window.focusInventoryItem(duplicateItem.id);
+            // After alert is dismissed, highlight the item
+            if (typeof window.highlightInventoryItem === 'function') {
+                window.highlightInventoryItem(duplicateItem.id);
             }
             return;
         }
@@ -227,7 +217,7 @@ function handleItemSubmit(e) {
 // Inventory Table Logic (Now handled by widgets/inventory-table)
 
 window.openRestockModal = function(id) {
-    const item = (window.inventory || []).find(i => String(i.id) === String(id));
+    const item = inventory.find(i => i.id === id);
     if(item) {
         document.getElementById('restock-item-id').value = item.id;
         document.getElementById('restock-item-name').innerText = `Adding stock for: ${item.name}`;
@@ -241,9 +231,9 @@ function handleRestockSubmit(e) {
     const id = document.getElementById('restock-item-id').value;
     const qtyToAdd = parseInt(document.getElementById('restock-quantity').value);
 
-    const index = (window.inventory || []).findIndex(i => String(i.id) === String(id));
+    const index = inventory.findIndex(i => i.id == id);
     if(index > -1 && qtyToAdd > 0) {
-        window.inventory[index].quantity += qtyToAdd;
+        inventory[index].quantity += qtyToAdd;
         saveData();
         closeModal('restockModal');
         if (typeof renderInventory === 'function') renderInventory();
@@ -268,7 +258,7 @@ setTimeout(() => {
 }, 500);
 
 window.editItem = function(id) {
-    const item = (window.inventory || []).find(i => String(i.id) === String(id));
+    const item = inventory.find(i => i.id === id);
     if(item) {
         document.getElementById('item-id').value = item.id;
         document.getElementById('item-name').value = item.name;

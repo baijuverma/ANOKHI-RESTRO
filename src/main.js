@@ -94,9 +94,41 @@ window.renderOrderType = () => {
 
 let inventoryPagination = null;
 window.changeInventoryPage = (page) => {
-    if (inventoryPagination && inventoryPagination.goToPage(page)) {
+    if (inventoryPagination) {
+        inventoryPagination.goToPage(page);
         window.renderInventory();
     }
+};
+
+window.highlightInventoryItem = (id) => {
+    if (!window.inventory) return;
+    
+    // Switch to Inventory view first
+    if (typeof window.showView === 'function') window.showView('inventory');
+    
+    // Apply "All" filter to ensure item is visible
+    if (typeof window.filterInventoryByType === 'function') window.filterInventoryByType('all');
+
+    const filtered = window.inventory; // We forced 'all' filter above
+    const itemIndex = filtered.findIndex(i => String(i.id) === String(id));
+    
+    if (itemIndex === -1) return;
+
+    // Calculate page (15 items per page as seen in renderInventory)
+    const pageSize = 15;
+    const pageNum = Math.floor(itemIndex / pageSize) + 1;
+    
+    window.changeInventoryPage(pageNum);
+
+    // Give DOM time to render
+    setTimeout(() => {
+        const row = document.querySelector(`tr[data-id="${id}"]`);
+        if (row) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            row.classList.add('highlight-row-pulse');
+            setTimeout(() => row.classList.remove('highlight-row-pulse'), 3000);
+        }
+    }, 300);
 };
 
 window.renderInventory = () => {
@@ -138,38 +170,6 @@ window.renderHistory = () => {
         updateCalendarData(window.salesHistory);
         if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
     }
-};
-
-window.focusInventoryItem = (id) => {
-    if (!window.inventory || !inventoryPagination) return;
-    
-    // 1. Find item index in current filtered list
-    let filtered = window.inventory;
-    const currentFilter = window.inventoryTypeFilter || 'all';
-    if (currentFilter !== 'all') {
-        filtered = window.inventory.filter(item => {
-            const type = (item.itemType || '').toLowerCase().replace(/[- ]/g, '');
-            return type === currentFilter;
-        });
-    }
-
-    const index = filtered.findIndex(i => String(i.id) === String(id));
-    if (index === -1) return;
-
-    // 2. Calculate and switch page
-    const page = Math.floor(index / inventoryPagination.pageSize) + 1;
-    inventoryPagination.currentPage = page;
-    window.renderInventory();
-
-    // 3. Highlight after DOM update
-    setTimeout(() => {
-        const row = document.querySelector(`tr[data-item-id="${id}"]`);
-        if (row) {
-            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            row.classList.add('highlight-flash');
-            setTimeout(() => row.classList.remove('highlight-flash'), 3000);
-        }
-    }, 100);
 };
 
 window.renderExpenses = () => {

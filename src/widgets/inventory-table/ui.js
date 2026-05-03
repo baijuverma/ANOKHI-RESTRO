@@ -18,7 +18,7 @@ export const renderInventoryTable = (containerId, inventory, offset = 0) => {
         else if (item.quantity <= (item.lowStockThreshold || 5)) statusClass = 'status-low';
 
         return `
-            <tr data-item-id="${item.id}">
+            <tr data-id="${item.id}">
                 <td style="color: var(--text-secondary); font-size: 11px;">${offset + index + 1}</td>
                 <td>${item.name}</td>
                 <td>${item.category}</td>

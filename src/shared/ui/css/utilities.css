@@ -48,18 +48,6 @@
 }
 .modal .close-btn:hover { color: var(--danger-color); }
 
-/* Highlight Flash Animation */
-@keyframes highlightFlash {
-    0% { background-color: rgba(234, 179, 8, 0.4); transform: scale(1.01); }
-    50% { background-color: rgba(234, 179, 8, 0.2); transform: scale(1); }
-    100% { background-color: transparent; }
-}
-
-.highlight-flash {
-    animation: highlightFlash 2s ease-out;
-    border: 2px solid var(--warning-color) !important;
-}
-
 
 
 
