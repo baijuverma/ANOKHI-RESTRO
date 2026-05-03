@@ -26,7 +26,10 @@ CREATE TABLE IF NOT EXISTS sales_history (
   split_amounts JSONB,
   order_type TEXT NOT NULL DEFAULT 'DINE_IN',
   table_name TEXT,
-  advance_paid NUMERIC NOT NULL DEFAULT 0
+  advance_paid NUMERIC NOT NULL DEFAULT 0,
+  customer_name TEXT,
+  customer_mobile TEXT,
+  dues NUMERIC NOT NULL DEFAULT 0
 );
 
 -- 3. TABLES TABLE (Dine-In tables state)

@@ -34,8 +34,9 @@ export function initSupabaseLogic() {
                     tableName: s.table_name,
                     tableId: s.table_id,
                     advancePaid: s.advance_paid,
-                    // dues should be calculated if not in DB, but let's assume it might be there or needs calculation
-                    dues: s.dues ?? (parseFloat(s.total || 0) - parseFloat(s.advance_paid || 0)) // fallback if dues column missing
+                    customerName: s.customer_name || s.customerName,
+                    customerMobile: s.customer_mobile || s.customerMobile,
+                    dues: s.dues ?? (parseFloat(s.total || 0) - parseFloat(s.advance_paid || 0))
                 }));
                 localStorage.setItem('anokhi_sales', JSON.stringify(window.salesHistory));
             }
@@ -186,7 +187,10 @@ export function initSupabaseLogic() {
                         splitAmounts: newSale.split_amounts,
                         orderType: newSale.order_type,
                         tableName: newSale.table_name,
-                        advancePaid: newSale.advance_paid
+                        advancePaid: newSale.advance_paid,
+                        customerName: newSale.customer_name || newSale.customerName,
+                        customerMobile: newSale.customer_mobile || newSale.customerMobile,
+                        dues: newSale.dues ?? (parseFloat(newSale.total || 0) - parseFloat(newSale.advance_paid || 0))
                     };
                     const idx = window.salesHistory.findIndex(s => s.id === mapped.id);
                     if (idx > -1) {
