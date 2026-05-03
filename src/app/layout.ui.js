@@ -365,13 +365,15 @@ export const appShellHTML = `
                                          <span id="cart-subtotal">₹0.00</span>
                                      </div>
                                      <div class="discount-container" style="display: flex; gap: 8px; margin-bottom: 10px; margin-top: 5px;">
-                                         <div class="input-group-floating" style="flex: 1;">
+                                         <div class="input-group-floating" style="flex: 1; position: relative;">
                                              <input type="number" id="cart-discount-percent" min="0" max="100" oninput="calculateTotal()" placeholder=" ">
                                              <label for="cart-discount-percent">Discount %</label>
+                                             <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('cart-discount-percent')" style="right: 12px; top: 50%; transform: translateY(-50%);"></i>
                                          </div>
-                                         <div class="input-group-floating" style="flex: 1;">
+                                         <div class="input-group-floating" style="flex: 1; position: relative;">
                                              <input type="number" id="cart-discount-fixed" min="0" oninput="calculateTotal()" placeholder=" ">
                                              <label for="cart-discount-fixed">Discount ₹</label>
+                                             <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('cart-discount-fixed')" style="right: 12px; top: 50%; transform: translateY(-50%);"></i>
                                          </div>
                                      </div>
                                  </div>
@@ -406,13 +408,15 @@ export const appShellHTML = `
                                 </div>
                                 
                                 <div class="payment-input-container" style="margin-top: 5px;">
-                                    <div class="input-group-floating">
+                                    <div class="input-group-floating" style="position: relative;">
                                         <input type="number" id="pay-cash-amount" min="0" oninput="calculateDues()" onfocus="window.autoFillPayment('cash')" placeholder=" " required>
                                         <label for="pay-cash-amount">Cash</label>
+                                        <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('pay-cash-amount')" style="right: 12px; top: 50%; transform: translateY(-50%);"></i>
                                     </div>
-                                    <div class="input-group-floating">
+                                    <div class="input-group-floating" style="position: relative;">
                                         <input type="number" id="pay-upi-amount" min="0" oninput="calculateDues()" onfocus="window.autoFillPayment('upi')" placeholder=" " required>
                                         <label for="pay-upi-amount">UPI</label>
+                                        <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('pay-upi-amount')" style="right: 12px; top: 50%; transform: translateY(-50%);"></i>
                                     </div>
                                 </div>
                                 <div class="pos-action-buttons" style="display: flex; gap: 8px; margin-top: 2px;">
