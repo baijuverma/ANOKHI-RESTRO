@@ -170,13 +170,6 @@ function handleItemSubmit(e) {
         }
     } else {
         // Add
-        const isDuplicate = inventory.some(i => i.name.trim().toLowerCase() === name.trim().toLowerCase());
-        if (isDuplicate) {
-            if (!confirm(`An item named "${name}" already exists in the inventory. Do you still want to add it as a new entry?`)) {
-                return;
-            }
-        }
-
         const newItem = {
             id: Date.now().toString(),
             name, category, itemType, price, quantity, lowStockThreshold
