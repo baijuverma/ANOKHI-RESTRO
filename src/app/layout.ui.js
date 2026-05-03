@@ -407,11 +407,11 @@ export const appShellHTML = `
                                 
                                 <div class="payment-input-container" style="margin-top: 5px;">
                                     <div class="input-group-floating">
-                                        <input type="number" id="pay-cash-amount" min="0" oninput="calculateDues()" placeholder=" " required>
+                                        <input type="number" id="pay-cash-amount" min="0" oninput="calculateDues()" onfocus="window.autoFillPayment('cash')" placeholder=" " required>
                                         <label for="pay-cash-amount">Cash</label>
                                     </div>
                                     <div class="input-group-floating">
-                                        <input type="number" id="pay-upi-amount" min="0" oninput="calculateDues()" placeholder=" " required>
+                                        <input type="number" id="pay-upi-amount" min="0" oninput="calculateDues()" onfocus="window.autoFillPayment('upi')" placeholder=" " required>
                                         <label for="pay-upi-amount">UPI</label>
                                     </div>
                                 </div>

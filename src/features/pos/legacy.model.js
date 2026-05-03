@@ -173,6 +173,33 @@ window.clearCart = function() {
     if (typeof renderCart === 'function') window.renderCart();
 }
 
+window.autoFillPayment = function(type) {
+    const cashInput = document.getElementById('pay-cash-amount');
+    const upiInput = document.getElementById('pay-upi-amount');
+    if (!cashInput || !upiInput) return;
+
+    // If either field has a value, do not auto-fill
+    if (cashInput.value !== '' || upiInput.value !== '') return;
+
+    const totalEl = document.getElementById('cart-total');
+    if (!totalEl) return;
+    
+    const totalStr = totalEl.innerText.replace(/[^0-9.]/g, '');
+    const finalTotal = parseFloat(totalStr) || 0;
+    
+    const prevPaid = typeof previousPaidAmount !== 'undefined' ? previousPaidAmount : 0;
+    const remainingToPay = Math.max(0, finalTotal - prevPaid);
+    
+    if (remainingToPay > 0) {
+        if (type === 'cash') {
+            cashInput.value = remainingToPay;
+        } else if (type === 'upi') {
+            upiInput.value = remainingToPay;
+        }
+        if (typeof calculateDues === 'function') calculateDues();
+    }
+};
+
 window.calculateDues = function() {
     const totalEl = document.getElementById('cart-total');
     if (!totalEl) return;
