@@ -294,14 +294,7 @@ window.completeCreditSale = function() {
     const name = document.getElementById('cust-name').value.trim();
     const mobile = document.getElementById('cust-mobile').value.trim();
     
-    if (!name || !mobile) {
-        return alert('Please enter both Customer Name and Mobile Number.');
-    }
-    if (mobile.length !== 10) {
-        return alert('Please enter a valid 10-digit mobile number.');
-    }
-    
-    finalizeSaleRecord(name, mobile);
+    finalizeSaleRecord(name || 'Walk-in Customer', mobile || '');
     window.closeModal('customerModal');
 }
 
