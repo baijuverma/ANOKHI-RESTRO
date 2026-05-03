@@ -67,7 +67,9 @@ export const renderExpenseTable = (containerId, expenses) => {
                 if (existingSentinel) existingSentinel.remove();
 
                 const allVisible = expensePagination.getVisibleItems();
-                const newRows = allVisible.slice(allVisible.length - expensePagination.pageSize);
+                const prevCount = (expensePagination.currentPage - 1) * expensePagination.pageSize;
+                const newRows = allVisible.slice(prevCount);
+                
                 const rowsHtml = newRows.map(exp => buildExpenseRow(exp)).join('');
                 container.insertAdjacentHTML('beforeend', rowsHtml);
 

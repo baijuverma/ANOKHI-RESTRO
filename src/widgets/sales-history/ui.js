@@ -131,9 +131,10 @@ export const renderSalesHistory = (containerId, orders, limit = null) => {
                 if (existingSentinel) existingSentinel.remove();
 
                 const allVisible = salesHistoryPagination.getVisibleItems();
-                // Append only newly loaded rows (avoid full re-render)
-                const newRows = allVisible.slice(allVisible.length - salesHistoryPagination.pageSize);
-                const rowsHtml = newRows.map((sale, i) => buildSaleRow(sale, allVisible.length - newRows.length + i)).join('');
+                const prevCount = (salesHistoryPagination.currentPage - 1) * salesHistoryPagination.pageSize;
+                const newRows = allVisible.slice(prevCount);
+                
+                const rowsHtml = newRows.map((sale, i) => buildSaleRow(sale, prevCount + i)).join('');
                 container.insertAdjacentHTML('beforeend', rowsHtml);
 
                 if (salesHistoryPagination.hasMore()) {
