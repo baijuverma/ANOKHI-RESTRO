@@ -14,6 +14,8 @@ window.checkLogin = function() {
             setTimeout(() => {
                 loginScreen.style.display = 'none';
                 loginScreen.classList.remove('hide');
+                const logoutBtn = document.getElementById('global-logout-container');
+                if (logoutBtn) logoutBtn.style.display = 'block';
             }, 500);
         }
         
@@ -84,6 +86,9 @@ window.updateAdminPassword = function() {
 
 window.logout = function() {
     if (confirm('Are you sure you want to logout and lock the system?')) {
+        const logoutBtn = document.getElementById('global-logout-container');
+        if (logoutBtn) logoutBtn.style.display = 'none';
+        
         const loginScreen = document.getElementById('login-screen');
         if (loginScreen) {
             loginScreen.style.display = 'flex';

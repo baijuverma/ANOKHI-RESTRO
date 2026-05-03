@@ -209,7 +209,23 @@ function handleItemSubmit(e) {
     }
 
     if (typeof window.saveData === 'function') window.saveData();
-    closeModal('addItemModal');
+    
+    if (!id) {
+        // ADD mode: Keep modal open, reset form but retain category, show success message
+        const currentCat = document.getElementById('item-category').value;
+        const currentLowStock = document.getElementById('item-low-stock').value;
+        document.getElementById('item-form').reset();
+        document.getElementById('item-id').value = '';
+        document.getElementById('item-category').value = currentCat;
+        document.getElementById('item-low-stock').value = currentLowStock;
+        document.getElementById('item-name').focus();
+        if (typeof window.showToast === 'function') window.showToast("Item added successfully!", "success");
+    } else {
+        // UPDATE mode: Close modal and show success
+        closeModal('addItemModal');
+        if (typeof window.showToast === 'function') window.showToast("Item updated successfully!", "success");
+    }
+    
     if (typeof window.renderInventory === 'function') window.renderInventory();
     if (typeof window.updateDashboard === 'function') window.updateDashboard();
 }
@@ -245,17 +261,6 @@ function handleRestockSubmit(e) {
 window.handleItemSubmit = handleItemSubmit;
 window.handleRestockSubmit = handleRestockSubmit;
 
-setTimeout(() => {
-    const itemForm = document.getElementById('item-form');
-    if (itemForm) {
-        itemForm.onsubmit = handleItemSubmit;
-    }
-    
-    const restockForm = document.getElementById('restock-form');
-    if (restockForm) {
-        restockForm.onsubmit = handleRestockSubmit;
-    }
-}, 500);
 
 window.editItem = function(id) {
     const item = inventory.find(i => i.id === id);

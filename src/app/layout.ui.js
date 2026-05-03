@@ -1,6 +1,6 @@
 export const appShellHTML = `
 <!-- Fixed Global Logout Button (Top Right of Screen) -->
-    <div class="global-header-actions" style="position: fixed; top: 10px; right: 15px; z-index: 99999;">
+    <div id="global-logout-container" class="global-header-actions" style="position: fixed; top: 10px; right: 15px; z-index: 99999; display: none;">
         <button class="modern-logout-btn" onclick="logout()" title="Logout & Lock System">
             <i class="fa-solid fa-power-off"></i>
             <span class="btn-text">Logout</span>
