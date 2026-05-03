@@ -39,9 +39,19 @@ function buildSaleRow(sale, index) {
     }
 
     const typeBadge = `
-        <span style="font-size: 11px; display: block; color: ${sale.status ? '#475569' : 'var(--text-secondary)'}; margin-top: 4px;">
-            ${sale.orderType === 'DINE_IN' ? 'Dine-In' : sale.orderType === 'TAKEAWAY' ? 'Takeaway' : 'Counter'}
-        </span>
+        <div style="font-size: 11px; color: ${sale.status ? '#475569' : 'var(--text-secondary)'}; margin-top: 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span style="opacity: 0.8;">${sale.orderType === 'DINE_IN' ? 'Dine-In' : sale.orderType === 'TAKEAWAY' ? 'Takeaway' : 'Counter'}</span>
+            ${sale.customerName ? `
+                <span style="color: var(--warning-color); font-weight: 700; display: flex; align-items: center; gap: 4px;">
+                    <i class="fa-solid fa-user" style="font-size: 10px;"></i> ${sale.customerName}
+                </span>
+                ${sale.customerMobile ? `
+                    <span style="color: var(--warning-color); opacity: 0.9; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+                        <i class="fa-solid fa-phone" style="font-size: 10px;"></i> ${sale.customerMobile}
+                    </span>
+                ` : ''}
+            ` : ''}
+        </div>
     `;
 
     const displayDate = sale.date || sale.timestamp || new Date();
@@ -52,12 +62,6 @@ function buildSaleRow(sale, index) {
         <td style="color: inherit;">
             <strong>#${sale.id.toString().slice(-6)}</strong>
             ${typeBadge}
-            ${sale.customerName ? `
-                <div style="font-size: 11px; color: var(--warning-color); font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 10px;">
-                    <span><i class="fa-solid fa-user"></i> ${sale.customerName}</span>
-                    ${sale.customerMobile ? `<span style="opacity: 0.8;"><i class="fa-solid fa-phone" style="font-size: 10px; margin-right: 4px;"></i>${sale.customerMobile}</span>` : ''}
-                </div>
-            ` : ''}
         </td>
         <td style="color: inherit;">${formatDateTime(displayDate)}</td>
         <td style="color: inherit;"><div style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${itemsStr}">${itemsStr}</div></td>
