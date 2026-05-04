@@ -8,7 +8,7 @@ export const renderPOSGrid = (container, search = '', filterType = 'all') => {
     container.innerHTML = '';
 
     const currentInventory = window.inventory || inventory;
-    const filtered = filterItems(currentInventory, search, filterType).filter(item => item.quantity > 0);
+    const filtered = filterItems(currentInventory, search, filterType);
 
     filtered.forEach(item => {
         const currentCart = window.cart || cart;

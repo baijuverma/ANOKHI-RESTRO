@@ -18,7 +18,7 @@ export const createItemCard = (item, cartQty, onAdd, onUpdateQty) => {
             </div>
         ` : ''}
         <div class="card-content">
-            <div class="stock-badge-top">STK: ${item.quantity}</div>
+            <div class="stock-badge-top" style="color: ${item.quantity === 0 ? '#ef4444' : (item.quantity <= (item.lowStockThreshold || 5) ? '#fbbf24' : '#22c55e')}; font-weight: 800;">STK: ${item.quantity}</div>
             <h4 class="item-name">${item.name}</h4>
             <div class="item-price">${formatCurrency(item.price)}</div>
         </div>
@@ -49,7 +49,17 @@ export const createItemCard = (item, cartQty, onAdd, onUpdateQty) => {
     }
 
     // Main Card Click
-    div.onclick = () => onAdd(item);
+    div.onclick = () => {
+        if (item.quantity <= 0) {
+            if (typeof window.showToast === 'function') {
+                window.showToast(`"${item.name}" is out of stock!`, "error");
+            } else {
+                alert("Out of stock!");
+            }
+            return;
+        }
+        onAdd(item);
+    };
 
     return div;
 };
