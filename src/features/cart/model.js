@@ -30,6 +30,13 @@ export const addToCart = (item) => {
     }
 
     syncWithWindow();
+    
+    // Clear search bar on item selection so user can type for next item immediately
+    const searchInput = document.getElementById('pos-search');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+
     if (window.refreshUI) window.refreshUI();
 };
 
