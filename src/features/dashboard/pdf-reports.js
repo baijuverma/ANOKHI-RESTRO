@@ -171,19 +171,25 @@ export function initPdfReports() {
         doc.setFont(undefined, 'bold');
         doc.text("2. Item-wise Sales Ranking", margin, itemStartY - 5);
 
-        // Aggregate items
+        // Aggregate items — use proportional share of actual bill total to match bill-wise total
         const itemMap = {};
         sales.forEach(sale => {
+            const saleTotal = parseFloat(sale.total || 0);
+            const rawSubtotal = (sale.items || []).reduce((sum, item) => {
+                return sum + parseFloat(item.price || 0) * parseFloat(item.cartQty || item.qty || 0);
+            }, 0);
+            const ratio = rawSubtotal > 0 ? saleTotal / rawSubtotal : 1;
+
             (sale.items || []).forEach(item => {
                 const name = item.name || "Unknown";
                 const qty = parseFloat(item.cartQty || item.qty || 0);
-                const total = parseFloat(item.price || 0) * qty;
+                const adjustedRevenue = parseFloat(item.price || 0) * qty * ratio;
                 
                 if (!itemMap[name]) {
                     itemMap[name] = { name, quantity: 0, revenue: 0 };
                 }
                 itemMap[name].quantity += qty;
-                itemMap[name].revenue += total;
+                itemMap[name].revenue += adjustedRevenue;
             });
         });
 
@@ -319,18 +325,25 @@ function generateSalesReport(title, data) {
     doc.setFont(undefined, 'bold');
     doc.text("Item-wise Sales Ranking", margin, itemStartY - 5);
 
+    // Aggregate items — use proportional share of actual bill total to match bill-wise total
     const itemMap = {};
     data.forEach(sale => {
+        const saleTotal = parseFloat(sale.total || 0);
+        const rawSubtotal = (sale.items || []).reduce((sum, item) => {
+            return sum + parseFloat(item.price || 0) * parseFloat(item.cartQty || item.qty || 0);
+        }, 0);
+        const ratio = rawSubtotal > 0 ? saleTotal / rawSubtotal : 1;
+
         (sale.items || []).forEach(item => {
             const name = item.name || "Unknown";
             const qty = parseFloat(item.cartQty || item.qty || 0);
-            const itemTotal = parseFloat(item.price || 0) * qty;
+            const adjustedRevenue = parseFloat(item.price || 0) * qty * ratio;
             
             if (!itemMap[name]) {
                 itemMap[name] = { name, quantity: 0, revenue: 0 };
             }
             itemMap[name].quantity += qty;
-            itemMap[name].revenue += itemTotal;
+            itemMap[name].revenue += adjustedRevenue;
         });
     });
 
