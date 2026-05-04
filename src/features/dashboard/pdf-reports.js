@@ -195,8 +195,14 @@ export function initPdfReports() {
         let totalItemQty = 0;
         let totalItemRev = 0;
 
-        // Sort categories alphabetically
-        const sortedCategories = Object.keys(categoryMap).sort();
+        // Calculate total quantity per category for sorting categories by performance
+        const categoryPerformance = {};
+        Object.keys(categoryMap).forEach(cat => {
+            categoryPerformance[cat] = Object.values(categoryMap[cat]).reduce((sum, item) => sum + item.quantity, 0);
+        });
+
+        // Sort categories by total quantity (descending)
+        const sortedCategories = Object.keys(categoryMap).sort((a, b) => categoryPerformance[b] - categoryPerformance[a]);
 
         sortedCategories.forEach(catName => {
             // Add Category Header Row
@@ -388,8 +394,14 @@ function generateSalesReport(title, data) {
     let totalItemQty = 0;
     let totalItemRev = 0;
 
-    // Sort categories alphabetically
-    const sortedCategories = Object.keys(categoryMap).sort();
+    // Calculate total quantity per category for sorting categories by performance
+    const categoryPerformance = {};
+    Object.keys(categoryMap).forEach(cat => {
+        categoryPerformance[cat] = Object.values(categoryMap[cat]).reduce((sum, item) => sum + item.quantity, 0);
+    });
+
+    // Sort categories by total quantity (descending)
+    const sortedCategories = Object.keys(categoryMap).sort((a, b) => categoryPerformance[b] - categoryPerformance[a]);
 
     sortedCategories.forEach(catName => {
         // Add Category Header Row
