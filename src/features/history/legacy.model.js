@@ -194,7 +194,17 @@ window.downloadGrossReport = function() {
         return;
     }
 
-    const dateRangeStr = (startDateStr || "") + (endDateStr ? " to " + endDateStr : "");
+    const formatToDDMMYYYY = (dateStr) => {
+        if (!dateStr) return "";
+        const parts = dateStr.split('-');
+        if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        return dateStr;
+    };
+
+    const formattedStart = formatToDDMMYYYY(startDateStr);
+    const formattedEnd = formatToDDMMYYYY(endDateStr);
+    
+    const dateRangeStr = (formattedStart || "") + (formattedEnd ? " to " + formattedEnd : "");
     const title = `Gross Item Sales Report (${dateRangeStr || "All Time"})`;
     
     if (typeof window.generateGrossReport === 'function') {

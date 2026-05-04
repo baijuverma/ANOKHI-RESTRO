@@ -192,6 +192,10 @@ export function initPdfReports() {
         doc.text(`Total Period Revenue: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 80, finalY + 12);
 
         addFooter(doc, doc.internal.getNumberOfPages());
+        
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages('{totalPages}');
+        }
         doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
     };
 }
@@ -222,6 +226,7 @@ function generateProfitReport(title, sales, expenses) {
     });
 
     addFooter(doc, 1);
+    if (typeof doc.putTotalPages === 'function') doc.putTotalPages('{totalPages}');
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
 }
 
@@ -267,6 +272,7 @@ function generateSalesReport(title, data) {
     doc.setFont(undefined, 'bold');
     doc.text(`Grand Total: Rs. ${total.toFixed(2)}`, pageWidth - margin - 60, finalY + 10);
 
+    if (typeof doc.putTotalPages === 'function') doc.putTotalPages('{totalPages}');
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
 }
 
@@ -312,6 +318,7 @@ function generateExpensesReport(title, data) {
     doc.setFont(undefined, 'bold');
     doc.text(`Total Expenses: Rs. ${total.toFixed(2)}`, pageWidth - margin - 60, finalY + 10);
 
+    if (typeof doc.putTotalPages === 'function') doc.putTotalPages('{totalPages}');
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
 }
 
@@ -324,10 +331,10 @@ function addFooter(doc, pageNumber) {
     doc.setFontSize(10);
     doc.setTextColor(150);
     
-    // Format: page 01 of 04
-    const pStr = `page ${String(pageNumber).padStart(2, '0')} of ${String(pageCount).padStart(2, '0')}`;
+    // Format: page 01 of {totalPages}
+    const pStr = `page ${String(pageNumber).padStart(2, '0')} of {totalPages}`;
     
-    doc.text(pStr, pageWidth / 2, pageHeight - margin, { align: 'center' });
+    doc.text(pStr, pageWidth - margin, pageHeight - margin, { align: 'right' });
     
     // Bottom border line
     doc.setDrawColor(230);
