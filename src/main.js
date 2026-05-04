@@ -167,10 +167,19 @@ window.renderInventory = () => {
         );
     }
 
-    if (!inventoryPagination || inventoryPagination._lastFilter !== currentFilter || inventoryPagination._lastSearch !== searchVal || inventoryPagination.fullArray.length !== filtered.length) {
+    if (!inventoryPagination || inventoryPagination._lastFilter !== currentFilter || inventoryPagination._lastSearch !== searchVal) {
+        // Filter ya search change hua — pagination fresh banao, page 1 se start
         inventoryPagination = new window.LocalPagination(filtered, 15);
         inventoryPagination._lastFilter = currentFilter;
         inventoryPagination._lastSearch = searchVal;
+    } else {
+        // Same filter/search — current page preserve karo, lekin fresh data inject karo
+        // (quantity update jaise changes ke liye)
+        const currentPage = inventoryPagination.currentPage || 1;
+        inventoryPagination = new window.LocalPagination(filtered, 15);
+        inventoryPagination._lastFilter = currentFilter;
+        inventoryPagination._lastSearch = searchVal;
+        inventoryPagination.goToPage(currentPage);
     }
     
     const pageItems = inventoryPagination.getPageItems();
