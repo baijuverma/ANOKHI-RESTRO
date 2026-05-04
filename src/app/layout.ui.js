@@ -163,9 +163,9 @@ export const appShellHTML = `
                         </div>
                         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                             <div class="search-bar" style="margin: 0; max-width: 200px; position: relative; display: flex; align-items: center;">
-                                <i class="fa-solid fa-search" style="position: absolute; left: 10px; color: var(--text-secondary);"></i>
-                                <input type="text" id="inventory-search" placeholder="Search items..." oninput="window.renderInventory()" style="width: 100%; padding: 8px 35px 8px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white;">
-                                <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('inventory-search')" style="position: absolute; right: 10px; cursor: pointer; color: var(--text-secondary); font-size: 16px; transition: color 0.2s;"></i>
+                                <i class="fa-solid fa-search" style="position: absolute; left: 12px; color: var(--text-secondary); font-size: 14px;"></i>
+                                <input type="text" id="inventory-search" placeholder="Search items..." oninput="window.renderInventory()" style="width: 100%; padding: 10px 35px 10px 32px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; font-size: 14px;">
+                                <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('inventory-search')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.4); font-size: 16px; transition: all 0.2s ease;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.4)'"></i>
                             </div>
                             <div style="display:flex; gap:8px; align-items:center;">
                                 <button id="filter-all" onclick="filterInventoryByType('all')" style="padding:6px 14px; border-radius:20px; border:2px solid var(--accent-color); background:var(--accent-color); color:white; cursor:pointer; font-size:12px; font-weight:700;">All</button>
@@ -347,10 +347,10 @@ export const appShellHTML = `
                             <!-- Integrated Header Row: Search + Filters -->
                             <div class="items-header-row" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; position: relative; z-index: 1000;">
                                 <!-- Search Bar (Left) -->
-                                <div class="search-bar" style="margin: 0; position: relative; display: flex; align-items: center;">
-                                    <i class="fa-solid fa-search" style="position: absolute; left: 10px; color: var(--text-secondary);"></i>
-                                    <input type="text" id="pos-search" placeholder="Search menu items..." oninput="window.renderPOSItems()" style="width: 100%; padding: 8px 35px 8px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white;">
-                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('pos-search')" style="position: absolute; right: 10px; cursor: pointer; color: var(--text-secondary); font-size: 16px; transition: color 0.2s;"></i>
+                                <div class="search-bar" style="margin: 0; position: relative; display: flex; align-items: center; flex: 1; max-width: 250px;">
+                                    <i class="fa-solid fa-search" style="position: absolute; left: 12px; color: var(--text-secondary); font-size: 14px;"></i>
+                                    <input type="text" id="pos-search" placeholder="Search menu items..." oninput="window.renderPOSItems()" style="width: 100%; padding: 10px 35px 10px 32px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; font-size: 14px;">
+                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('pos-search')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.4); font-size: 16px; transition: all 0.2s ease;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.4)'"></i>
                                 </div>
 
                                 <!-- Filters (Right) -->
