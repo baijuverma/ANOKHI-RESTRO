@@ -97,8 +97,20 @@ export function initPdfReports() {
         doc.setTextColor(40);
         doc.text(title, margin, margin + 10);
         
+        const formatDate = (dateStr) => {
+            const d = new Date(dateStr);
+            const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return `${String(d.getDate()).padStart(2, '0')} ${String(d.getMonth() + 1).padStart(2, '0')} ${d.getFullYear()}`;
+        };
+
+        const formatDateTime = (dateStr) => {
+            const d = new Date(dateStr);
+            const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return `${formatDate(d)} ${time}`;
+        };
+
         doc.setFontSize(10);
-        doc.text(`Generated on: ${new Date().toLocaleString()}`, margin, margin + 18);
+        doc.text(`Generated on: ${formatDateTime(new Date())}`, margin, margin + 18);
 
         // --- Section 1: Bill-wise Transactions ---
         doc.setFontSize(14);
@@ -108,7 +120,7 @@ export function initPdfReports() {
         const billTableBody = sales.map((s, i) => [
             i + 1,
             s.id.toString().slice(-6),
-            new Date(s.date).toLocaleDateString(),
+            formatDate(s.date),
             s.orderType || 'Counter',
             (s.payment_mode || 'CASH').toUpperCase(),
             `Rs. ${parseFloat(s.total || 0).toFixed(2)}`
@@ -312,8 +324,8 @@ function addFooter(doc, pageNumber) {
     doc.setFontSize(10);
     doc.setTextColor(150);
     
-    // Format: page 01-01
-    const pStr = `page ${String(pageNumber).padStart(2, '0')}-${String(pageCount).padStart(2, '0')}`;
+    // Format: page 01 of 04
+    const pStr = `page ${String(pageNumber).padStart(2, '0')} of ${String(pageCount).padStart(2, '0')}`;
     
     doc.text(pStr, pageWidth / 2, pageHeight - margin, { align: 'center' });
     
