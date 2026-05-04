@@ -188,8 +188,31 @@ window.renderHistory = () => {
         const dashboardOrders = [...window.salesHistory].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
         renderSalesHistory('sales-tbody', dashboardOrders, 10);
 
-        // History page: apply dues filter if active
-        renderSalesHistory('history-tbody', window.salesHistory, null);
+        // Main History View with Date Range Filtering
+        let historyOrders = [...window.salesHistory];
+        const startDateStr = document.getElementById('history-start-date')?.value;
+        const endDateStr = document.getElementById('history-end-date')?.value;
+
+        if (startDateStr || endDateStr) {
+            historyOrders = historyOrders.filter(sale => {
+                const saleDate = new Date(sale.date);
+                saleDate.setHours(0, 0, 0, 0);
+
+                if (startDateStr) {
+                    const start = new Date(startDateStr);
+                    start.setHours(0, 0, 0, 0);
+                    if (saleDate < start) return false;
+                }
+                if (endDateStr) {
+                    const end = new Date(endDateStr);
+                    end.setHours(23, 59, 59, 999);
+                    if (saleDate > end) return false;
+                }
+                return true;
+            });
+        }
+
+        renderSalesHistory('history-tbody', historyOrders, null);
         
         updateCalendarData(window.salesHistory);
         if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();

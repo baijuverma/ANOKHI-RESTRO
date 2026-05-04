@@ -164,3 +164,75 @@ window.deleteSale = async function(saleId) {
         }
     });
 };
+
+window.downloadGrossReport = function() {
+    let sales = [...(window.salesHistory || [])];
+    const startDateStr = document.getElementById('history-start-date')?.value;
+    const endDateStr = document.getElementById('history-end-date')?.value;
+
+    // Filter by date range
+    if (startDateStr || endDateStr) {
+        sales = sales.filter(sale => {
+            const saleDate = new Date(sale.date);
+            saleDate.setHours(0,0,0,0);
+            if (startDateStr) {
+                const s = new Date(startDateStr);
+                s.setHours(0,0,0,0);
+                if (saleDate < s) return false;
+            }
+            if (endDateStr) {
+                const e = new Date(endDateStr);
+                e.setHours(23,59,59,999);
+                if (saleDate > e) return false;
+            }
+            return true;
+        });
+    }
+
+    if (sales.length === 0) {
+        alert("No transactions found in this period.");
+        return;
+    }
+
+    // Aggregate items
+    const itemMap = {};
+    sales.forEach(sale => {
+        (sale.items || []).forEach(item => {
+            const name = item.name || "Unknown";
+            const qty = parseFloat(item.cartQty || item.qty || 0);
+            const total = parseFloat(item.price || 0) * qty;
+            
+            if (!itemMap[name]) {
+                itemMap[name] = { name, quantity: 0, revenue: 0 };
+            }
+            itemMap[name].quantity += qty;
+            itemMap[name].revenue += total;
+        });
+    });
+
+    // Convert to array and sort by quantity desc
+    const reportData = Object.values(itemMap).sort((a, b) => b.quantity - a.quantity);
+
+    // CSV Generation
+    let csv = "Rank,Item Name,Quantity Sold,Total Revenue (INR)\n";
+    reportData.forEach((item, index) => {
+        csv += `${index + 1},"${item.name}",${item.quantity},${item.revenue.toFixed(2)}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    const dateRangeStr = (startDateStr || "") + (endDateStr ? "_to_" + endDateStr : "");
+    const filename = `Gross_Report_${dateRangeStr || "All_Time"}.csv`;
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    if (typeof window.showToast === 'function') {
+        window.showToast("Gross Report downloaded successfully", "success");
+    }
+};

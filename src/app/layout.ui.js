@@ -570,10 +570,24 @@ export const appShellHTML = `
                     </div>
                 </div>
 
-                <!-- All Transactions -->
+                <!-- All Transactions with Date Filter & Report -->
                 <div class="glass-panel mt-4">
-                    <h2 style="padding: 20px; font-size: 18px; border-bottom: 1px solid var(--panel-border);">All
-                        Transactions</h2>
+                    <div class="flex-between" style="padding: 15px 20px; border-bottom: 1px solid var(--panel-border); flex-wrap: wrap; gap: 15px;">
+                        <h2 style="font-size: 18px; margin: 0;">All Transactions</h2>
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 8px; border: 1px solid var(--panel-border);">
+                                <label style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">From:</label>
+                                <input type="date" id="history-start-date" onchange="window.renderHistory()" style="background: transparent; border: none; color: white; font-size: 13px; outline: none;">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 8px; border: 1px solid var(--panel-border);">
+                                <label style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">To:</label>
+                                <input type="date" id="history-end-date" onchange="window.renderHistory()" style="background: transparent; border: none; color: white; font-size: 13px; outline: none;">
+                            </div>
+                            <button class="btn-success" onclick="window.downloadGrossReport()" style="padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; height: auto;">
+                                <i class="fa-solid fa-file-csv"></i> Gross Report
+                            </button>
+                        </div>
+                    </div>
                     <div class="table-container">
                         <table id="history-table">
                             <thead>
