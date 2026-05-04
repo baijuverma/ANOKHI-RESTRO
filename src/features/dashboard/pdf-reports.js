@@ -171,36 +171,50 @@ export function initPdfReports() {
         doc.setFont(undefined, 'bold');
         doc.text("2. Item-wise Sales Ranking", margin, itemStartY - 5);
 
-        // Aggregate items — actual price × qty (gross, before discount)
-        const itemMap = {};
+        // Aggregate items by category
+        const categoryMap = {};
         let totalDiscount = 0;
         sales.forEach(sale => {
             totalDiscount += parseFloat(sale.discount || 0);
             (sale.items || []).forEach(item => {
+                const cat = item.category || "General";
                 const name = item.name || "Unknown";
                 const qty = parseFloat(item.cartQty || item.qty || 0);
                 const revenue = parseFloat(item.price || 0) * qty;
                 
-                if (!itemMap[name]) {
-                    itemMap[name] = { name, quantity: 0, revenue: 0 };
+                if (!categoryMap[cat]) categoryMap[cat] = {};
+                if (!categoryMap[cat][name]) {
+                    categoryMap[cat][name] = { name, quantity: 0, revenue: 0 };
                 }
-                itemMap[name].quantity += qty;
-                itemMap[name].revenue += revenue;
+                categoryMap[cat][name].quantity += qty;
+                categoryMap[cat][name].revenue += revenue;
             });
         });
 
-        const reportData = Object.values(itemMap).sort((a, b) => b.quantity - a.quantity);
+        const itemTableBody = [];
         let totalItemQty = 0;
         let totalItemRev = 0;
-        const itemTableBody = reportData.map((item, i) => {
-            totalItemQty += item.quantity;
-            totalItemRev += item.revenue;
-            return [
-                i + 1,
-                item.name,
-                item.quantity,
-                `Rs. ${item.revenue.toFixed(2)}`
-            ];
+
+        // Sort categories alphabetically
+        const sortedCategories = Object.keys(categoryMap).sort();
+
+        sortedCategories.forEach(catName => {
+            // Add Category Header Row
+            itemTableBody.push([
+                { content: `Category: ${catName}`, colSpan: 4, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }
+            ]);
+
+            const categoryItems = Object.values(categoryMap[catName]).sort((a, b) => b.quantity - a.quantity);
+            categoryItems.forEach((item, i) => {
+                totalItemQty += item.quantity;
+                totalItemRev += item.revenue;
+                itemTableBody.push([
+                    i + 1,
+                    item.name,
+                    item.quantity,
+                    `Rs. ${item.revenue.toFixed(2)}`
+                ]);
+            });
         });
 
         const netTotal = totalItemRev - totalDiscount;
@@ -338,36 +352,50 @@ function generateSalesReport(title, data) {
     doc.setFont(undefined, 'bold');
     doc.text("Item-wise Sales Ranking", margin, itemStartY - 5);
 
-    // Aggregate items — actual price × qty (gross, before discount)
-    const itemMap = {};
+    // Aggregate items by category
+    const categoryMap = {};
     let totalDiscount = 0;
     data.forEach(sale => {
         totalDiscount += parseFloat(sale.discount || 0);
         (sale.items || []).forEach(item => {
+            const cat = item.category || "General";
             const name = item.name || "Unknown";
             const qty = parseFloat(item.cartQty || item.qty || 0);
             const revenue = parseFloat(item.price || 0) * qty;
             
-            if (!itemMap[name]) {
-                itemMap[name] = { name, quantity: 0, revenue: 0 };
+            if (!categoryMap[cat]) categoryMap[cat] = {};
+            if (!categoryMap[cat][name]) {
+                categoryMap[cat][name] = { name, quantity: 0, revenue: 0 };
             }
-            itemMap[name].quantity += qty;
-            itemMap[name].revenue += revenue;
+            categoryMap[cat][name].quantity += qty;
+            categoryMap[cat][name].revenue += revenue;
         });
     });
 
-    const reportData = Object.values(itemMap).sort((a, b) => b.quantity - a.quantity);
+    const itemTableBody = [];
     let totalItemQty = 0;
     let totalItemRev = 0;
-    const itemTableBody = reportData.map((item, i) => {
-        totalItemQty += item.quantity;
-        totalItemRev += item.revenue;
-        return [
-            i + 1,
-            item.name,
-            item.quantity,
-            `Rs. ${item.revenue.toFixed(2)}`
-        ];
+
+    // Sort categories alphabetically
+    const sortedCategories = Object.keys(categoryMap).sort();
+
+    sortedCategories.forEach(catName => {
+        // Add Category Header Row
+        itemTableBody.push([
+            { content: `Category: ${catName}`, colSpan: 4, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }
+        ]);
+
+        const categoryItems = Object.values(categoryMap[catName]).sort((a, b) => b.quantity - a.quantity);
+        categoryItems.forEach((item, i) => {
+            totalItemQty += item.quantity;
+            totalItemRev += item.revenue;
+            itemTableBody.push([
+                i + 1,
+                item.name,
+                item.quantity,
+                `Rs. ${item.revenue.toFixed(2)}`
+            ]);
+        });
     });
 
     const netTotal = totalItemRev - totalDiscount;
