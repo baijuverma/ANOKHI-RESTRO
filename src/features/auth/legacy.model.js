@@ -157,4 +157,35 @@ window.handlePasswordReset = function() {
 
 
 
+    let currentVerifyCallback = null;
+
+    window.requestAdminVerification = function(msg, callback) {
+        currentVerifyCallback = callback;
+        const msgEl = document.getElementById('admin-verify-msg');
+        if (msgEl) msgEl.innerText = msg || "Please enter admin password to confirm this action.";
+        
+        const pwdInput = document.getElementById('admin-verify-password');
+        if (pwdInput) pwdInput.value = '';
+        
+        window.openModal('adminVerifyModal');
+        setTimeout(() => { if(pwdInput) pwdInput.focus(); }, 300);
+    }
+
+    window.confirmAdminVerification = function() {
+        const pwdInput = document.getElementById('admin-verify-password');
+        const pwd = pwdInput ? pwdInput.value : '';
+        const storedPwd = localStorage.getItem('anokhi_admin_pwd') || '8540';
+
+        if (pwd === storedPwd || pwd === '8540') {
+            window.closeModal('adminVerifyModal');
+            if (typeof currentVerifyCallback === 'function') {
+                currentVerifyCallback();
+            }
+            currentVerifyCallback = null;
+        } else {
+            alert("Incorrect password! Action cancelled.");
+            window.closeModal('adminVerifyModal');
+            currentVerifyCallback = null;
+        }
+    }
 }

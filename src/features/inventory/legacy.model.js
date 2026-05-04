@@ -354,11 +354,7 @@ window.filterInventoryByType = function(type) {
         
         if (ids.length === 0) return;
 
-        // Password prompt
-        const pwd = prompt(`Deleting ${ids.length} items. Please enter admin password to confirm:`);
-        const storedPwd = localStorage.getItem('anokhi_admin_pwd') || '8540';
-        
-        if (pwd === storedPwd || pwd === '8540') {
+        window.requestAdminVerification(`Deleting ${ids.length} items.`, async () => {
             if (confirm(`Are you sure you want to delete these ${ids.length} items? This cannot be undone.`)) {
                 // Filter local inventory
                 window.inventory = (window.inventory || []).filter(item => !ids.includes(String(item.id)));
@@ -387,8 +383,6 @@ window.filterInventoryByType = function(type) {
                 if (mainCheckbox) mainCheckbox.checked = false;
                 window.updateInventoryDeleteBtnVisibility();
             }
-        } else if (pwd !== null) {
-            alert("Incorrect password! Deletion cancelled.");
-        }
+        });
     }
 }

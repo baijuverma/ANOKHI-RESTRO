@@ -793,4 +793,23 @@ export const appShellHTML = `
             </button>
         </div>
     </div>
+    <!-- Admin Verification Modal (For sensitive actions) -->
+    <div id="adminVerifyModal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 400px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 60px; height: 60px; background: rgba(99, 102, 241, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                    <i class="fa-solid fa-shield-check" style="font-size: 24px; color: var(--accent-color);"></i>
+                </div>
+                <h2>Verify Identity</h2>
+                <p id="admin-verify-msg" style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;">Please enter admin password to confirm this action.</p>
+            </div>
+            <div class="form-group">
+                <input type="password" id="admin-verify-password" placeholder="Enter Admin Password" style="font-size: 18px; text-align: center; font-weight: 700;" onkeyup="if(event.key === 'Enter') window.confirmAdminVerification()">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-primary" style="flex: 1; background: var(--text-secondary);" onclick="closeModal('adminVerifyModal')">Cancel</button>
+                <button class="btn-success" style="flex: 2;" onclick="window.confirmAdminVerification()">Confirm Action</button>
+            </div>
+        </div>
+    </div>
 `;

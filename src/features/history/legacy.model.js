@@ -144,8 +144,7 @@ window.viewReceipt = function(id) {
 };
 
 window.deleteSale = async function(saleId) {
-    const password = prompt("Enter Admin Password:");
-    if (password === '8540') {
+    window.requestAdminVerification("Deleting this sale will restore item stock.", async () => {
         const sale = (window.salesHistory || []).find(s => s.id === saleId);
         if (sale) {
             // Restore Stock
@@ -161,9 +160,7 @@ window.deleteSale = async function(saleId) {
 
             if (typeof window.renderHistory === 'function') window.renderHistory();
             if (typeof window.renderInventory === 'function') window.renderInventory();
-            alert("Sale deleted.");
+            if (typeof window.showToast === 'function') window.showToast("Sale deleted and stock restored", "success");
         }
-    } else if (password !== null) {
-        alert("Incorrect Password!");
-    }
+    });
 };
