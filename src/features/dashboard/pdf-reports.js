@@ -331,8 +331,8 @@ function addFooter(doc, pageNumber) {
     doc.setFontSize(10);
     doc.setTextColor(150);
     
-    // Format: page 01 of {totalPages}
-    const pStr = `page ${String(pageNumber).padStart(2, '0')} of {totalPages}`;
+    // Format: page 1 of {totalPages}
+    const pStr = `page ${pageNumber} of {totalPages}`;
     
     doc.text(pStr, pageWidth - margin, pageHeight - margin, { align: 'right' });
     
