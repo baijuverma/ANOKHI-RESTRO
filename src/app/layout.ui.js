@@ -584,7 +584,7 @@ export const appShellHTML = `
                                 <input type="date" id="history-end-date" onchange="window.renderHistory()" style="background: transparent; border: none; color: white; font-size: 13px; outline: none;">
                             </div>
                             <button class="btn-success" onclick="window.downloadGrossReport()" style="padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; height: auto;">
-                                <i class="fa-solid fa-file-csv"></i> Gross Report
+                                <i class="fa-solid fa-file-pdf"></i> Gross Report
                             </button>
                         </div>
                     </div>
