@@ -126,6 +126,13 @@ export function initPdfReports() {
             `Rs. ${parseFloat(s.total || 0).toFixed(2)}`
         ]);
 
+        const drawnPages = new Set();
+        const safeAddFooter = (d, p) => {
+            if (drawnPages.has(p)) return;
+            addFooter(d, p);
+            drawnPages.add(p);
+        };
+
         doc.autoTable({
             head: [['Sr.', 'Bill ID', 'Date', 'Type', 'Mode', 'Amount']],
             body: billTableBody,
@@ -133,7 +140,7 @@ export function initPdfReports() {
             margin: { left: margin, right: margin },
             headStyles: { fillColor: [99, 102, 241] }, // Indigo for bills
             styles: { fontSize: 8 },
-            didDrawPage: (data) => addFooter(doc, data.pageNumber)
+            didDrawPage: (data) => safeAddFooter(doc, data.pageNumber)
         });
 
         const totalRevenue = sales.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
@@ -182,7 +189,7 @@ export function initPdfReports() {
             margin: { left: margin, right: margin },
             headStyles: { fillColor: [34, 197, 94] }, // Green for rankings
             styles: { fontSize: 9 },
-            didDrawPage: (data) => addFooter(doc, data.pageNumber)
+            didDrawPage: (data) => safeAddFooter(doc, data.pageNumber)
         });
 
         const finalY = doc.lastAutoTable.finalY || 150;
@@ -191,7 +198,7 @@ export function initPdfReports() {
         doc.setFont(undefined, 'bold');
         doc.text(`Total Period Revenue: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 80, finalY + 12);
 
-        addFooter(doc, doc.internal.getNumberOfPages());
+        safeAddFooter(doc, doc.internal.getNumberOfPages());
         
         if (typeof doc.putTotalPages === 'function') {
             doc.putTotalPages('{totalPages}');
