@@ -8,7 +8,8 @@ export function initPdfReports() {
         const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : today.toDateString();
         
         const data = (window.salesHistory || []).filter(s => {
-            return window.getDDMMYYYY && window.getDDMMYYYY(new Date(s.date)) === todayStr;
+            const dVal = s.date || s.timestamp || s.created_at;
+            return dVal && window.getDDMMYYYY && window.getDDMMYYYY(new Date(dVal)) === todayStr;
         });
 
         generateSalesReport(`Today's Sales Report (${todayStr})`, data);
@@ -19,11 +20,13 @@ export function initPdfReports() {
         const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : today.toDateString();
         
         const sales = (window.salesHistory || []).filter(s => {
-            return window.getDDMMYYYY && window.getDDMMYYYY(new Date(s.date)) === todayStr;
+            const dVal = s.date || s.timestamp || s.created_at;
+            return dVal && window.getDDMMYYYY && window.getDDMMYYYY(new Date(dVal)) === todayStr;
         });
 
         const expenses = (window.expensesHistory || []).filter(e => {
-            return window.getDDMMYYYY && window.getDDMMYYYY(new Date(e.date)) === todayStr;
+            const dVal = e.date || e.timestamp || e.created_at;
+            return dVal && window.getDDMMYYYY && window.getDDMMYYYY(new Date(dVal)) === todayStr;
         });
 
         generateProfitReport(`Today's Profit & Loss Statement (${todayStr})`, sales, expenses);
@@ -34,7 +37,8 @@ export function initPdfReports() {
         const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : today.toDateString();
 
         const data = (window.expensesHistory || []).filter(e => {
-            return window.getDDMMYYYY && window.getDDMMYYYY(new Date(e.date)) === todayStr;
+            const dVal = e.date || e.timestamp || e.created_at;
+            return dVal && window.getDDMMYYYY && window.getDDMMYYYY(new Date(dVal)) === todayStr;
         });
 
         generateExpensesReport(`Today's Expenses Report (${todayStr})`, data);
@@ -47,7 +51,9 @@ export function initPdfReports() {
         const currentMonth = now.getMonth();
 
         const data = (window.salesHistory || []).filter(s => {
-            const d = new Date(s.date);
+            const dVal = s.date || s.timestamp || s.created_at;
+            if (!dVal) return false;
+            const d = new Date(dVal);
             return d.getMonth() === currentMonth && d.getFullYear() === year;
         });
 
@@ -61,7 +67,9 @@ export function initPdfReports() {
         const currentMonth = now.getMonth();
 
         const data = (window.expensesHistory || []).filter(e => {
-            const d = new Date(e.date);
+            const dVal = e.date || e.timestamp || e.created_at;
+            if (!dVal) return false;
+            const d = new Date(dVal);
             return d.getMonth() === currentMonth && d.getFullYear() === year;
         });
 
@@ -75,12 +83,16 @@ export function initPdfReports() {
         const currentMonth = now.getMonth();
 
         const sales = (window.salesHistory || []).filter(s => {
-            const d = new Date(s.date);
+            const dVal = s.date || s.timestamp || s.created_at;
+            if (!dVal) return false;
+            const d = new Date(dVal);
             return d.getMonth() === currentMonth && d.getFullYear() === year;
         });
 
         const expenses = (window.expensesHistory || []).filter(e => {
-            const d = new Date(e.date);
+            const dVal = e.date || e.timestamp || e.created_at;
+            if (!dVal) return false;
+            const d = new Date(dVal);
             return d.getMonth() === currentMonth && d.getFullYear() === year;
         });
 
@@ -166,11 +178,24 @@ export function initPdfReports() {
         });
 
         const reportData = Object.values(itemMap).sort((a, b) => b.quantity - a.quantity);
-        const itemTableBody = reportData.map((item, i) => [
-            i + 1,
-            item.name,
-            item.quantity,
-            `Rs. ${item.revenue.toFixed(2)}`
+        let totalItemQty = 0;
+        let totalItemRev = 0;
+        const itemTableBody = reportData.map((item, i) => {
+            totalItemQty += item.quantity;
+            totalItemRev += item.revenue;
+            return [
+                i + 1,
+                item.name,
+                item.quantity,
+                `Rs. ${item.revenue.toFixed(2)}`
+            ];
+        });
+
+        itemTableBody.push([
+            '',
+            { content: 'TOTAL', styles: { fontStyle: 'bold' } },
+            { content: totalItemQty.toString(), styles: { fontStyle: 'bold' } },
+            { content: `Rs. ${totalItemRev.toFixed(2)}`, styles: { fontStyle: 'bold' } }
         ]);
 
         doc.autoTable({
@@ -300,11 +325,24 @@ function generateSalesReport(title, data) {
     });
 
     const reportData = Object.values(itemMap).sort((a, b) => b.quantity - a.quantity);
-    const itemTableBody = reportData.map((item, i) => [
-        i + 1,
-        item.name,
-        item.quantity,
-        `Rs. ${item.revenue.toFixed(2)}`
+    let totalItemQty = 0;
+    let totalItemRev = 0;
+    const itemTableBody = reportData.map((item, i) => {
+        totalItemQty += item.quantity;
+        totalItemRev += item.revenue;
+        return [
+            i + 1,
+            item.name,
+            item.quantity,
+            `Rs. ${item.revenue.toFixed(2)}`
+        ];
+    });
+
+    itemTableBody.push([
+        '',
+        { content: 'TOTAL', styles: { fontStyle: 'bold' } },
+        { content: totalItemQty.toString(), styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalItemRev.toFixed(2)}`, styles: { fontStyle: 'bold' } }
     ]);
 
     doc.autoTable({
