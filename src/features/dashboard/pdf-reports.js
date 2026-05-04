@@ -171,25 +171,21 @@ export function initPdfReports() {
         doc.setFont(undefined, 'bold');
         doc.text("2. Item-wise Sales Ranking", margin, itemStartY - 5);
 
-        // Aggregate items — use proportional share of actual bill total to match bill-wise total
+        // Aggregate items — actual price × qty (gross, before discount)
         const itemMap = {};
+        let totalDiscount = 0;
         sales.forEach(sale => {
-            const saleTotal = parseFloat(sale.total || 0);
-            const rawSubtotal = (sale.items || []).reduce((sum, item) => {
-                return sum + parseFloat(item.price || 0) * parseFloat(item.cartQty || item.qty || 0);
-            }, 0);
-            const ratio = rawSubtotal > 0 ? saleTotal / rawSubtotal : 1;
-
+            totalDiscount += parseFloat(sale.discount || 0);
             (sale.items || []).forEach(item => {
                 const name = item.name || "Unknown";
                 const qty = parseFloat(item.cartQty || item.qty || 0);
-                const adjustedRevenue = parseFloat(item.price || 0) * qty * ratio;
+                const revenue = parseFloat(item.price || 0) * qty;
                 
                 if (!itemMap[name]) {
                     itemMap[name] = { name, quantity: 0, revenue: 0 };
                 }
                 itemMap[name].quantity += qty;
-                itemMap[name].revenue += adjustedRevenue;
+                itemMap[name].revenue += revenue;
             });
         });
 
@@ -207,11 +203,28 @@ export function initPdfReports() {
             ];
         });
 
+        const netTotal = totalItemRev - totalDiscount;
+
+        // Row 1: Gross Total
         itemTableBody.push([
             '',
-            { content: 'TOTAL', styles: { fontStyle: 'bold' } },
+            { content: 'Gross Total', styles: { fontStyle: 'bold' } },
             { content: totalItemQty.toString(), styles: { fontStyle: 'bold' } },
             { content: `Rs. ${totalItemRev.toFixed(2)}`, styles: { fontStyle: 'bold' } }
+        ]);
+        // Row 2: Less Discount
+        itemTableBody.push([
+            '',
+            { content: 'Less: Discount', styles: { fontStyle: 'italic', textColor: [239, 68, 68] } },
+            '',
+            { content: `- Rs. ${totalDiscount.toFixed(2)}`, styles: { fontStyle: 'italic', textColor: [239, 68, 68] } }
+        ]);
+        // Row 3: Net Total
+        itemTableBody.push([
+            '',
+            { content: 'Net Total (= Bill Total)', styles: { fontStyle: 'bold', textColor: [34, 197, 94] } },
+            '',
+            { content: `Rs. ${netTotal.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [34, 197, 94] } }
         ]);
 
         doc.autoTable({
@@ -325,25 +338,21 @@ function generateSalesReport(title, data) {
     doc.setFont(undefined, 'bold');
     doc.text("Item-wise Sales Ranking", margin, itemStartY - 5);
 
-    // Aggregate items — use proportional share of actual bill total to match bill-wise total
+    // Aggregate items — actual price × qty (gross, before discount)
     const itemMap = {};
+    let totalDiscount = 0;
     data.forEach(sale => {
-        const saleTotal = parseFloat(sale.total || 0);
-        const rawSubtotal = (sale.items || []).reduce((sum, item) => {
-            return sum + parseFloat(item.price || 0) * parseFloat(item.cartQty || item.qty || 0);
-        }, 0);
-        const ratio = rawSubtotal > 0 ? saleTotal / rawSubtotal : 1;
-
+        totalDiscount += parseFloat(sale.discount || 0);
         (sale.items || []).forEach(item => {
             const name = item.name || "Unknown";
             const qty = parseFloat(item.cartQty || item.qty || 0);
-            const adjustedRevenue = parseFloat(item.price || 0) * qty * ratio;
+            const revenue = parseFloat(item.price || 0) * qty;
             
             if (!itemMap[name]) {
                 itemMap[name] = { name, quantity: 0, revenue: 0 };
             }
             itemMap[name].quantity += qty;
-            itemMap[name].revenue += adjustedRevenue;
+            itemMap[name].revenue += revenue;
         });
     });
 
@@ -361,11 +370,28 @@ function generateSalesReport(title, data) {
         ];
     });
 
+    const netTotal = totalItemRev - totalDiscount;
+
+    // Row 1: Gross Total
     itemTableBody.push([
         '',
-        { content: 'TOTAL', styles: { fontStyle: 'bold' } },
+        { content: 'Gross Total', styles: { fontStyle: 'bold' } },
         { content: totalItemQty.toString(), styles: { fontStyle: 'bold' } },
         { content: `Rs. ${totalItemRev.toFixed(2)}`, styles: { fontStyle: 'bold' } }
+    ]);
+    // Row 2: Less Discount
+    itemTableBody.push([
+        '',
+        { content: 'Less: Discount', styles: { fontStyle: 'italic', textColor: [239, 68, 68] } },
+        '',
+        { content: `- Rs. ${totalDiscount.toFixed(2)}`, styles: { fontStyle: 'italic', textColor: [239, 68, 68] } }
+    ]);
+    // Row 3: Net Total
+    itemTableBody.push([
+        '',
+        { content: 'Net Total (= Bill Total)', styles: { fontStyle: 'bold', textColor: [34, 197, 94] } },
+        '',
+        { content: `Rs. ${netTotal.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [34, 197, 94] } }
     ]);
 
     doc.autoTable({
