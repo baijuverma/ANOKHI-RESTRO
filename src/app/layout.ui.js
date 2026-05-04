@@ -583,8 +583,8 @@ export const appShellHTML = `
                                 <label style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">To:</label>
                                 <input type="date" id="history-end-date" onchange="window.renderHistory()" style="background: transparent; border: none; color: white; font-size: 13px; outline: none;">
                             </div>
-                            <button class="btn-success" onclick="window.downloadGrossReport()" style="padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; height: auto;">
-                                <i class="fa-solid fa-file-pdf"></i> Gross Report
+                            <button onclick="window.downloadGrossReport()" style="padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; height: auto; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; cursor: pointer;">
+                                <i class="fa-solid fa-file-pdf" style="font-size: 15px;"></i> Gross Report PDF
                             </button>
                         </div>
                     </div>
