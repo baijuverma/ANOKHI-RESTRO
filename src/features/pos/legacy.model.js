@@ -23,7 +23,7 @@ window.newBill = function() {
                 allTables[tableIndex].cart = [];
             }
             allTables[tableIndex].advance = 0;
-            if (typeof saveData === 'function') saveData();
+            if (typeof window.saveData === 'function') window.saveData();
         }
     }
     
@@ -60,8 +60,8 @@ window.newBill = function() {
         window.refreshUI();
     } else {
         if (typeof window.renderCart === 'function') window.renderCart();
-        if (typeof renderTableGrid === 'function') renderTableGrid(); 
-        if (typeof renderPOSItems === 'function') renderPOSItems(); 
+        if (typeof window.renderTableGrid === 'function') window.renderTableGrid(); 
+        if (typeof window.renderPOSItems === 'function') window.renderPOSItems(); 
     }
 }
 
@@ -110,7 +110,7 @@ window.calculateTotal = function() {
             totalEl.innerText = formatCurrency(finalTotal);
         }
         
-        if (typeof calculateDues === 'function') calculateDues();
+        if (typeof window.calculateDues === 'function') window.calculateDues();
         
         // Update table indicator in total row
         const tableIndicator = document.getElementById('total-table-indicator');
@@ -199,7 +199,7 @@ window.autoFillPayment = function(type) {
         } else if (type === 'upi') {
             upiInput.value = remainingToPay;
         }
-        if (typeof calculateDues === 'function') calculateDues();
+        if (typeof window.calculateDues === 'function') window.calculateDues();
     }
 };
 
@@ -254,13 +254,13 @@ window.toggleSplitPayment = function() {
 }
 
 window.processSale = function() {
-    if(cart.length === 0) return alert('Cart is empty!');
+    if((window.cart || []).length === 0) return alert('Cart is empty!');
 
-    if (selectedOrderType === 'DINE_IN' && !currentSelectedTable) {
+    if (window.selectedOrderType === 'DINE_IN' && !window.currentSelectedTable) {
         return alert('Validation Error: Please select a table before completing a Dine-In sale.');
     }
 
-    const totals = calculateTotal();
+    const totals = window.calculateTotal();
     const total = totals.total;
     const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
     const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
@@ -362,20 +362,20 @@ window.holdOrder = async function() {
         localStorage.setItem('anokhi_tables', JSON.stringify(window.tables));
         
         // Non-blocking sync
-        saveData().catch(e => console.warn("Sync failed:", e));
+        if (typeof window.saveData === 'function') window.saveData().catch(e => console.warn("Sync failed:", e));
 
         window.clearCart();
         window.currentSelectedTable = null;
         const tableNameEl = document.getElementById('current-table-name');
         if (tableNameEl) tableNameEl.innerText = 'No Table Selected';
         
-        if (typeof renderActiveOrders === 'function') renderActiveOrders();
-        if (typeof renderTableGrid === 'function') renderTableGrid();
+        if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
+        if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
         
-        showToast('Order Success: Order is now on Hold.', 'success');
+        if (typeof window.showToast === 'function') window.showToast('Order Success: Order is now on Hold.', 'success');
     } catch (error) {
         console.error("Hold Order Error:", error);
-        showToast('Internal Error. Please try again.', 'error');
+        if (typeof window.showToast === 'function') window.showToast('Internal Error. Please try again.', 'error');
     }
 };
 
@@ -423,13 +423,13 @@ window.loadActiveOrder = async function(id) {
     if (holdBtn) holdBtn.innerHTML = '<i class="fa-solid fa-clock"></i> Update [F8]';
 
     // Remove from active orders
-    window.activeOrders = orders.filter(o => o.id !== id);
+    window.activeOrders = orders.filter(o => String(o.id) !== String(id));
     localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders));
     
-    saveData().catch(e => console.warn("Sync failed after load:", e));
+    if (typeof window.saveData === 'function') window.saveData().catch(e => console.warn("Sync failed after load:", e));
     
     // Explicitly delete from Supabase to ensure clean removal
-    if (db) await db.from('active_orders').delete().eq('id', id);
+    if (window.db) await window.db.from('active_orders').delete().eq('id', id);
 
     if (typeof window.refreshUI === 'function') {
         window.refreshUI();
@@ -448,10 +448,10 @@ window.deleteActiveOrder = async function(id) {
     window.activeOrders = (window.activeOrders || []).filter(o => o.id !== id);
     localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders));
     
-    saveData().catch(e => console.warn("Sync failed after delete:", e));
-    if (db) await db.from('active_orders').delete().eq('id', id);
+    if (typeof window.saveData === 'function') window.saveData().catch(e => console.warn("Sync failed after delete:", e));
+    if (window.db) await window.db.from('active_orders').delete().eq('id', id);
     
-    if (typeof renderActiveOrders === 'function') renderActiveOrders();
+    if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
 };
 
 window.renderActiveOrders = function() {
@@ -503,7 +503,7 @@ window.renderActiveOrders = function() {
                 ${order.tableName || order.orderType}
             </div>
             <div style="font-size:10px; font-weight:700; color:var(--warning-color); margin-top:4px;">
-                ${formatCurrency(order.total)}
+                ${window.formatCurrency ? window.formatCurrency(order.total) : `₹${order.total}`}
             </div>
             <div style="font-size:8px; color:var(--text-secondary); margin-top:2px;">
                 ${order.items.length} Items • ${timeStr}

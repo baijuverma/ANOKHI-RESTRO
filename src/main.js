@@ -183,6 +183,10 @@ window.renderInventory = () => {
     }
     
     const pageItems = inventoryPagination.getPageItems();
+    console.log(`Rendering Inventory Table: Page ${inventoryPagination.currentPage}, Items: ${pageItems.length}/${filtered.length}`);
+    if (pageItems.length > 0) {
+        console.log('Sample Item (0):', { name: pageItems[0].name, qty: pageItems[0].quantity });
+    }
     renderInventoryTable('inventory-tbody', pageItems, 0);
     
     // Render Pagination Controls

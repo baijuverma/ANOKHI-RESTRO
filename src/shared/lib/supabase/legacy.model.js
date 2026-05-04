@@ -115,16 +115,22 @@ export function initSupabaseLogic() {
                     };
                     const idx = window.inventory.findIndex(i => String(i.id) === String(mapped.id));
                     if (idx > -1) {
+                        console.log(`Inventory Update: Index ${idx}. Old Qty: ${window.inventory[idx].quantity}, New Qty: ${mapped.quantity}`);
                         window.inventory[idx] = mapped;
                     } else {
+                        console.log('Inventory Insert: New item added.');
                         window.inventory.push(mapped);
                     }
                 } else if (eventType === 'DELETE') {
+                    console.log('Inventory Delete: Removing item.');
                     window.inventory = window.inventory.filter(i => String(i.id) !== String(oldItem.id));
                 }
                 
                 localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
-                if (typeof window.renderInventory === 'function') window.renderInventory();
+                if (typeof window.renderInventory === 'function') {
+                    console.log('Refreshing Inventory UI...');
+                    window.renderInventory();
+                }
                 if (typeof window.renderPOSItems === 'function') window.renderPOSItems();
                 if (typeof window.updateDashboard === 'function') window.updateDashboard();
             })

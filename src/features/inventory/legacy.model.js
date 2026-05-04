@@ -113,7 +113,7 @@ window.showStockList = function(type, isLoadMore = false) {
 
 window.showTodaySalesList = function() {
     const todayStr = getDDMMYYYY(new Date());
-    let todaySales = salesHistory.filter(s => getDDMMYYYY(new Date(s.date)) === todayStr);
+    let todaySales = (window.salesHistory || []).filter(s => getDDMMYYYY(new Date(s.date)) === todayStr);
     
     // aggregate items
     let itemsSold = {};
@@ -249,11 +249,11 @@ function handleRestockSubmit(e) {
 
     const index = (window.inventory || []).findIndex(i => String(i.id) === String(id));
     if(index > -1 && qtyToAdd > 0) {
-        inventory[index].quantity += qtyToAdd;
-        saveData();
+        window.inventory[index].quantity += qtyToAdd;
+        if (typeof window.saveData === 'function') window.saveData();
         closeModal('restockModal');
-        if (typeof renderInventory === 'function') renderInventory();
-        if (typeof updateDashboard === 'function') updateDashboard();
+        if (typeof window.renderInventory === 'function') window.renderInventory();
+        if (typeof window.updateDashboard === 'function') window.updateDashboard();
     }
 }
 
@@ -304,13 +304,13 @@ window.deleteItem = async function(id) {
 // POS Logic
 
 window.filterInventoryByType = function(type) {
-    inventoryTypeFilter = type;
+    window.inventoryTypeFilter = type;
     // Update button styles
     const btns = { all: document.getElementById('filter-all'), veg: document.getElementById('filter-veg'), nonveg: document.getElementById('filter-nonveg') };
     if (btns.all) { btns.all.style.background = type==='all' ? 'var(--accent-color)' : 'transparent'; btns.all.style.color = type==='all' ? 'white' : 'var(--accent-color)'; }
     if (btns.veg) { btns.veg.style.background = type==='veg' ? '#22c55e' : 'transparent'; btns.veg.style.color = type==='veg' ? 'white' : '#22c55e'; }
     if (btns.nonveg) { btns.nonveg.style.background = type==='nonveg' ? '#ef4444' : 'transparent'; btns.nonveg.style.color = type==='nonveg' ? 'white' : '#ef4444'; }
-    renderInventory();
+    if (typeof window.renderInventory === 'function') window.renderInventory();
 }
 
 // POS Filter logic moved to main.js
