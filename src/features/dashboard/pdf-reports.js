@@ -126,28 +126,19 @@ export function initPdfReports() {
             `Rs. ${parseFloat(s.total || 0).toFixed(2)}`
         ]);
 
-        const drawnPages = new Set();
-        const safeAddFooter = (d, p) => {
-            if (drawnPages.has(p)) return;
-            addFooter(d, p);
-            drawnPages.add(p);
-        };
-
         doc.autoTable({
             head: [['Sr.', 'Bill ID', 'Date', 'Type', 'Mode', 'Amount']],
             body: billTableBody,
             startY: margin + 32,
             margin: { left: margin, right: margin },
             headStyles: { fillColor: [99, 102, 241] }, // Indigo for bills
-            styles: { fontSize: 8 },
-            didDrawPage: (data) => safeAddFooter(doc, data.pageNumber)
+            styles: { fontSize: 8 }
         });
 
         const totalRevenue = sales.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
         const billY = doc.lastAutoTable.finalY || 100;
 
         // --- Section 2: Item-wise Ranking Summary ---
-        // Check if we need a new page or just space
         let itemStartY = billY + 20;
         if (itemStartY > 240) {
             doc.addPage();
@@ -188,8 +179,7 @@ export function initPdfReports() {
             startY: itemStartY,
             margin: { left: margin, right: margin },
             headStyles: { fillColor: [34, 197, 94] }, // Green for rankings
-            styles: { fontSize: 9 },
-            didDrawPage: (data) => safeAddFooter(doc, data.pageNumber)
+            styles: { fontSize: 9 }
         });
 
         const finalY = doc.lastAutoTable.finalY || 150;
@@ -198,7 +188,12 @@ export function initPdfReports() {
         doc.setFont(undefined, 'bold');
         doc.text(`Total Period Revenue: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 80, finalY + 12);
 
-        safeAddFooter(doc, doc.internal.getNumberOfPages());
+        // --- Add Footers to All Pages at Once ---
+        const totalPagesCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPagesCount; i++) {
+            doc.setPage(i);
+            addFooter(doc, i);
+        }
         
         if (typeof doc.putTotalPages === 'function') {
             doc.putTotalPages('{totalPages}');
