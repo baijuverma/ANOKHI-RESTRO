@@ -233,7 +233,7 @@ function handleItemSubmit(e) {
 // Inventory Table Logic (Now handled by widgets/inventory-table)
 
 window.openRestockModal = function(id) {
-    const item = inventory.find(i => i.id === id);
+    const item = (window.inventory || []).find(i => String(i.id) === String(id));
     if(item) {
         document.getElementById('restock-item-id').value = item.id;
         document.getElementById('restock-item-name').innerText = `Adding stock for: ${item.name}`;
@@ -247,7 +247,7 @@ function handleRestockSubmit(e) {
     const id = document.getElementById('restock-item-id').value;
     const qtyToAdd = parseInt(document.getElementById('restock-quantity').value);
 
-    const index = inventory.findIndex(i => i.id == id);
+    const index = (window.inventory || []).findIndex(i => String(i.id) === String(id));
     if(index > -1 && qtyToAdd > 0) {
         inventory[index].quantity += qtyToAdd;
         saveData();
@@ -263,7 +263,7 @@ window.handleRestockSubmit = handleRestockSubmit;
 
 
 window.editItem = function(id) {
-    const item = inventory.find(i => i.id === id);
+    const item = (window.inventory || []).find(i => String(i.id) === String(id));
     if(item) {
         document.getElementById('item-id').value = item.id;
         document.getElementById('item-name').value = item.name;

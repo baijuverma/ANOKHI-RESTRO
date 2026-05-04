@@ -139,21 +139,21 @@ window.showStockList = function(type) {
 };
 
 window.viewReceipt = function(id) {
-    const sale = (window.salesHistory || []).find(s => s.id === id);
+    const sale = (window.salesHistory || []).find(s => String(s.id) === String(id));
     if (sale && typeof window.showReceipt === 'function') window.showReceipt(sale);
 };
 
 window.deleteSale = async function(saleId) {
     window.requestAdminVerification("Deleting this sale will restore item stock.", async () => {
-        const sale = (window.salesHistory || []).find(s => s.id === saleId);
+        const sale = (window.salesHistory || []).find(s => String(s.id) === String(saleId));
         if (sale) {
             // Restore Stock
             sale.items.forEach(cartItem => {
-                const invItem = (window.inventory || []).find(i => i.id === cartItem.id);
+                const invItem = (window.inventory || []).find(i => String(i.id) === String(cartItem.id));
                 if (invItem) invItem.quantity += cartItem.cartQty;
             });
 
-            window.salesHistory = window.salesHistory.filter(s => s.id !== saleId);
+            window.salesHistory = window.salesHistory.filter(s => String(s.id) !== String(saleId));
             window.saveData();
             
             if (window.db) await window.db.from('sales_history').delete().eq('id', saleId);

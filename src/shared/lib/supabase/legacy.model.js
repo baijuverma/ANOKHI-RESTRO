@@ -45,7 +45,7 @@ export function initSupabaseLogic() {
             if (tableData && tableData.length > 0) {
                 // Map db tables to local structure if needed
                 window.tables = window.tables.map(t => {
-                    const dbTable = tableData.find(dt => dt.id === t.id);
+                    const dbTable = tableData.find(dt => String(dt.id) === String(t.id));
                     return dbTable ? { ...t, ...dbTable } : t;
                 });
                 localStorage.setItem('anokhi_tables', JSON.stringify(window.tables));
@@ -113,14 +113,14 @@ export function initSupabaseLogic() {
                         quantity: newItem.quantity,
                         lowStockThreshold: newItem.low_stock_threshold || 5
                     };
-                    const idx = window.inventory.findIndex(i => i.id === mapped.id);
+                    const idx = window.inventory.findIndex(i => String(i.id) === String(mapped.id));
                     if (idx > -1) {
                         window.inventory[idx] = mapped;
                     } else {
                         window.inventory.push(mapped);
                     }
                 } else if (eventType === 'DELETE') {
-                    window.inventory = window.inventory.filter(i => i.id !== oldItem.id);
+                    window.inventory = window.inventory.filter(i => String(i.id) !== String(oldItem.id));
                 }
                 
                 localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
@@ -137,7 +137,7 @@ export function initSupabaseLogic() {
                 const { eventType, new: newTable } = payload;
                 
                 if (eventType === 'INSERT' || eventType === 'UPDATE') {
-                    const idx = window.tables.findIndex(t => t.id === newTable.id);
+                    const idx = window.tables.findIndex(t => String(t.id) === String(newTable.id));
                     if (idx > -1) {
                         window.tables[idx] = { 
                             ...window.tables[idx], 
@@ -161,8 +161,8 @@ export function initSupabaseLogic() {
                 localStorage.setItem('anokhi_tables', JSON.stringify(window.tables));
                 if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
                 
-                if (window.currentSelectedTable && window.currentSelectedTable.id === newTable.id) {
-                    window.currentSelectedTable = window.tables.find(t => t.id === newTable.id);
+                if (window.currentSelectedTable && String(window.currentSelectedTable.id) === String(newTable.id)) {
+                    window.currentSelectedTable = window.tables.find(t => String(t.id) === String(newTable.id));
                     window.cart = window.currentSelectedTable.cart || [];
                     if (typeof window.renderCart === 'function') window.renderCart();
                 }
@@ -192,14 +192,14 @@ export function initSupabaseLogic() {
                         customerMobile: newSale.customer_mobile || newSale.customerMobile,
                         dues: newSale.dues ?? (parseFloat(newSale.total || 0) - parseFloat(newSale.advance_paid || 0))
                     };
-                    const idx = window.salesHistory.findIndex(s => s.id === mapped.id);
+                    const idx = window.salesHistory.findIndex(s => String(s.id) === String(mapped.id));
                     if (idx > -1) {
                         window.salesHistory[idx] = mapped;
                     } else {
                         window.salesHistory.unshift(mapped);
                     }
                 } else if (eventType === 'DELETE') {
-                    window.salesHistory = window.salesHistory.filter(s => s.id !== oldSale.id);
+                    window.salesHistory = window.salesHistory.filter(s => String(s.id) !== String(oldSale.id));
                 }
                 
                 localStorage.setItem('anokhi_sales', JSON.stringify(window.salesHistory));
@@ -215,14 +215,14 @@ export function initSupabaseLogic() {
                 const { eventType, new: newExpense, old: oldExpense } = payload;
                 
                 if (eventType === 'INSERT' || eventType === 'UPDATE') {
-                    const idx = window.expensesHistory.findIndex(e => e.id === newExpense.id);
+                    const idx = window.expensesHistory.findIndex(e => String(e.id) === String(newExpense.id));
                     if (idx > -1) {
                         window.expensesHistory[idx] = newExpense;
                     } else {
                         window.expensesHistory.unshift(newExpense);
                     }
                 } else if (eventType === 'DELETE') {
-                    window.expensesHistory = window.expensesHistory.filter(e => e.id !== oldExpense.id);
+                    window.expensesHistory = window.expensesHistory.filter(e => String(e.id) !== String(oldExpense.id));
                 }
                 
                 localStorage.setItem('anokhi_expenses', JSON.stringify(window.expensesHistory));
@@ -250,11 +250,11 @@ export function initSupabaseLogic() {
                         customerMobile: newOrder.customer_mobile,
                         createdAt: newOrder.created_at
                     };
-                    const idx = window.activeOrders.findIndex(o => o.id === mapped.id);
+                    const idx = window.activeOrders.findIndex(o => String(o.id) === String(mapped.id));
                     if (idx > -1) window.activeOrders[idx] = mapped;
                     else window.activeOrders.unshift(mapped);
                 } else if (eventType === 'DELETE') {
-                    window.activeOrders = window.activeOrders.filter(o => o.id !== oldOrder.id);
+                    window.activeOrders = window.activeOrders.filter(o => String(o.id) !== String(oldOrder.id));
                 }
                 
                 localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders));

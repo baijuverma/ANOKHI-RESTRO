@@ -425,28 +425,6 @@ initSidebar();
 initBoot();
 
 // ============================================================
-// REALTIME SUBSCRIPTIONS
-// ============================================================
-const initRealtime = () => {
-    subscribeToTable('inventory', async () => {
-        await syncInventory();
-        window.refreshUI();
-    });
-    subscribeToTable('tables', async () => {
-        await syncTables();
-        window.refreshUI();
-    });
-    ['sales_history', 'expenses'].forEach(table => {
-        subscribeToTable(table, async () => {
-            if (typeof window.syncFromSupabase === 'function') {
-                await window.syncFromSupabase();
-                window.refreshUI();
-            }
-        });
-    });
-};
-
-// ============================================================
 // APP INIT
 // ============================================================
 const init = async () => {
@@ -467,8 +445,8 @@ const init = async () => {
 
     if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
 
-    initRealtime();
-
+    // Realtime is now handled inside syncFromSupabase call in legacy.model.js
+    
     // Global Timer
     setInterval(() => {
         document.querySelectorAll('.table-timer').forEach(el => {

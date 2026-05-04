@@ -15,7 +15,7 @@ window.newBill = function() {
     // If a table is selected, clear its saved cart and advance as well (Full Cancel)
     if (window.currentSelectedTable) {
         const allTables = window.tables || [];
-        const tableIndex = allTables.findIndex(t => t.id === window.currentSelectedTable);
+        const tableIndex = allTables.findIndex(t => String(t.id) === String(window.currentSelectedTable));
         if (tableIndex > -1) {
             if (typeof window.setCart === 'function') {
                 window.setCart([], tableIndex);
@@ -87,7 +87,7 @@ window.calculateTotal = function() {
         let advancePaid = 0;
         if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
             const allTables = window.tables || [];
-            const table = allTables.find(t => t.id === window.currentSelectedTable);
+            const table = allTables.find(t => String(t.id) === String(window.currentSelectedTable));
             if (table) advancePaid = table.advance || 0;
         }
 
@@ -285,7 +285,7 @@ window.processSale = function() {
         const mobileInput = document.getElementById('cust-mobile');
         
         if (window.editingSaleId) {
-            const sale = (window.salesHistory || []).find(s => s.id == window.editingSaleId);
+            const sale = (window.salesHistory || []).find(s => String(s.id) === String(window.editingSaleId));
             if (sale) {
                 if (nameInput) nameInput.value = sale.customerName || '';
                 if (mobileInput) mobileInput.value = sale.customerMobile || '';
@@ -328,7 +328,7 @@ window.holdOrder = async function() {
         // Get table name if DINE_IN
         let tableName = null;
         if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
-            const tbl = (window.tables || []).find(t => t.id === window.currentSelectedTable);
+            const tbl = (window.tables || []).find(t => String(t.id) === String(window.currentSelectedTable));
             tableName = tbl ? tbl.name : window.currentSelectedTable;
         }
 
@@ -351,7 +351,7 @@ window.holdOrder = async function() {
         
         if (window.selectedOrderType === 'DINE_IN' && window.currentSelectedTable) {
             const allTables = window.tables || [];
-            const tIdx = allTables.findIndex(t => t.id === window.currentSelectedTable);
+            const tIdx = allTables.findIndex(t => String(t.id) === String(window.currentSelectedTable));
             if (tIdx > -1) {
                 allTables[tIdx].cart = [];
                 allTables[tIdx].advance = 0;
@@ -381,7 +381,7 @@ window.holdOrder = async function() {
 
 window.loadActiveOrder = async function(id) {
     const orders = window.activeOrders || [];
-    const order = orders.find(o => o.id === id);
+    const order = orders.find(o => String(o.id) === String(id));
     if (!order) return;
 
     if (window.cart && window.cart.length > 0) {
@@ -403,7 +403,7 @@ window.loadActiveOrder = async function(id) {
         
         // Update table's own cart so it doesn't stay empty
         const allTables = window.tables || [];
-        const tIdx = allTables.findIndex(t => t.id === order.tableId);
+        const tIdx = allTables.findIndex(t => String(t.id) === String(order.tableId));
         if (tIdx > -1) {
             allTables[tIdx].cart = JSON.parse(JSON.stringify(newCart));
             localStorage.setItem('anokhi_tables', JSON.stringify(allTables));
@@ -549,7 +549,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
 
             if (oldSale.items) {
                 oldSale.items.forEach(oldItem => {
-                    const invItem = (window.inventory || []).find(i => i.id === oldItem.id);
+                    const invItem = (window.inventory || []).find(i => String(i.id) === String(oldItem.id));
                     if (invItem) invItem.quantity += oldItem.cartQty;
                 });
             }
@@ -576,7 +576,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
 
     // Deduct Inventory
     (window.cart || []).forEach(cartItem => {
-        const invItem = (window.inventory || []).find(i => i.id === cartItem.id);
+        const invItem = (window.inventory || []).find(i => String(i.id) === String(cartItem.id));
         if(invItem) {
             invItem.quantity -= cartItem.cartQty;
         }
@@ -653,7 +653,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
 
 
 window.editSale = function(id) {
-    const sale = (window.salesHistory || []).find(s => s.id == id);
+    const sale = (window.salesHistory || []).find(s => String(s.id) === String(id));
     if (!sale) return;
     
     if ((window.cart || []).length > 0) {
