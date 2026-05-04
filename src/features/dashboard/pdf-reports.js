@@ -100,6 +100,45 @@ export function initPdfReports() {
         doc.setFontSize(10);
         doc.text(`Generated on: ${new Date().toLocaleString()}`, margin, margin + 18);
 
+        // --- Section 1: Bill-wise Transactions ---
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.text("1. Bill-wise Transactions", margin, margin + 28);
+        
+        const billTableBody = sales.map((s, i) => [
+            i + 1,
+            s.id.toString().slice(-6),
+            new Date(s.date).toLocaleDateString(),
+            s.orderType || 'Counter',
+            (s.payment_mode || 'CASH').toUpperCase(),
+            `Rs. ${parseFloat(s.total || 0).toFixed(2)}`
+        ]);
+
+        doc.autoTable({
+            head: [['Sr.', 'Bill ID', 'Date', 'Type', 'Mode', 'Amount']],
+            body: billTableBody,
+            startY: margin + 32,
+            margin: { left: margin, right: margin },
+            headStyles: { fillColor: [99, 102, 241] }, // Indigo for bills
+            styles: { fontSize: 8 },
+            didDrawPage: (data) => addFooter(doc, data.pageNumber)
+        });
+
+        const totalRevenue = sales.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
+        const billY = doc.lastAutoTable.finalY || 100;
+
+        // --- Section 2: Item-wise Ranking Summary ---
+        // Check if we need a new page or just space
+        let itemStartY = billY + 20;
+        if (itemStartY > 240) {
+            doc.addPage();
+            itemStartY = 20;
+        }
+
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.text("2. Item-wise Sales Ranking", margin, itemStartY - 5);
+
         // Aggregate items
         const itemMap = {};
         sales.forEach(sale => {
@@ -117,7 +156,7 @@ export function initPdfReports() {
         });
 
         const reportData = Object.values(itemMap).sort((a, b) => b.quantity - a.quantity);
-        const tableBody = reportData.map((item, i) => [
+        const itemTableBody = reportData.map((item, i) => [
             i + 1,
             item.name,
             item.quantity,
@@ -125,23 +164,22 @@ export function initPdfReports() {
         ]);
 
         doc.autoTable({
-            head: [['Rank', 'Item Name', 'Quantity Sold', 'Revenue']],
-            body: tableBody,
-            startY: margin + 25,
+            head: [['Rank', 'Item Name', 'Qty Sold', 'Revenue']],
+            body: itemTableBody,
+            startY: itemStartY,
             margin: { left: margin, right: margin },
-            headStyles: { fillColor: [34, 197, 94] }, // Green header for success/profit
+            headStyles: { fillColor: [34, 197, 94] }, // Green for rankings
             styles: { fontSize: 9 },
             didDrawPage: (data) => addFooter(doc, data.pageNumber)
         });
 
-        const totalRevenue = reportData.reduce((sum, item) => sum + item.revenue, 0);
-        const finalY = doc.lastAutoTable.finalY || 40;
+        const finalY = doc.lastAutoTable.finalY || 150;
         
         doc.setFontSize(12);
         doc.setFont(undefined, 'bold');
-        doc.text(`Total Sales Revenue: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 80, finalY + 10);
+        doc.text(`Total Period Revenue: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 80, finalY + 12);
 
-        addFooter(doc, 1);
+        addFooter(doc, doc.internal.getNumberOfPages());
         doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
     };
 }
