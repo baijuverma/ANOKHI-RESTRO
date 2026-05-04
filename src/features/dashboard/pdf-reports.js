@@ -86,6 +86,64 @@ export function initPdfReports() {
 
         generateProfitReport(`Monthly Profit & Loss Statement (${monthName} ${year})`, sales, expenses);
     };
+
+    window.generateGrossReport = (title, sales) => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const margin = 10;
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        doc.setFontSize(18);
+        doc.setTextColor(40);
+        doc.text(title, margin, margin + 10);
+        
+        doc.setFontSize(10);
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, margin, margin + 18);
+
+        // Aggregate items
+        const itemMap = {};
+        sales.forEach(sale => {
+            (sale.items || []).forEach(item => {
+                const name = item.name || "Unknown";
+                const qty = parseFloat(item.cartQty || item.qty || 0);
+                const total = parseFloat(item.price || 0) * qty;
+                
+                if (!itemMap[name]) {
+                    itemMap[name] = { name, quantity: 0, revenue: 0 };
+                }
+                itemMap[name].quantity += qty;
+                itemMap[name].revenue += total;
+            });
+        });
+
+        const reportData = Object.values(itemMap).sort((a, b) => b.quantity - a.quantity);
+        const tableBody = reportData.map((item, i) => [
+            i + 1,
+            item.name,
+            item.quantity,
+            `Rs. ${item.revenue.toFixed(2)}`
+        ]);
+
+        doc.autoTable({
+            head: [['Rank', 'Item Name', 'Quantity Sold', 'Revenue']],
+            body: tableBody,
+            startY: margin + 25,
+            margin: { left: margin, right: margin },
+            headStyles: { fillColor: [34, 197, 94] }, // Green header for success/profit
+            styles: { fontSize: 9 },
+            didDrawPage: (data) => addFooter(doc, data.pageNumber)
+        });
+
+        const totalRevenue = reportData.reduce((sum, item) => sum + item.revenue, 0);
+        const finalY = doc.lastAutoTable.finalY || 40;
+        
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text(`Total Sales Revenue: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 80, finalY + 10);
+
+        addFooter(doc, 1);
+        doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
+    };
 }
 
 function generateProfitReport(title, sales, expenses) {

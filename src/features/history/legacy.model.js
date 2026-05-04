@@ -194,45 +194,16 @@ window.downloadGrossReport = function() {
         return;
     }
 
-    // Aggregate items
-    const itemMap = {};
-    sales.forEach(sale => {
-        (sale.items || []).forEach(item => {
-            const name = item.name || "Unknown";
-            const qty = parseFloat(item.cartQty || item.qty || 0);
-            const total = parseFloat(item.price || 0) * qty;
-            
-            if (!itemMap[name]) {
-                itemMap[name] = { name, quantity: 0, revenue: 0 };
-            }
-            itemMap[name].quantity += qty;
-            itemMap[name].revenue += total;
-        });
-    });
-
-    // Convert to array and sort by quantity desc
-    const reportData = Object.values(itemMap).sort((a, b) => b.quantity - a.quantity);
-
-    // CSV Generation
-    let csv = "Rank,Item Name,Quantity Sold,Total Revenue (INR)\n";
-    reportData.forEach((item, index) => {
-        csv += `${index + 1},"${item.name}",${item.quantity},${item.revenue.toFixed(2)}\n`;
-    });
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    const dateRangeStr = (startDateStr || "") + (endDateStr ? "_to_" + endDateStr : "");
-    const filename = `Gross_Report_${dateRangeStr || "All_Time"}.csv`;
+    const dateRangeStr = (startDateStr || "") + (endDateStr ? " to " + endDateStr : "");
+    const title = `Gross Item Sales Report (${dateRangeStr || "All Time"})`;
     
-    link.setAttribute("href", url);
-    link.setAttribute("download", filename);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    if (typeof window.showToast === 'function') {
-        window.showToast("Gross Report downloaded successfully", "success");
+    if (typeof window.generateGrossReport === 'function') {
+        window.generateGrossReport(title, sales);
+        if (typeof window.showToast === 'function') {
+            window.showToast("Gross Report PDF generated successfully", "success");
+        }
+    } else {
+        console.error("PDF generation service not available");
+        alert("PDF service not loaded. Please refresh the page.");
     }
 };
