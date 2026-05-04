@@ -99,7 +99,7 @@ export function renderPaginationControls(containerId, pagination, onPageChange) 
     // Setup the observer to trigger loadMore automatically
     setupInfiniteScroll(sentinelId, () => {
         if (typeof window[onPageChange] === 'function') {
-            // Use a small timeout to avoid rapid fire
+            // Use a very small timeout for fast continuous scrolling
             if (window._loadingNextPage) return;
             window._loadingNextPage = true;
             
@@ -107,9 +107,9 @@ export function renderPaginationControls(containerId, pagination, onPageChange) 
             
             setTimeout(() => {
                 window._loadingNextPage = false;
-            }, 500);
+            }, 50); // Reduced from 500ms to 50ms for much faster scrolling
         }
-    }, { threshold: 0.1, rootMargin: '200px' });
+    }, { threshold: 0.1, rootMargin: '800px' }); // Increased rootMargin from 200px to 800px to start loading way before reaching bottom
 }
 
 window.setupInfiniteScroll = setupInfiniteScroll;

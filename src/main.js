@@ -135,6 +135,19 @@ window.highlightInventoryItem = (id) => {
 window.renderInventory = () => {
     if (!window.inventory) return;
     
+    // Update Summary Card
+    const totalCount = window.inventory.length;
+    const outCount = window.inventory.filter(i => i.quantity === 0).length;
+    const lowCount = window.inventory.filter(i => i.quantity > 0 && i.quantity <= (i.lowStockThreshold || 5)).length;
+    
+    const totalEl = document.getElementById('inv-total-count');
+    const outEl = document.getElementById('inv-out-count');
+    const lowEl = document.getElementById('inv-low-count');
+    
+    if (totalEl) totalEl.innerText = totalCount;
+    if (outEl) outEl.innerText = outCount;
+    if (lowEl) lowEl.innerText = lowCount;
+
     // Apply Veg/Non-Veg Filtering
     let filtered = window.inventory;
     const currentFilter = window.inventoryTypeFilter || 'all';

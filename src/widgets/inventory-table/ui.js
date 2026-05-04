@@ -14,11 +14,17 @@ export const renderInventoryTable = (containerId, inventory, offset = 0) => {
 
     container.innerHTML = inventory.map((item, index) => {
         let statusClass = 'status-ok';
-        if (item.quantity === 0) statusClass = 'status-out';
-        else if (item.quantity <= (item.lowStockThreshold || 5)) statusClass = 'status-low';
+        let rowBg = 'transparent';
+        if (item.quantity === 0) {
+            statusClass = 'status-out';
+            rowBg = 'rgba(239, 68, 68, 0.15)'; // Red tint for out of stock
+        } else if (item.quantity <= (item.lowStockThreshold || 5)) {
+            statusClass = 'status-low';
+            rowBg = 'rgba(245, 158, 11, 0.15)'; // Orange/Yellow tint for low stock
+        }
 
         return `
-            <tr data-id="${item.id}">
+            <tr data-id="${item.id}" style="background-color: ${rowBg};">
                 <td><input type="checkbox" class="inventory-checkbox" data-id="${item.id}" onclick="window.updateInventoryDeleteBtnVisibility()"></td>
                 <td style="color: var(--text-secondary); font-size: 11px;">${offset + index + 1}</td>
                 <td>${item.name}</td>

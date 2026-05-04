@@ -155,24 +155,44 @@ export const appShellHTML = `
 
             <!-- Inventory View -->
             <section id="inventory" class="view-section">
-                <header class="flex-between">
-                    <div>
-                        <h1>Inventory Management</h1>
-                        <p>Manage your ingredients and products</p>
+                <header>
+                    <div class="flex-between" style="margin-bottom: 15px;">
+                        <div>
+                            <h1>Inventory Management</h1>
+                            <p>Manage your ingredients and products</p>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                            <div class="search-bar" style="margin: 0; max-width: 200px;">
+                                <i class="fa-solid fa-search"></i>
+                                <input type="text" id="inventory-search" placeholder="Search items..." oninput="window.renderInventory()" style="width: 100%;">
+                            </div>
+                            <div style="display:flex; gap:8px; align-items:center;">
+                                <button id="filter-all" onclick="filterInventoryByType('all')" style="padding:6px 14px; border-radius:20px; border:2px solid var(--accent-color); background:var(--accent-color); color:white; cursor:pointer; font-size:12px; font-weight:700;">All</button>
+                                <button id="filter-veg" onclick="filterInventoryByType('veg')" style="padding:6px 14px; border-radius:20px; border:2px solid #22c55e; background:transparent; color:#22c55e; cursor:pointer; font-size:12px; font-weight:700;">&#9632; Veg</button>
+                                <button id="filter-nonveg" onclick="filterInventoryByType('nonveg')" style="padding:6px 14px; border-radius:20px; border:2px solid #ef4444; background:transparent; color:#ef4444; cursor:pointer; font-size:12px; font-weight:700;">&#9632; Non-Veg</button>
+                            </div>
+                            <button class="btn-primary" onclick="openAddItemModal()" style="padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700; height: auto;">
+                                <i class="fa-solid fa-plus"></i> Add New Item
+                            </button>
+                        </div>
                     </div>
-                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-                        <div class="search-bar" style="margin: 0; max-width: 200px;">
-                            <i class="fa-solid fa-search"></i>
-                            <input type="text" id="inventory-search" placeholder="Search items..." oninput="window.renderInventory()" style="width: 100%;">
+                    
+                    <!-- Single Integrated Stock Summary Card -->
+                    <div class="glass-panel" style="display: flex; justify-content: space-around; align-items: center; padding: 15px 20px; border-left: 4px solid var(--accent-color); border-radius: 12px; background: rgba(99, 102, 241, 0.05);">
+                        <div style="text-align: center; cursor: pointer; flex: 1;" onclick="window.showStockList('total')">
+                            <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;"><i class="fa-solid fa-boxes-stacked"></i> Total Stock</div>
+                            <div id="inv-total-count" style="font-size: 28px; font-weight: 800; color: white; margin-top: 5px;">0</div>
                         </div>
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <button id="filter-all" onclick="filterInventoryByType('all')" style="padding:6px 14px; border-radius:20px; border:2px solid var(--accent-color); background:var(--accent-color); color:white; cursor:pointer; font-size:12px; font-weight:700;">All</button>
-                            <button id="filter-veg" onclick="filterInventoryByType('veg')" style="padding:6px 14px; border-radius:20px; border:2px solid #22c55e; background:transparent; color:#22c55e; cursor:pointer; font-size:12px; font-weight:700;">&#9632; Veg</button>
-                            <button id="filter-nonveg" onclick="filterInventoryByType('nonveg')" style="padding:6px 14px; border-radius:20px; border:2px solid #ef4444; background:transparent; color:#ef4444; cursor:pointer; font-size:12px; font-weight:700;">&#9632; Non-Veg</button>
+                        <div style="width: 1px; height: 40px; background: rgba(255,255,255,0.1);"></div>
+                        <div style="text-align: center; cursor: pointer; flex: 1;" onclick="window.showStockList('low')">
+                            <div style="font-size: 11px; color: var(--warning-color); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;"><i class="fa-solid fa-triangle-exclamation"></i> Low Stock</div>
+                            <div id="inv-low-count" style="font-size: 28px; font-weight: 800; color: var(--warning-color); margin-top: 5px;">0</div>
                         </div>
-                        <button class="btn-primary" onclick="openAddItemModal()" style="padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700; height: auto;">
-                            <i class="fa-solid fa-plus"></i> Add New Item
-                        </button>
+                        <div style="width: 1px; height: 40px; background: rgba(255,255,255,0.1);"></div>
+                        <div style="text-align: center; cursor: pointer; flex: 1;" onclick="window.showStockList('out')">
+                            <div style="font-size: 11px; color: var(--danger-color); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;"><i class="fa-solid fa-circle-exclamation"></i> Out of Stock</div>
+                            <div id="inv-out-count" style="font-size: 28px; font-weight: 800; color: var(--danger-color); margin-top: 5px;">0</div>
+                        </div>
                     </div>
                 </header>
                 <div class="glass-panel mt-4">
