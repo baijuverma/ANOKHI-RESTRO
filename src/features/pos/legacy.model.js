@@ -648,6 +648,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     if (typeof window.updateDashboard === 'function') window.updateDashboard();
     if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
     if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
+    if (typeof window.renderHistory === 'function') window.renderHistory();
 }
 
 

@@ -13,7 +13,7 @@ export const createItemCard = (item, cartQty, onAdd, onUpdateQty) => {
         ${inCart ? `
             <div class="pos-item-overlay-bottom">
                 <button class="overlay-btn-small minus" data-id="${item.id}">-</button>
-                <input type="number" class="overlay-qty-small-input" value="${cartQty}" min="0" data-id="${item.id}" />
+                <input type="number" class="overlay-qty-small-input" value="${cartQty}" min="0" max="${item.quantity}" data-id="${item.id}" />
                 <button class="overlay-btn-small plus" data-id="${item.id}">+</button>
             </div>
         ` : ''}
@@ -32,10 +32,22 @@ export const createItemCard = (item, cartQty, onAdd, onUpdateQty) => {
         const qtyInput = div.querySelector('.overlay-qty-small-input');
         if (qtyInput) {
             qtyInput.onclick = (e) => e.stopPropagation(); // prevent clicking input from adding item
+            
+            qtyInput.oninput = (e) => {
+                let val = parseInt(e.target.value);
+                if (!isNaN(val) && val > item.quantity) {
+                    e.target.value = item.quantity;
+                }
+            };
+
             qtyInput.onchange = (e) => {
                 e.stopPropagation();
-                const newQty = parseInt(e.target.value);
+                let newQty = parseInt(e.target.value);
                 if (!isNaN(newQty)) {
+                    if (newQty > item.quantity) {
+                        newQty = item.quantity;
+                        e.target.value = newQty;
+                    }
                     const delta = newQty - cartQty;
                     if (delta !== 0) onUpdateQty(item.id, delta);
                 } else {
