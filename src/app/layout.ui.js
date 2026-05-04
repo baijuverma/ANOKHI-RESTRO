@@ -162,9 +162,10 @@ export const appShellHTML = `
                             <p>Manage your ingredients and products</p>
                         </div>
                         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-                            <div class="search-bar" style="margin: 0; max-width: 200px;">
+                            <div class="search-bar" style="margin: 0; max-width: 200px; position: relative;">
                                 <i class="fa-solid fa-search"></i>
-                                <input type="text" id="inventory-search" placeholder="Search items..." oninput="window.renderInventory()" style="width: 100%;">
+                                <input type="text" id="inventory-search" placeholder="Search items..." oninput="window.renderInventory()" style="width: 100%; padding-right: 30px;">
+                                <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="clearInput('inventory-search')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-secondary); opacity: 0.7;"></i>
                             </div>
                             <div style="display:flex; gap:8px; align-items:center;">
                                 <button id="filter-all" onclick="filterInventoryByType('all')" style="padding:6px 14px; border-radius:20px; border:2px solid var(--accent-color); background:var(--accent-color); color:white; cursor:pointer; font-size:12px; font-weight:700;">All</button>
@@ -346,9 +347,10 @@ export const appShellHTML = `
                             <!-- Integrated Header Row: Search + Filters -->
                             <div class="items-header-row" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; position: relative; z-index: 1000;">
                                 <!-- Search Bar (Left) -->
-                                <div class="search-bar" style="flex: 1; max-width: 250px; margin: 0;">
+                                <div class="search-bar" style="flex: 1; max-width: 250px; margin: 0; position: relative;">
                                     <i class="fa-solid fa-search"></i>
-                                    <input type="text" id="pos-search" placeholder="Search...">
+                                    <input type="text" id="pos-search" placeholder="Search..." style="padding-right: 30px;">
+                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="clearInput('pos-search')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-secondary); opacity: 0.7;"></i>
                                 </div>
 
                                 <!-- Filters (Right) -->
