@@ -138,6 +138,17 @@ export function initPdfReports() {
             `Rs. ${parseFloat(s.total || 0).toFixed(2)}`
         ]);
 
+        const totalRevenue = sales.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
+
+        billTableBody.push([
+            '',
+            '',
+            '',
+            '',
+            { content: 'TOTAL', styles: { fontStyle: 'bold' } },
+            { content: `Rs. ${totalRevenue.toFixed(2)}`, styles: { fontStyle: 'bold' } }
+        ]);
+
         doc.autoTable({
             head: [['Sr.', 'Bill ID', 'Date', 'Type', 'Mode', 'Amount']],
             body: billTableBody,
@@ -147,7 +158,6 @@ export function initPdfReports() {
             styles: { fontSize: 8 }
         });
 
-        const totalRevenue = sales.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
         const billY = doc.lastAutoTable.finalY || 100;
 
         // --- Section 2: Item-wise Ranking Summary ---
