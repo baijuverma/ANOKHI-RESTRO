@@ -504,6 +504,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     let finalSaleId = Math.floor(100000 + Math.random() * 900000).toString();
     let finalCustName = custName;
     let finalCustMobile = custMobile;
+    let finalSaleDate = new Date().toISOString();
     
     let prevCash = 0;
     let prevUpi = 0;
@@ -513,6 +514,9 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
         const oldSale = (window.salesHistory || []).find(s => s.id == window.editingSaleId);
         if (oldSale) {
             finalSaleId = oldSale.id;
+            if (oldSale.date) finalSaleDate = oldSale.date;
+            else if (oldSale.timestamp) finalSaleDate = oldSale.timestamp;
+
             if (oldSale.items) {
                 oldSale.items.forEach(oldItem => {
                     const invItem = (window.inventory || []).find(i => i.id === oldItem.id);
@@ -560,7 +564,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     // Record Sale
     const sale = {
         id: finalSaleId,
-        date: new Date().toISOString(),
+        date: finalSaleDate,
         items: [...window.cart],
         total: total,
         discount: discount,
