@@ -51,17 +51,20 @@ function buildSaleRow(sale, index) {
 
     const orderTypeLabel = sale.orderType === 'DINE_IN' ? 'Dine-In' : sale.orderType === 'TAKEAWAY' ? 'Takeaway' : 'Counter';
     
+    const cName = sale.customerName || sale.customer_name;
+    const cMobile = sale.customerMobile || sale.customer_mobile;
+    
     const customerInfo = `
         <div style="font-size: 11px; margin-top: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
             <span style="color: rgba(255,255,255,0.5);">${orderTypeLabel}</span>
-            ${sale.customerName ? `
+            ${cName ? `
                 <span style="color: #f59e0b; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-                    <i class="fa-solid fa-user" style="font-size: 10px;"></i> ${sale.customerName}
+                    <i class="fa-solid fa-user" style="font-size: 10px;"></i> ${cName}
                 </span>
             ` : ''}
-            ${sale.customerMobile ? `
+            ${cMobile ? `
                 <span style="color: #f59e0b; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-                    <i class="fa-solid fa-phone" style="font-size: 10px;"></i> ${sale.customerMobile}
+                    <i class="fa-solid fa-phone" style="font-size: 10px;"></i> ${cMobile}
                 </span>
             ` : ''}
         </div>

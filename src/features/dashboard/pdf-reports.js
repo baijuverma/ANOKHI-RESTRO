@@ -263,8 +263,7 @@ function generateSalesReport(title, data) {
         startY: margin + 25,
         margin: { left: margin, right: margin, top: margin, bottom: margin + 10 },
         styles: { fontSize: 9 },
-        headStyles: { fillStyle: 'f', fillColor: [99, 102, 241] },
-        didDrawPage: (data) => addFooter(doc, data.pageNumber)
+        headStyles: { fillStyle: 'f', fillColor: [99, 102, 241] }
     });
 
     const total = data.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
@@ -273,6 +272,55 @@ function generateSalesReport(title, data) {
     doc.setFontSize(12);
     doc.setFont(undefined, 'bold');
     doc.text(`Grand Total: Rs. ${total.toFixed(2)}`, pageWidth - margin - 60, finalY + 10);
+
+    // --- Section 2: Item-wise Ranking Summary ---
+    let itemStartY = finalY + 20;
+    if (itemStartY > pageHeight - 40) {
+        doc.addPage();
+        itemStartY = 20;
+    }
+
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.text("Item-wise Sales Ranking", margin, itemStartY - 5);
+
+    const itemMap = {};
+    data.forEach(sale => {
+        (sale.items || []).forEach(item => {
+            const name = item.name || "Unknown";
+            const qty = parseFloat(item.cartQty || item.qty || 0);
+            const itemTotal = parseFloat(item.price || 0) * qty;
+            
+            if (!itemMap[name]) {
+                itemMap[name] = { name, quantity: 0, revenue: 0 };
+            }
+            itemMap[name].quantity += qty;
+            itemMap[name].revenue += itemTotal;
+        });
+    });
+
+    const reportData = Object.values(itemMap).sort((a, b) => b.quantity - a.quantity);
+    const itemTableBody = reportData.map((item, i) => [
+        i + 1,
+        item.name,
+        item.quantity,
+        `Rs. ${item.revenue.toFixed(2)}`
+    ]);
+
+    doc.autoTable({
+        head: [['Rank', 'Item Name', 'Qty Sold', 'Revenue']],
+        body: itemTableBody,
+        startY: itemStartY,
+        margin: { left: margin, right: margin, bottom: margin + 10 },
+        headStyles: { fillColor: [34, 197, 94] },
+        styles: { fontSize: 9 }
+    });
+
+    const totalPagesCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPagesCount; i++) {
+        doc.setPage(i);
+        addFooter(doc, i);
+    }
 
     if (typeof doc.putTotalPages === 'function') doc.putTotalPages('{totalPages}');
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
