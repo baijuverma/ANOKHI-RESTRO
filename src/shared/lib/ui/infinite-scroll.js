@@ -73,29 +73,43 @@ export class LocalPagination {
 }
 
 /**
- * Renders Modern Pagination Controls
+ * Renders Modern Pagination Controls with Infinite Scroll
  */
 export function renderPaginationControls(containerId, pagination, onPageChange) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const totalPages = pagination.getTotalPages();
-    if (totalPages <= 1) {
+    if (!pagination.hasMore()) {
         container.innerHTML = '';
         return;
     }
 
-    const current = pagination.currentPage;
-    
-    let html = `
-        <div class="pagination-container" style="display: flex; justify-content: center; margin-top: 15px;">
-            <button class="btn-primary" onclick="window.${onPageChange}()" style="border-radius: 20px; padding: 10px 30px; font-weight: 700;">
-                <i class="fa-solid fa-arrow-down"></i> Load More
-            </button>
+    // Render a sentinel for IntersectionObserver instead of a button
+    const sentinelId = `sentinel-${containerId}`;
+    container.innerHTML = `
+        <div id="${sentinelId}" class="infinite-scroll-sentinel" style="display: flex; justify-content: center; align-items: center; padding: 20px; width: 100%;">
+            <div class="loading-dots">
+                <i class="fa-solid fa-circle fa-fade" style="font-size: 8px; color: var(--accent-color); margin: 0 4px;"></i>
+                <i class="fa-solid fa-circle fa-fade" style="font-size: 8px; color: var(--accent-color); margin: 0 4px; animation-delay: 0.1s;"></i>
+                <i class="fa-solid fa-circle fa-fade" style="font-size: 8px; color: var(--accent-color); margin: 0 4px; animation-delay: 0.2s;"></i>
+            </div>
         </div>
     `;
 
-    container.innerHTML = html;
+    // Setup the observer to trigger loadMore automatically
+    setupInfiniteScroll(sentinelId, () => {
+        if (typeof window[onPageChange] === 'function') {
+            // Use a small timeout to avoid rapid fire
+            if (window._loadingNextPage) return;
+            window._loadingNextPage = true;
+            
+            window[onPageChange]();
+            
+            setTimeout(() => {
+                window._loadingNextPage = false;
+            }, 500);
+        }
+    }, { threshold: 0.1, rootMargin: '200px' });
 }
 
 window.setupInfiniteScroll = setupInfiniteScroll;
