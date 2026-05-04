@@ -204,10 +204,14 @@ export function initPdfReports() {
                 { content: `Category: ${catName}`, colSpan: 4, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }
             ]);
 
+            let catQty = 0;
+            let catRev = 0;
             const categoryItems = Object.values(categoryMap[catName]).sort((a, b) => b.quantity - a.quantity);
             categoryItems.forEach((item, i) => {
                 totalItemQty += item.quantity;
                 totalItemRev += item.revenue;
+                catQty += item.quantity;
+                catRev += item.revenue;
                 itemTableBody.push([
                     i + 1,
                     item.name,
@@ -215,6 +219,14 @@ export function initPdfReports() {
                     `Rs. ${item.revenue.toFixed(2)}`
                 ]);
             });
+
+            // Subtotal for Category
+            itemTableBody.push([
+                '',
+                { content: `${catName} Total`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
+                { content: catQty.toString(), styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
+                { content: `Rs. ${catRev.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } }
+            ]);
         });
 
         const netTotal = totalItemRev - totalDiscount;
@@ -385,10 +397,14 @@ function generateSalesReport(title, data) {
             { content: `Category: ${catName}`, colSpan: 4, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }
         ]);
 
+        let catQty = 0;
+        let catRev = 0;
         const categoryItems = Object.values(categoryMap[catName]).sort((a, b) => b.quantity - a.quantity);
         categoryItems.forEach((item, i) => {
             totalItemQty += item.quantity;
             totalItemRev += item.revenue;
+            catQty += item.quantity;
+            catRev += item.revenue;
             itemTableBody.push([
                 i + 1,
                 item.name,
@@ -396,6 +412,14 @@ function generateSalesReport(title, data) {
                 `Rs. ${item.revenue.toFixed(2)}`
             ]);
         });
+
+        // Subtotal for Category
+        itemTableBody.push([
+            '',
+            { content: `${catName} Total`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
+            { content: catQty.toString(), styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
+            { content: `Rs. ${catRev.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } }
+        ]);
     });
 
     const netTotal = totalItemRev - totalDiscount;
