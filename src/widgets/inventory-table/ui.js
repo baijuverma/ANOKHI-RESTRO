@@ -19,6 +19,7 @@ export const renderInventoryTable = (containerId, inventory, offset = 0) => {
 
         return `
             <tr data-id="${item.id}">
+                <td><input type="checkbox" class="inventory-checkbox" data-id="${item.id}" onclick="window.updateInventoryDeleteBtnVisibility()"></td>
                 <td style="color: var(--text-secondary); font-size: 11px;">${offset + index + 1}</td>
                 <td>${item.name}</td>
                 <td>${item.category}</td>

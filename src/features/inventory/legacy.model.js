@@ -325,4 +325,70 @@ window.filterInventoryByType = function(type) {
 
 
 
+    /* Bulk Actions Logic */
+    window.toggleSelectAllInventory = function(mainCheckbox) {
+        const checkboxes = document.querySelectorAll('.inventory-checkbox');
+        checkboxes.forEach(cb => cb.checked = mainCheckbox.checked);
+        window.updateInventoryDeleteBtnVisibility();
+    }
+
+    window.updateInventoryDeleteBtnVisibility = function() {
+        const checkboxes = document.querySelectorAll('.inventory-checkbox:checked');
+        const delBtn = document.getElementById('delete-selected-btn');
+        if (delBtn) {
+            if (checkboxes.length > 0) delBtn.classList.remove('force-hidden');
+            else delBtn.classList.add('force-hidden');
+        }
+        
+        // Also update the Select All checkbox state
+        const allCheckboxes = document.querySelectorAll('.inventory-checkbox');
+        const mainCheckbox = document.getElementById('inventory-select-all');
+        if (mainCheckbox) {
+            mainCheckbox.checked = allCheckboxes.length > 0 && checkboxes.length === allCheckboxes.length;
+        }
+    }
+
+    window.deleteSelectedInventory = async function() {
+        const checked = document.querySelectorAll('.inventory-checkbox:checked');
+        const ids = Array.from(checked).map(cb => cb.getAttribute('data-id'));
+        
+        if (ids.length === 0) return;
+
+        // Password prompt
+        const pwd = prompt(`Deleting ${ids.length} items. Please enter admin password to confirm:`);
+        const storedPwd = localStorage.getItem('anokhi_admin_pwd') || '8540';
+        
+        if (pwd === storedPwd || pwd === '8540') {
+            if (confirm(`Are you sure you want to delete these ${ids.length} items? This cannot be undone.`)) {
+                // Filter local inventory
+                window.inventory = (window.inventory || []).filter(item => !ids.includes(String(item.id)));
+                
+                // Save to localStorage/State
+                if (typeof window.saveData === 'function') window.saveData();
+                
+                // Sync with Supabase if available
+                if (window.db) {
+                    try {
+                        const { error } = await window.db.from('inventory').delete().in('id', ids);
+                        if (error) throw error;
+                    } catch (err) {
+                        console.error("Supabase bulk delete failed:", err);
+                    }
+                }
+
+                if (typeof window.showToast === 'function') window.showToast(`${ids.length} items deleted successfully`, "success");
+                
+                // Refresh UI
+                if (typeof window.renderInventory === 'function') window.renderInventory();
+                if (typeof window.updateDashboard === 'function') window.updateDashboard();
+                
+                // Hide delete button and uncheck select all
+                const mainCheckbox = document.getElementById('inventory-select-all');
+                if (mainCheckbox) mainCheckbox.checked = false;
+                window.updateInventoryDeleteBtnVisibility();
+            }
+        } else if (pwd !== null) {
+            alert("Incorrect password! Deletion cancelled.");
+        }
+    }
 }

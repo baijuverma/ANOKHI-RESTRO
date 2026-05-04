@@ -180,6 +180,7 @@ export const appShellHTML = `
                         <table id="inventory-table">
                             <thead>
                                 <tr>
+                                    <th style="width: 40px;"><input type="checkbox" id="inventory-select-all" onclick="window.toggleSelectAllInventory(this)"></th>
                                     <th style="width: 50px;">Sr No.</th>
                                     <th>Name</th>
                                     <th>Category</th>
@@ -187,7 +188,14 @@ export const appShellHTML = `
                                     <th>Price (₹)</th>
                                     <th>Stock</th>
                                     <th>Min Stock</th>
-                                    <th>Actions</th>
+                                    <th style="width: 120px;">
+                                        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                            Actions
+                                            <button id="delete-selected-btn" onclick="window.deleteSelectedInventory()" class="btn-danger force-hidden" style="padding: 4px 8px; font-size: 12px; border-radius: 4px;" title="Delete Selected Items">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="inventory-tbody">
