@@ -204,10 +204,10 @@ export function initPdfReports() {
         // Sort categories by total quantity (descending)
         const sortedCategories = Object.keys(categoryMap).sort((a, b) => categoryPerformance[b] - categoryPerformance[a]);
 
-        sortedCategories.forEach(catName => {
-            // Add Category Header Row
+        sortedCategories.forEach((catName, catIdx) => {
+            // Add Category Header Row with Serial Number
             itemTableBody.push([
-                { content: `Category: ${catName}`, colSpan: 4, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }
+                { content: `${catIdx + 1}. Category: ${catName}`, colSpan: 4, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }
             ]);
 
             let catQty = 0;
@@ -403,10 +403,10 @@ function generateSalesReport(title, data) {
     // Sort categories by total quantity (descending)
     const sortedCategories = Object.keys(categoryMap).sort((a, b) => categoryPerformance[b] - categoryPerformance[a]);
 
-    sortedCategories.forEach(catName => {
-        // Add Category Header Row
+    sortedCategories.forEach((catName, catIdx) => {
+        // Add Category Header Row with Serial Number
         itemTableBody.push([
-            { content: `Category: ${catName}`, colSpan: 4, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }
+            { content: `${catIdx + 1}. Category: ${catName}`, colSpan: 4, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }
         ]);
 
         let catQty = 0;
