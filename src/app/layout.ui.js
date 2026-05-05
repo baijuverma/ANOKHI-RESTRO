@@ -260,17 +260,20 @@ export const appShellHTML = `
                             </div>
                             <!-- Floating Label Expense Fields -->
                             <div class="expense-payment-row" style="display: flex; gap: 10px; margin-top: 10px;">
-                                <div class="input-group-floating" style="flex: 1;">
-                                    <input type="number" id="expense-cash" placeholder=" " min="0" step="0.01">
+                                <div class="input-group-floating" style="flex: 1; position: relative;">
+                                    <input type="number" id="expense-cash" placeholder=" " min="0" step="0.01" style="padding-right: 30px;">
                                     <label for="expense-cash">Cash</label>
+                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-cash')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
                                 </div>
-                                <div class="input-group-floating" style="flex: 1;">
-                                    <input type="number" id="expense-upi" placeholder=" " min="0" step="0.01">
+                                <div class="input-group-floating" style="flex: 1; position: relative;">
+                                    <input type="number" id="expense-upi" placeholder=" " min="0" step="0.01" style="padding-right: 30px;">
                                     <label for="expense-upi">UPI</label>
+                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-upi')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
                                 </div>
-                                <div class="input-group-floating" style="flex: 1;">
-                                    <input type="number" id="expense-udhar" placeholder=" " min="0" step="0.01">
+                                <div class="input-group-floating" style="flex: 1; position: relative;">
+                                    <input type="number" id="expense-udhar" placeholder=" " min="0" step="0.01" style="padding-right: 30px;">
                                     <label for="expense-udhar">Udhar</label>
+                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-udhar')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
                                 </div>
                             </div>
                         </div>
