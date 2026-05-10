@@ -169,7 +169,9 @@ window.handleExpenseSubmit = async function(e) {
     const udhar = parseFloat(document.getElementById('expense-udhar').value) || 0;
 
     if (cash === 0 && upi === 0 && udhar === 0) {
-        return alert('Please enter an amount.');
+        alert('Please enter an amount.');
+        setTimeout(() => document.getElementById('expense-cash').focus(), 10);
+        return;
     }
 
     const modes = [{ n: 'Cash', v: cash }, { n: 'UPI', v: upi }, { n: 'Udhar', v: udhar }];
