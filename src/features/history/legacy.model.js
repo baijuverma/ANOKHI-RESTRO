@@ -78,6 +78,13 @@ window.toggleDuesFilter = function() {
             statusText.style.color = 'white';
         }
         if(card) card.style.background = 'rgba(239, 68, 68, 0.15)';
+        
+        // Sync column highlight
+        if (window.historyPaymentFilter !== 'DUES' && typeof window.togglePaymentFilter === 'function') {
+            window.togglePaymentFilter('DUES', 'history');
+            window.renderHistoryCards();
+            return;
+        }
     } else {
         if(statusText) {
             statusText.innerText = 'Click to Filter Dues';
@@ -85,6 +92,13 @@ window.toggleDuesFilter = function() {
             statusText.style.color = 'var(--text-secondary)';
         }
         if(card) card.style.background = 'rgba(239, 68, 68, 0.05)';
+        
+        // Clear column highlight
+        if (window.historyPaymentFilter === 'DUES' && typeof window.togglePaymentFilter === 'function') {
+            window.togglePaymentFilter('DUES', 'history');
+            window.renderHistoryCards();
+            return;
+        }
     }
     
     window.renderHistoryCards();
@@ -171,7 +185,7 @@ window.downloadGrossReport = function() {
     const endDateStr = document.getElementById('history-end-date')?.value;
 
     // Filter by date range and payment filter
-    if (startDateStr || endDateStr || window.historyPaymentFilter) {
+    if (startDateStr || endDateStr || window.historyPaymentFilter || window.showOnlyDues) {
         sales = sales.filter(sale => {
             const saleDate = new Date(sale.date);
             saleDate.setHours(0,0,0,0);
@@ -185,6 +199,10 @@ window.downloadGrossReport = function() {
                 e.setHours(23,59,59,999);
                 if (saleDate > e) return false;
             }
+            
+            // Apply showOnlyDues filter
+            const sDuesAmount = parseFloat(sale.dues || 0);
+            if (window.showOnlyDues && sDuesAmount <= 0.01) return false;
             
             // Apply payment filter for PDF report
             if (window.historyPaymentFilter) {
