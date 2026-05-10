@@ -31,6 +31,7 @@ function buildSaleRow(sale, index) {
     // Calculate Cash, UPI, Dues separately
     const totalPaid = parseFloat(sale.total || 0) - parseFloat(sale.dues || 0);
     const split = sale.split_amounts || sale.splitAmounts;
+    const pMode = (sale.payment_mode || sale.paymentMode || 'CASH').toUpperCase();
     let sCash = 0, sUpi = 0;
 
     if (pMode === 'UPI') {
