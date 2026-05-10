@@ -199,51 +199,66 @@ window.dashboardPaymentFilter = null; // 'CASH' | 'UPI' | 'DUES' | null
 window.historyPaymentFilter = null;
 
 window.togglePaymentFilter = (type, view) => {
+    const applyHighlight = (el, typeName, isActive) => {
+        if (!el) return;
+        if (isActive) {
+            let color = typeName === 'CASH' ? '#10b981' : typeName === 'UPI' ? '#818cf8' : '#ef4444';
+            el.style.color = color;
+            el.style.background = `rgba(${typeName === 'CASH' ? '16, 185, 129' : typeName === 'UPI' ? '129, 140, 248' : '239, 68, 68'}, 0.2)`;
+            el.style.border = `1px solid ${color}`;
+            el.style.borderRadius = '6px';
+            el.style.padding = '4px 8px';
+        } else {
+            el.style.color = '';
+            el.style.background = '';
+            el.style.border = '';
+            el.style.borderRadius = '';
+            el.style.padding = '';
+        }
+    };
+
     if (view === 'dashboard') {
         window.dashboardPaymentFilter = window.dashboardPaymentFilter === type ? null : type;
-        const cashTh = document.getElementById('dashboard-th-cash');
-        const upiTh = document.getElementById('dashboard-th-upi');
-        const duesTh = document.getElementById('dashboard-th-dues');
-        if (cashTh) cashTh.style.color = window.dashboardPaymentFilter === 'CASH' ? '#10b981' : '';
-        if (upiTh) upiTh.style.color = window.dashboardPaymentFilter === 'UPI' ? '#818cf8' : '';
-        if (duesTh) duesTh.style.color = window.dashboardPaymentFilter === 'DUES' ? '#ef4444' : '';
+        applyHighlight(document.getElementById('dashboard-th-cash'), 'CASH', window.dashboardPaymentFilter === 'CASH');
+        applyHighlight(document.getElementById('dashboard-th-upi'), 'UPI', window.dashboardPaymentFilter === 'UPI');
+        applyHighlight(document.getElementById('dashboard-th-dues'), 'DUES', window.dashboardPaymentFilter === 'DUES');
     } else {
         window.historyPaymentFilter = window.historyPaymentFilter === type ? null : type;
-        const cashTh = document.getElementById('history-th-cash');
-        const upiTh = document.getElementById('history-th-upi');
-        const duesTh = document.getElementById('history-th-dues');
-        if (cashTh) cashTh.style.color = window.historyPaymentFilter === 'CASH' ? '#10b981' : '';
-        if (upiTh) upiTh.style.color = window.historyPaymentFilter === 'UPI' ? '#818cf8' : '';
-        if (duesTh) duesTh.style.color = window.historyPaymentFilter === 'DUES' ? '#ef4444' : '';
+        applyHighlight(document.getElementById('history-th-cash'), 'CASH', window.historyPaymentFilter === 'CASH');
+        applyHighlight(document.getElementById('history-th-upi'), 'UPI', window.historyPaymentFilter === 'UPI');
+        applyHighlight(document.getElementById('history-th-dues'), 'DUES', window.historyPaymentFilter === 'DUES');
     }
     window.renderHistory();
 };
 
 document.addEventListener('click', (e) => {
     const inDashboardSection = e.target.closest('#dashboard .recent-activity');
-    const inHistorySection = e.target.closest('#history');
+    const inHistorySection = e.target.closest('#history-transactions-panel');
     
     let needsRender = false;
 
+    const resetHighlight = (el) => {
+        if (!el) return;
+        el.style.color = '';
+        el.style.background = '';
+        el.style.border = '';
+        el.style.borderRadius = '';
+        el.style.padding = '';
+    };
+
     if (!inDashboardSection && window.dashboardPaymentFilter) {
         window.dashboardPaymentFilter = null;
-        const cashTh = document.getElementById('dashboard-th-cash');
-        const upiTh = document.getElementById('dashboard-th-upi');
-        const duesTh = document.getElementById('dashboard-th-dues');
-        if (cashTh) cashTh.style.color = '';
-        if (upiTh) upiTh.style.color = '';
-        if (duesTh) duesTh.style.color = '';
+        resetHighlight(document.getElementById('dashboard-th-cash'));
+        resetHighlight(document.getElementById('dashboard-th-upi'));
+        resetHighlight(document.getElementById('dashboard-th-dues'));
         needsRender = true;
     }
 
     if (!inHistorySection && window.historyPaymentFilter) {
         window.historyPaymentFilter = null;
-        const cashTh = document.getElementById('history-th-cash');
-        const upiTh = document.getElementById('history-th-upi');
-        const duesTh = document.getElementById('history-th-dues');
-        if (cashTh) cashTh.style.color = '';
-        if (upiTh) upiTh.style.color = '';
-        if (duesTh) duesTh.style.color = '';
+        resetHighlight(document.getElementById('history-th-cash'));
+        resetHighlight(document.getElementById('history-th-upi'));
+        resetHighlight(document.getElementById('history-th-dues'));
         needsRender = true;
     }
 

@@ -586,7 +586,7 @@ export const appShellHTML = `
                 </div>
 
                 <!-- All Transactions with Date Filter & Report -->
-                <div class="glass-panel mt-4">
+                <div id="history-transactions-panel" class="glass-panel mt-4">
                     <div class="flex-between" style="padding: 15px 20px; border-bottom: 1px solid var(--panel-border); flex-wrap: wrap; gap: 15px;">
                         <h2 style="font-size: 18px; margin: 0;">All Transactions</h2>
                         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
