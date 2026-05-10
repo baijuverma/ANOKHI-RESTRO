@@ -284,8 +284,13 @@ export const appShellHTML = `
                         border: 1px solid #E2E8F0 !important;
                         box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
                     }
+                    #expense-form-container .suggestion-item {
+                        color: #1A202C !important;
+                        border-bottom: 1px solid #E2E8F0 !important;
+                    }
                     #expense-form-container .suggestion-item:hover {
                         background: #EDF2F7 !important;
+                        color: #1A202C !important;
                     }
                     #expense-form-container .clear-dropdown-btn, #expense-form-container .dropdown-arrow, #expense-form-container .clear-input-btn {
                         color: #A0AEC0 !important;
