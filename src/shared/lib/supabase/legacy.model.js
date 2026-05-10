@@ -394,7 +394,7 @@ export function initSupabaseLogic() {
             }
 
             if (window.expensesHistory && window.expensesHistory.length > 0) {
-                await db.from('expenses').upsert(window.expensesHistory.map(e => ({
+                const mapExpense = e => ({
                     id: e.id,
                     date: e.date,
                     main_category: e.main_category,
@@ -403,7 +403,18 @@ export function initSupabaseLogic() {
                     payment_mode: e.payment_mode,
                     description: e.description,
                     qty: e.qty || 0
-                })));
+                });
+
+                const { error: bulkExpErr } = await db.from('expenses').upsert(window.expensesHistory.map(mapExpense));
+                if (bulkExpErr) {
+                    console.error('Bulk Expenses Push Error:', bulkExpErr);
+                    // Fallback: just save the newest one
+                    const newestExp = window.expensesHistory[0];
+                    if (newestExp) {
+                        const { error: singleExpErr } = await db.from('expenses').upsert(mapExpense(newestExp));
+                        if (singleExpErr) console.error('Single Expense Push Error:', singleExpErr);
+                    }
+                }
             }
         } catch (err) {
             console.error('Push Error:', err);
