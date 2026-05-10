@@ -230,6 +230,27 @@ window.togglePaymentFilter = (type, view) => {
         applyHighlight(document.getElementById('history-th-cash'), 'CASH', window.historyPaymentFilter === 'CASH');
         applyHighlight(document.getElementById('history-th-upi'), 'UPI', window.historyPaymentFilter === 'UPI');
         applyHighlight(document.getElementById('history-th-dues'), 'DUES', window.historyPaymentFilter === 'DUES');
+        
+        // Sync the TOTAL DUES card UI
+        const statusText = document.getElementById('dues-filter-status');
+        const card = document.getElementById('dues-filter-card');
+        if (window.historyPaymentFilter === 'DUES') {
+            window.showOnlyDues = true;
+            if(statusText) {
+                statusText.innerText = 'Filter: DUES ONLY (Click to Clear)';
+                statusText.style.background = '#ef4444';
+                statusText.style.color = 'white';
+            }
+            if(card) card.style.background = 'rgba(239, 68, 68, 0.15)';
+        } else {
+            window.showOnlyDues = false;
+            if(statusText) {
+                statusText.innerText = 'Click to Filter Dues';
+                statusText.style.background = 'rgba(239, 68, 68, 0.1)';
+                statusText.style.color = 'var(--text-secondary)';
+            }
+            if(card) card.style.background = 'rgba(239, 68, 68, 0.05)';
+        }
     }
     window.renderHistory();
 };
@@ -265,6 +286,18 @@ document.addEventListener('click', (e) => {
         resetHighlight(document.getElementById('history-th-cash'), 'CASH');
         resetHighlight(document.getElementById('history-th-upi'), 'UPI');
         resetHighlight(document.getElementById('history-th-dues'), 'DUES');
+        
+        // Also clear the TOTAL DUES card UI
+        window.showOnlyDues = false;
+        const statusText = document.getElementById('dues-filter-status');
+        const card = document.getElementById('dues-filter-card');
+        if(statusText) {
+            statusText.innerText = 'Click to Filter Dues';
+            statusText.style.background = 'rgba(239, 68, 68, 0.1)';
+            statusText.style.color = 'var(--text-secondary)';
+        }
+        if(card) card.style.background = 'rgba(239, 68, 68, 0.05)';
+        
         needsRender = true;
     }
 
