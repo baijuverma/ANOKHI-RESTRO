@@ -23,7 +23,11 @@ function buildSaleRow(sale, index) {
     });
 
     const items = sale.items || [];
-    const itemsStr = items.map(i => `${i.name || 'Unknown'} (x${i.cartQty || i.qty || 0})`).join(', ');
+    const itemsStr = items.map(i => {
+        let itemName = i.name || 'Unknown';
+        if (itemName.length > 25) itemName = itemName.substring(0, 25) + '...';
+        return `${itemName} (x${i.cartQty || i.qty || 0})`;
+    }).join(', ');
 
     let trStyle = 'border-bottom: 1px solid rgba(255,255,255,0.05);';
     let leftBar = '';
@@ -84,7 +88,7 @@ function buildSaleRow(sale, index) {
         </td>
         <td style="padding: 20px 16px; color: rgba(255,255,255,0.8); font-size: 13px;">${formatDateTime(displayDate)}</td>
         <td style="padding: 20px 16px; color: rgba(255,255,255,0.8); font-size: 13px;">
-            <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${itemsStr}">
+            <div style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${sale.items ? sale.items.map(i => `${i.name} (x${i.cartQty||i.qty})`).join(', ') : ''}">
                 ${itemsStr}
             </div>
         </td>
