@@ -131,7 +131,14 @@ export const appShellHTML = `
                 </div>
 
                 <div class="recent-activity glass-panel mt-4">
-                    <h2>Recent Sales</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2 style="margin: 0;">Recent Sales</h2>
+                        <div class="search-bar" style="margin: 0; max-width: 250px; position: relative;">
+                            <i class="fa-solid fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 14px;"></i>
+                            <input type="text" id="dashboard-dues-search" placeholder="Search dues person..." oninput="window.renderHistory()" style="width: 100%; padding: 8px 35px 8px 32px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; font-size: 13px;">
+                            <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('dashboard-dues-search')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.4); font-size: 14px;"></i>
+                        </div>
+                    </div>
                     <div class="table-container">
                         <table id="recent-sales-table">
                             <thead>
@@ -140,7 +147,9 @@ export const appShellHTML = `
                                     <th>Order ID</th>
                                     <th>Date & Time</th>
                                     <th>Items Details</th>
-                                    <th>Payment</th>
+                                    <th>Cash</th>
+                                    <th>UPI</th>
+                                    <th>Dues</th>
                                     <th>Total Amount</th>
                                     <th>Action</th>
                                 </tr>
@@ -150,6 +159,7 @@ export const appShellHTML = `
                             </tbody>
                         </table>
                     </div>
+                    <div id="dashboard-sales-pagination"></div>
                 </div>
             </section>
 
@@ -601,7 +611,9 @@ export const appShellHTML = `
                                     <th>Order ID</th>
                                     <th>Date & Time</th>
                                     <th>Items Details</th>
-                                    <th>Payment</th>
+                                    <th>Cash</th>
+                                    <th>UPI</th>
+                                    <th>Dues</th>
                                     <th>Total Amount</th>
                                     <th>Action</th>
                                 </tr>

@@ -197,9 +197,19 @@ window.renderInventory = () => {
 
 window.renderHistory = () => {
     if (window.salesHistory) {
-        // Dashboard recent sales: always show latest 10, sorted by time — NO dues filter
-        const dashboardOrders = [...window.salesHistory].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
-        renderSalesHistory('sales-tbody', dashboardOrders, 10);
+        // Dashboard recent sales
+        let dashboardOrders = [...window.salesHistory];
+        const dashboardSearch = document.getElementById('dashboard-dues-search')?.value?.toLowerCase() || '';
+        
+        if (dashboardSearch) {
+            dashboardOrders = dashboardOrders.filter(sale => {
+                const cName = (sale.customerName || sale.customer_name || '').toLowerCase();
+                return cName.includes(dashboardSearch) && (sale.dues || 0) > 0.01;
+            });
+        }
+        
+        // Pass 'dashboard' as mode/limit parameter so ui.js knows it's the dashboard
+        renderSalesHistory('sales-tbody', dashboardOrders, 'dashboard');
 
         // Main History View with Date Range Filtering
         let historyOrders = [...window.salesHistory];

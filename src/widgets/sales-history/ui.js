@@ -5,6 +5,7 @@
 
 const PAGE_SIZE = 20;
 let salesHistoryPagination = null;
+let dashboardSalesPagination = null;
 
 function buildSaleRow(sale, index) {
     const formatCurrency = window.formatCurrency || ((amt) => `₹${Number(amt).toFixed(2)}`);
@@ -24,27 +25,25 @@ function buildSaleRow(sale, index) {
     const items = sale.items || [];
     const itemsStr = items.map(i => `${i.name || 'Unknown'} (x${i.cartQty || i.qty || 0})`).join(', ');
 
-    const pMode = (sale.payment_mode || sale.paymentMode || 'CASH').toUpperCase();
-    let pModeBadge = '';
-
-    if (sale.status === 'HELD') {
-        pModeBadge = '<span class="status-badge" style="background: #334155; color: white; font-weight: 800;">HELD</span>';
-    } else if (sale.status === 'ADVANCE') {
-        pModeBadge = '<span class="status-badge" style="background: var(--warning-color); color: white; font-weight: 800;">ADVANCE</span>';
-    } else if (sale.dues > 0.01) {
-        pModeBadge = '<span class="status-badge" style="background: #ef4444; color: white; font-weight: 800; border-radius: 20px; padding: 4px 12px; font-size: 11px;">CREDIT</span>';
-        pModeBadge += `<div style="font-size: 11px; color: #ef4444; margin-top: 4px; font-weight: 700;">Dues: ${formatCurrency(sale.dues)}</div>`;
-    } else if (pMode === 'UPI') {
-        pModeBadge = '<span class="status-badge" style="background: rgba(16, 185, 129, 0.1); color: #10b981; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 800;">UPI</span>';
-    } else if (pMode === 'BOTH' || pMode === 'SPLIT') {
-        pModeBadge = '<span class="status-badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 800;">SPLIT</span>';
-    } else {
-        pModeBadge = '<span class="status-badge" style="background: rgba(13, 148, 136, 0.1); color: #0d9488; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 800;">CASH</span>';
-    }
-
     let trStyle = 'border-bottom: 1px solid rgba(255,255,255,0.05);';
     let leftBar = '';
-    if (sale.dues > 0.01) {
+    
+    // Calculate Cash, UPI, Dues separately
+    const totalPaid = parseFloat(sale.total || 0) - parseFloat(sale.dues || 0);
+    const split = sale.split_amounts || sale.splitAmounts;
+    let sCash = 0, sUpi = 0;
+
+    if (pMode === 'UPI') {
+        sUpi = totalPaid;
+    } else if ((pMode === 'BOTH' || pMode === 'SPLIT') && split) {
+        sCash = parseFloat(split.cash || 0);
+        sUpi = parseFloat(split.upi || 0);
+    } else {
+        sCash = totalPaid;
+    }
+    const sDues = parseFloat(sale.dues || 0);
+
+    if (sDues > 0.01) {
         trStyle += 'background: rgba(239, 68, 68, 0.03); position: relative;';
         leftBar = '<div style="position: absolute; left: 0; top: 10%; height: 80%; width: 3px; background: #ef4444; border-radius: 0 4px 4px 0;"></div>';
     }
@@ -88,7 +87,9 @@ function buildSaleRow(sale, index) {
                 ${itemsStr}
             </div>
         </td>
-        <td style="padding: 20px 16px;">${pModeBadge}</td>
+        <td style="padding: 20px 16px; color: #10b981; font-weight: 600;">${sCash > 0 ? formatCurrency(sCash) : '-'}</td>
+        <td style="padding: 20px 16px; color: #818cf8; font-weight: 600;">${sUpi > 0 ? formatCurrency(sUpi) : '-'}</td>
+        <td style="padding: 20px 16px; color: #ef4444; font-weight: 600;">${sDues > 0 ? formatCurrency(sDues) : '-'}</td>
         <td style="padding: 20px 16px; font-weight: 800; color: white; font-size: 15px;">${formatCurrency(sale.total)}</td>
         <td style="padding: 20px 16px;">
             <button class="btn-edit" onclick="editSale('${sale.id}')" style="background: #6366f1; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s;">
@@ -102,52 +103,69 @@ function buildSaleRow(sale, index) {
 
 
 
+window.changeDashboardSalesPage = (page) => {
+    if (dashboardSalesPagination) {
+        if (page === undefined) dashboardSalesPagination.loadMore();
+        else dashboardSalesPagination.goToPage(page);
+        renderSalesHistory('sales-tbody', dashboardSalesPagination.fullArray, 'dashboard');
+    }
+};
+
 window.changeSalesPage = (page) => {
     if (salesHistoryPagination) {
         if (page === undefined) salesHistoryPagination.loadMore();
         else salesHistoryPagination.goToPage(page);
-        const containerId = document.getElementById('history-tbody') ? 'history-tbody' : 'sales-tbody';
-        renderSalesHistory(containerId, salesHistoryPagination.fullArray);
+        renderSalesHistory('history-tbody', salesHistoryPagination.fullArray, null);
     }
 };
 
-export const renderSalesHistory = (containerId, orders, limit = null) => {
+export const renderSalesHistory = (containerId, orders, mode = null) => {
     const container = document.getElementById(containerId);
     if (!container) return;
 
     if (!orders || orders.length === 0) {
-        container.innerHTML = '<tr><td colspan="7" style="text-align:center;">No sales records found.</td></tr>';
+        container.innerHTML = '<tr><td colspan="9" style="text-align:center;">No sales records found.</td></tr>';
         return;
     }
 
-    // Filter by dues ONLY on history page (limit === null), NOT on dashboard
+    // Filter by dues ONLY on history page (mode === null)
     let activeOrders = orders;
-    if (window.showOnlyDues && limit === null) {
+    if (window.showOnlyDues && mode === null) {
         activeOrders = activeOrders.filter(s => (s.dues || 0) > 0.01);
     }
 
     // Sort by date (descending)
     let sortedOrders = [...activeOrders].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    if (limit !== null) {
-        // Dashboard mode: just render top N directly
-        container.innerHTML = sortedOrders.slice(0, limit).map((sale, i) => buildSaleRow(sale, i)).join('');
-        return;
-    }
-
-    // History page: use LocalPagination
+    // Support for pagination in both dashboard and history
     if (typeof window.LocalPagination !== 'undefined') {
-        if (!salesHistoryPagination || salesHistoryPagination.fullArray.length !== sortedOrders.length) {
-            salesHistoryPagination = new window.LocalPagination(sortedOrders, PAGE_SIZE);
+        let paginator;
+        let paginatorId;
+        let changeFnName;
+
+        if (mode === 'dashboard') {
+            if (!dashboardSalesPagination || dashboardSalesPagination.fullArray.length !== sortedOrders.length) {
+                dashboardSalesPagination = new window.LocalPagination(sortedOrders, PAGE_SIZE);
+            }
+            paginator = dashboardSalesPagination;
+            paginatorId = 'dashboard-sales-pagination';
+            changeFnName = 'changeDashboardSalesPage';
+        } else {
+            if (!salesHistoryPagination || salesHistoryPagination.fullArray.length !== sortedOrders.length) {
+                salesHistoryPagination = new window.LocalPagination(sortedOrders, PAGE_SIZE);
+            }
+            paginator = salesHistoryPagination;
+            paginatorId = 'history-pagination';
+            changeFnName = 'changeSalesPage';
         }
         
-        const pageItems = salesHistoryPagination.getPageItems();
+        const pageItems = paginator.getPageItems();
         const offset = 0;
         container.innerHTML = pageItems.map((sale, i) => buildSaleRow(sale, offset + i)).join('');
 
         // Render Pagination Controls
         if (typeof renderPaginationControls === 'function') {
-            renderPaginationControls('history-pagination', salesHistoryPagination, 'changeSalesPage');
+            renderPaginationControls(paginatorId, paginator, changeFnName);
         }
     } else {
         // Fallback if LocalPagination not loaded
