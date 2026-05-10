@@ -270,6 +270,20 @@ document.addEventListener('click', (e) => {
     if (needsRender && typeof window.renderHistory === 'function') {
         window.renderHistory();
     }
+
+    // Inventory Veg/Non-Veg Filter Auto-clear logic
+    if (window.inventoryTypeFilter && window.inventoryTypeFilter !== 'all') {
+        const isSearchBar = e.target.closest('#inventory .search-bar');
+        const isFilterButton = e.target.closest('#filter-all') || e.target.closest('#filter-veg') || e.target.closest('#filter-nonveg');
+        const isEditButton = e.target.closest('button[onclick^="editItem"]');
+        const isStockModal = e.target.closest('#stockListModal');
+
+        if (!isSearchBar && !isFilterButton && !isEditButton && !isStockModal) {
+            if (typeof window.filterInventoryByType === 'function') {
+                window.filterInventoryByType('all');
+            }
+        }
+    }
 });
 
 window.renderHistory = () => {
