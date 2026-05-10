@@ -22,10 +22,29 @@ export function initSupabaseLogic() {
                 localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
             }
 
-            // Fetch more records for accurate dashboard/monthly stats
-            const { data: salesData } = await db.from('sales_history').select('*').order('date', { ascending: false }).limit(100000);
-            if (salesData) {
-                window.salesHistory = salesData.map(s => ({
+            // Fetch ALL records for accurate dashboard/monthly stats bypassing Supabase max-rows limits
+            let allSales = [];
+            let currentOffset = 0;
+            const pageSize = 1000;
+            let keepFetching = true;
+            
+            while (keepFetching) {
+                const { data: chunk } = await db.from('sales_history')
+                    .select('*')
+                    .order('date', { ascending: false })
+                    .range(currentOffset, currentOffset + pageSize - 1);
+                
+                if (!chunk || chunk.length === 0) {
+                    keepFetching = false;
+                } else {
+                    allSales = allSales.concat(chunk);
+                    currentOffset += pageSize;
+                    if (chunk.length < pageSize) keepFetching = false;
+                }
+            }
+
+            if (allSales.length > 0) {
+                window.salesHistory = allSales.map(s => ({
                     ...s,
                     paymentMode: s.payment_mode,
                     splitAmounts: s.split_amounts,
@@ -51,9 +70,26 @@ export function initSupabaseLogic() {
                 localStorage.setItem('anokhi_tables', JSON.stringify(window.tables));
             }
 
-            const { data: expData } = await db.from('expenses').select('*').order('date', { ascending: false }).limit(100000);
-            if (expData && expData.length > 0) {
-                window.expensesHistory = expData;
+            let allExpenses = [];
+            let expOffset = 0;
+            let keepFetchingExp = true;
+            while (keepFetchingExp) {
+                const { data: chunk } = await db.from('expenses')
+                    .select('*')
+                    .order('date', { ascending: false })
+                    .range(expOffset, expOffset + pageSize - 1);
+                
+                if (!chunk || chunk.length === 0) {
+                    keepFetchingExp = false;
+                } else {
+                    allExpenses = allExpenses.concat(chunk);
+                    expOffset += pageSize;
+                    if (chunk.length < pageSize) keepFetchingExp = false;
+                }
+            }
+
+            if (allExpenses.length > 0) {
+                window.expensesHistory = allExpenses;
                 localStorage.setItem('anokhi_expenses', JSON.stringify(window.expensesHistory));
             }
 
