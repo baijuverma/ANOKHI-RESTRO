@@ -53,6 +53,21 @@ window.handleSearchableInput = function(inputId, panelId) {
     renderSuggestions(items, input, panel);
     panel.classList.remove('hidden');
     panel.style.display = 'block';
+
+    if (inputId === 'expense-main-cat') {
+        const isRaw = input.value.toLowerCase().includes('raw material') || input.value.toLowerCase().includes('kitchen');
+        const isBuiltIn = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(input.value);
+        const priceContainer = document.getElementById('expense-sell-price-container');
+        if (priceContainer) {
+            priceContainer.style.display = (isRaw || isBuiltIn) ? 'none' : 'block';
+        }
+    } else if (inputId === 'expense-sub-cat') {
+        const invItem = (window.inventory || []).find(i => i.name.trim().toLowerCase() === query.trim());
+        const priceInput = document.getElementById('expense-sell-price');
+        if (priceInput) {
+            priceInput.value = (invItem && invItem.price) ? invItem.price : '';
+        }
+    }
 };
 
 window.clearSearchableInput = function(inputId, panelId) {
@@ -110,6 +125,21 @@ function renderSuggestions(items, input, panel) {
                     subInput.value = '';
                     window.showSuggestions('expense-sub-cat', 'sub-suggestions');
                 }
+                const priceInput = document.getElementById('expense-sell-price');
+                if (priceInput) priceInput.value = '';
+
+                const isRaw = item.toLowerCase().includes('raw material') || item.toLowerCase().includes('kitchen');
+                const isBuiltIn = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(item);
+                const priceContainer = document.getElementById('expense-sell-price-container');
+                if (priceContainer) {
+                    priceContainer.style.display = (isRaw || isBuiltIn) ? 'none' : 'block';
+                }
+            } else if (input.id === 'expense-sub-cat') {
+                const invItem = (window.inventory || []).find(i => i.name.trim().toLowerCase() === item.trim().toLowerCase());
+                const priceInput = document.getElementById('expense-sell-price');
+                if (priceInput) {
+                    priceInput.value = (invItem && invItem.price) ? invItem.price : '';
+                }
             }
         };
         panel.appendChild(div);
@@ -133,6 +163,7 @@ window.handleExpenseSubmit = async function(e) {
     const desc = document.getElementById('expense-desc').value;
 
     const qty = parseFloat(document.getElementById('expense-qty').value) || 0;
+    const sellPrice = parseFloat(document.getElementById('expense-sell-price').value) || 0;
     const cash = parseFloat(document.getElementById('expense-cash').value) || 0;
     const upi = parseFloat(document.getElementById('expense-upi').value) || 0;
     const udhar = parseFloat(document.getElementById('expense-udhar').value) || 0;
@@ -161,34 +192,36 @@ window.handleExpenseSubmit = async function(e) {
     const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
     const isBuiltInExpenseCat = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(mainCat);
     
-    if (!isRawMaterial && qty > 0 && window.inventory) {
+    if (!isRawMaterial && window.inventory && (qty > 0 || sellPrice > 0)) {
         // Try to find the matching item in inventory by Sub Category name
         const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase());
         
         if (invItem) {
-            invItem.quantity = (parseFloat(invItem.quantity) || 0) + qty;
+            if (qty > 0) invItem.quantity = (parseFloat(invItem.quantity) || 0) + qty;
+            if (sellPrice > 0) invItem.price = sellPrice;
+            
             // Also update category if it was previously uncategorized or if user is forcing a new category
             if (invItem.category !== mainCat && !isBuiltInExpenseCat) {
                 invItem.category = mainCat;
             }
             localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
             if (typeof window.renderInventory === 'function') window.renderInventory();
-            console.log(`Auto-updated inventory: ${invItem.name} +${qty}`);
-        } else if (!isBuiltInExpenseCat) {
+            console.log(`Auto-updated inventory: ${invItem.name} +${qty} (Price: ${sellPrice})`);
+        } else if (!isBuiltInExpenseCat && qty > 0) {
             // Auto-Add NEW item to Inventory
             const newItem = {
                  id: Date.now().toString() + Math.floor(Math.random() * 1000),
                  name: subCat.trim(),
                  category: mainCat.trim(),
                  type: 'Veg', // Default type
-                 price: 0, // Needs to be updated manually later for selling
+                 price: sellPrice, // Save the new selling price
                  quantity: qty,
                  low_stock_threshold: 5
             };
             window.inventory.unshift(newItem);
             localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
             if (typeof window.renderInventory === 'function') window.renderInventory();
-            console.log(`Auto-added NEW item to inventory: ${subCat} +${qty}`);
+            console.log(`Auto-added NEW item to inventory: ${subCat} +${qty} (Price: ${sellPrice})`);
         }
     }
 

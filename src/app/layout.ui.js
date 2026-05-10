@@ -270,7 +270,11 @@ export const appShellHTML = `
                             </div>
                             <div class="form-group">
                                 <label>Quantity</label>
-                                <input type="number" id="expense-qty" placeholder="Enter quantity (Optional)" min="0" step="any" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                                <input type="number" id="expense-qty" placeholder="Enter qty (Optional)" min="0" step="any" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                            </div>
+                            <div class="form-group" id="expense-sell-price-container">
+                                <label>Selling Price (₹)</label>
+                                <input type="number" id="expense-sell-price" placeholder="For new/updated item" min="0" step="any" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
                             </div>
                             <!-- Floating Label Expense Fields -->
                             <div class="expense-payment-row" style="display: flex; gap: 10px; margin-top: 10px;">
