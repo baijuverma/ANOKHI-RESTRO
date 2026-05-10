@@ -147,9 +147,9 @@ export const appShellHTML = `
                                     <th>Order ID</th>
                                     <th>Date & Time</th>
                                     <th>Items Details</th>
-                                    <th>Cash</th>
-                                    <th>UPI</th>
-                                    <th>Dues</th>
+                                    <th onclick="window.togglePaymentFilter('CASH', 'dashboard')" style="cursor: pointer; user-select: none;" id="dashboard-th-cash" title="Click to filter by Cash">Cash</th>
+                                    <th onclick="window.togglePaymentFilter('UPI', 'dashboard')" style="cursor: pointer; user-select: none;" id="dashboard-th-upi" title="Click to filter by UPI">UPI</th>
+                                    <th onclick="window.togglePaymentFilter('DUES', 'dashboard')" style="cursor: pointer; user-select: none;" id="dashboard-th-dues" title="Click to filter by Dues">Dues</th>
                                     <th>Total Amount</th>
                                     <th>Action</th>
                                 </tr>
@@ -611,9 +611,9 @@ export const appShellHTML = `
                                     <th>Order ID</th>
                                     <th>Date & Time</th>
                                     <th>Items Details</th>
-                                    <th>Cash</th>
-                                    <th>UPI</th>
-                                    <th>Dues</th>
+                                    <th onclick="window.togglePaymentFilter('CASH', 'history')" style="cursor: pointer; user-select: none;" id="history-th-cash" title="Click to filter by Cash">Cash</th>
+                                    <th onclick="window.togglePaymentFilter('UPI', 'history')" style="cursor: pointer; user-select: none;" id="history-th-upi" title="Click to filter by UPI">UPI</th>
+                                    <th onclick="window.togglePaymentFilter('DUES', 'history')" style="cursor: pointer; user-select: none;" id="history-th-dues" title="Click to filter by Dues">Dues</th>
                                     <th>Total Amount</th>
                                     <th>Action</th>
                                 </tr>

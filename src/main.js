@@ -195,16 +195,61 @@ window.renderInventory = () => {
     }
 };
 
+window.dashboardPaymentFilter = null; // 'CASH' | 'UPI' | 'DUES' | null
+window.historyPaymentFilter = null;
+
+window.togglePaymentFilter = (type, view) => {
+    if (view === 'dashboard') {
+        window.dashboardPaymentFilter = window.dashboardPaymentFilter === type ? null : type;
+        const cashTh = document.getElementById('dashboard-th-cash');
+        const upiTh = document.getElementById('dashboard-th-upi');
+        const duesTh = document.getElementById('dashboard-th-dues');
+        if (cashTh) cashTh.style.color = window.dashboardPaymentFilter === 'CASH' ? '#10b981' : '';
+        if (upiTh) upiTh.style.color = window.dashboardPaymentFilter === 'UPI' ? '#818cf8' : '';
+        if (duesTh) duesTh.style.color = window.dashboardPaymentFilter === 'DUES' ? '#ef4444' : '';
+    } else {
+        window.historyPaymentFilter = window.historyPaymentFilter === type ? null : type;
+        const cashTh = document.getElementById('history-th-cash');
+        const upiTh = document.getElementById('history-th-upi');
+        const duesTh = document.getElementById('history-th-dues');
+        if (cashTh) cashTh.style.color = window.historyPaymentFilter === 'CASH' ? '#10b981' : '';
+        if (upiTh) upiTh.style.color = window.historyPaymentFilter === 'UPI' ? '#818cf8' : '';
+        if (duesTh) duesTh.style.color = window.historyPaymentFilter === 'DUES' ? '#ef4444' : '';
+    }
+    window.renderHistory();
+};
+
 window.renderHistory = () => {
     if (window.salesHistory) {
         // Dashboard recent sales
         let dashboardOrders = [...window.salesHistory];
         const dashboardSearch = document.getElementById('dashboard-dues-search')?.value?.toLowerCase() || '';
         
-        if (dashboardSearch) {
+        if (dashboardSearch || window.dashboardPaymentFilter) {
             dashboardOrders = dashboardOrders.filter(sale => {
-                const cName = (sale.customerName || sale.customer_name || '').toLowerCase();
-                return cName.includes(dashboardSearch) && (sale.dues || 0) > 0.01;
+                const totalPaid = parseFloat(sale.total || 0) - parseFloat(sale.dues || 0);
+                const split = sale.split_amounts || sale.splitAmounts;
+                const pMode = (sale.payment_mode || sale.paymentMode || 'CASH').toUpperCase();
+                let sCash = 0, sUpi = 0;
+                if (pMode === 'UPI') {
+                    sUpi = totalPaid;
+                } else if ((pMode === 'BOTH' || pMode === 'SPLIT') && split) {
+                    sCash = parseFloat(split.cash || 0);
+                    sUpi = parseFloat(split.upi || 0);
+                } else {
+                    sCash = totalPaid;
+                }
+                const sDues = parseFloat(sale.dues || 0);
+
+                if (window.dashboardPaymentFilter === 'CASH' && sCash <= 0) return false;
+                if (window.dashboardPaymentFilter === 'UPI' && sUpi <= 0) return false;
+                if (window.dashboardPaymentFilter === 'DUES' && sDues <= 0) return false;
+
+                if (dashboardSearch) {
+                    const cName = (sale.customerName || sale.customer_name || '').toLowerCase();
+                    if (!cName.includes(dashboardSearch) || sDues <= 0) return false;
+                }
+                return true;
             });
         }
         
@@ -216,7 +261,7 @@ window.renderHistory = () => {
         const startDateStr = document.getElementById('history-start-date')?.value;
         const endDateStr = document.getElementById('history-end-date')?.value;
 
-        if (startDateStr || endDateStr) {
+        if (startDateStr || endDateStr || window.historyPaymentFilter) {
             historyOrders = historyOrders.filter(sale => {
                 const saleDate = new Date(sale.date);
                 saleDate.setHours(0, 0, 0, 0);
@@ -231,6 +276,27 @@ window.renderHistory = () => {
                     end.setHours(23, 59, 59, 999);
                     if (saleDate > end) return false;
                 }
+                
+                if (window.historyPaymentFilter) {
+                    const totalPaid = parseFloat(sale.total || 0) - parseFloat(sale.dues || 0);
+                    const split = sale.split_amounts || sale.splitAmounts;
+                    const pMode = (sale.payment_mode || sale.paymentMode || 'CASH').toUpperCase();
+                    let sCash = 0, sUpi = 0;
+                    if (pMode === 'UPI') {
+                        sUpi = totalPaid;
+                    } else if ((pMode === 'BOTH' || pMode === 'SPLIT') && split) {
+                        sCash = parseFloat(split.cash || 0);
+                        sUpi = parseFloat(split.upi || 0);
+                    } else {
+                        sCash = totalPaid;
+                    }
+                    const sDues = parseFloat(sale.dues || 0);
+
+                    if (window.historyPaymentFilter === 'CASH' && sCash <= 0) return false;
+                    if (window.historyPaymentFilter === 'UPI' && sUpi <= 0) return false;
+                    if (window.historyPaymentFilter === 'DUES' && sDues <= 0) return false;
+                }
+                
                 return true;
             });
         }
