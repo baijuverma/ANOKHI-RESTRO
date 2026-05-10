@@ -216,7 +216,7 @@ window.togglePaymentFilter = (type, view) => {
             el.style.border = '';
             el.style.borderRadius = '';
             el.style.padding = '';
-            el.innerHTML = textMap[typeName];
+            el.innerHTML = `${textMap[typeName]} <i class="fa-solid fa-filter" style="font-size: 10px; margin-left: 3px; opacity: 0.5;"></i>`;
         }
     };
 
@@ -248,7 +248,7 @@ document.addEventListener('click', (e) => {
         el.style.border = '';
         el.style.borderRadius = '';
         el.style.padding = '';
-        if (typeName) el.innerHTML = textMap[typeName];
+        if (typeName) el.innerHTML = `${textMap[typeName]} <i class="fa-solid fa-filter" style="font-size: 10px; margin-left: 3px; opacity: 0.5;"></i>`;
     };
 
     if (!inDashboardSection && window.dashboardPaymentFilter) {
