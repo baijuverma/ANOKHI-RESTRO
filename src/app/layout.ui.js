@@ -249,49 +249,56 @@ export const appShellHTML = `
 
                 <div class="glass-panel mt-4" style="padding: 24px;">
                     <form id="expense-form" class="expense-entry-form">
-                        <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-                            <div class="form-group">
-                                <label>Main Category</label>
-                                <div class="input-wrapper searchable-dropdown" id="main-cat-container">
-                                    <input type="text" id="expense-main-cat" placeholder="Select or type category..." oninput="handleSearchableInput('expense-main-cat', 'main-suggestions')" onfocus="showSuggestions('expense-main-cat', 'main-suggestions')" required style="width:100%; padding: 10px 35px 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
-                                    <i class="fa-solid fa-xmark clear-dropdown-btn" onclick="clearSearchableInput('expense-main-cat', 'main-suggestions')" title="Clear"></i>
-                                    <i class="fa-solid fa-chevron-down dropdown-arrow" onclick="toggleSuggestions('expense-main-cat', 'main-suggestions')"></i>
-                                    <div id="main-suggestions" class="suggestions-panel hidden"></div>
+                        <div class="expense-entry-layout" style="display: flex; flex-direction: column; gap: 20px;">
+                            <!-- Top Row -->
+                            <div style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+                                <div class="form-group" style="flex: 2; min-width: 150px;">
+                                    <label>Main Category</label>
+                                    <div class="input-wrapper searchable-dropdown" id="main-cat-container">
+                                        <input type="text" id="expense-main-cat" placeholder="Select or type category..." oninput="handleSearchableInput('expense-main-cat', 'main-suggestions')" onfocus="showSuggestions('expense-main-cat', 'main-suggestions')" required style="width:100%; padding: 10px 35px 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                                        <i class="fa-solid fa-xmark clear-dropdown-btn" onclick="clearSearchableInput('expense-main-cat', 'main-suggestions')" title="Clear"></i>
+                                        <i class="fa-solid fa-chevron-down dropdown-arrow" onclick="toggleSuggestions('expense-main-cat', 'main-suggestions')"></i>
+                                        <div id="main-suggestions" class="suggestions-panel hidden"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="flex: 2; min-width: 150px;">
+                                    <label>Sub Category</label>
+                                    <div class="input-wrapper searchable-dropdown" id="sub-cat-container">
+                                        <input type="text" id="expense-sub-cat" placeholder="Select or type sub-category..." oninput="handleSearchableInput('expense-sub-cat', 'sub-suggestions')" onfocus="showSuggestions('expense-sub-cat', 'sub-suggestions')" required style="width:100%; padding: 10px 35px 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                                        <i class="fa-solid fa-xmark clear-dropdown-btn" onclick="clearSearchableInput('expense-sub-cat', 'sub-suggestions')" title="Clear"></i>
+                                        <i class="fa-solid fa-chevron-down dropdown-arrow" onclick="toggleSuggestions('expense-sub-cat', 'sub-suggestions')"></i>
+                                        <div id="sub-suggestions" class="suggestions-panel hidden"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="flex: 1; max-width: 120px; min-width: 80px;">
+                                    <label>Quantity</label>
+                                    <input type="number" id="expense-qty" placeholder="Qty" min="0" step="any" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                                </div>
+                                <!-- Floating Label Expense Fields -->
+                                <div class="expense-payment-row" style="display: flex; gap: 10px; flex: 3; min-width: 250px;">
+                                    <div class="input-group-floating" style="flex: 1; position: relative;">
+                                        <input type="number" id="expense-cash" placeholder=" " min="0" step="0.01" style="padding-right: 30px;">
+                                        <label for="expense-cash">Cash</label>
+                                        <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-cash')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
+                                    </div>
+                                    <div class="input-group-floating" style="flex: 1; position: relative;">
+                                        <input type="number" id="expense-upi" placeholder=" " min="0" step="0.01" style="padding-right: 30px;">
+                                        <label for="expense-upi">UPI</label>
+                                        <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-upi')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
+                                    </div>
+                                    <div class="input-group-floating" style="flex: 1; position: relative;">
+                                        <input type="number" id="expense-udhar" placeholder=" " min="0" step="0.01" style="padding-right: 30px;">
+                                        <label for="expense-udhar">Udhar</label>
+                                        <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-udhar')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label>Sub Category</label>
-                                <div class="input-wrapper searchable-dropdown" id="sub-cat-container">
-                                    <input type="text" id="expense-sub-cat" placeholder="Select or type sub-category..." oninput="handleSearchableInput('expense-sub-cat', 'sub-suggestions')" onfocus="showSuggestions('expense-sub-cat', 'sub-suggestions')" required style="width:100%; padding: 10px 35px 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
-                                    <i class="fa-solid fa-xmark clear-dropdown-btn" onclick="clearSearchableInput('expense-sub-cat', 'sub-suggestions')" title="Clear"></i>
-                                    <i class="fa-solid fa-chevron-down dropdown-arrow" onclick="toggleSuggestions('expense-sub-cat', 'sub-suggestions')"></i>
-                                    <div id="sub-suggestions" class="suggestions-panel hidden"></div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Quantity</label>
-                                <input type="number" id="expense-qty" placeholder="Enter qty (Optional)" min="0" step="any" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
-                            </div>
-                            <div class="form-group" id="expense-sell-price-container">
-                                <label>Selling Price (₹)</label>
-                                <input type="number" id="expense-sell-price" placeholder="For new/updated item" min="0" step="any" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
-                            </div>
-                            <!-- Floating Label Expense Fields -->
-                            <div class="expense-payment-row" style="display: flex; gap: 10px; margin-top: 10px;">
-                                <div class="input-group-floating" style="flex: 1; position: relative;">
-                                    <input type="number" id="expense-cash" placeholder=" " min="0" step="0.01" style="padding-right: 30px;">
-                                    <label for="expense-cash">Cash</label>
-                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-cash')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
-                                </div>
-                                <div class="input-group-floating" style="flex: 1; position: relative;">
-                                    <input type="number" id="expense-upi" placeholder=" " min="0" step="0.01" style="padding-right: 30px;">
-                                    <label for="expense-upi">UPI</label>
-                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-upi')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
-                                </div>
-                                <div class="input-group-floating" style="flex: 1; position: relative;">
-                                    <input type="number" id="expense-udhar" placeholder=" " min="0" step="0.01" style="padding-right: 30px;">
-                                    <label for="expense-udhar">Udhar</label>
-                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-udhar')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
+                            
+                            <!-- Second Row -->
+                            <div style="display: flex; gap: 15px;">
+                                <div class="form-group" id="expense-sell-price-container" style="flex: 1; max-width: 200px;">
+                                    <label>Selling Price (₹)</label>
+                                    <input type="number" id="expense-sell-price" placeholder="For new/updated item" min="0" step="any" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
                                 </div>
                             </div>
                         </div>
