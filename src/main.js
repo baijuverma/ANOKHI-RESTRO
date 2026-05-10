@@ -201,6 +201,7 @@ window.historyPaymentFilter = null;
 window.togglePaymentFilter = (type, view) => {
     const applyHighlight = (el, typeName, isActive) => {
         if (!el) return;
+        const textMap = { 'CASH': 'Cash', 'UPI': 'UPI', 'DUES': 'Dues' };
         if (isActive) {
             let color = typeName === 'CASH' ? '#10b981' : typeName === 'UPI' ? '#818cf8' : '#ef4444';
             el.style.color = color;
@@ -208,12 +209,14 @@ window.togglePaymentFilter = (type, view) => {
             el.style.border = `1px solid ${color}`;
             el.style.borderRadius = '6px';
             el.style.padding = '4px 8px';
+            el.innerHTML = `${textMap[typeName]} <i class="fa-solid fa-xmark" style="font-size: 11px; margin-left: 4px;"></i>`;
         } else {
             el.style.color = '';
             el.style.background = '';
             el.style.border = '';
             el.style.borderRadius = '';
             el.style.padding = '';
+            el.innerHTML = textMap[typeName];
         }
     };
 
@@ -237,28 +240,30 @@ document.addEventListener('click', (e) => {
     
     let needsRender = false;
 
-    const resetHighlight = (el) => {
+    const resetHighlight = (el, typeName) => {
         if (!el) return;
+        const textMap = { 'CASH': 'Cash', 'UPI': 'UPI', 'DUES': 'Dues' };
         el.style.color = '';
         el.style.background = '';
         el.style.border = '';
         el.style.borderRadius = '';
         el.style.padding = '';
+        if (typeName) el.innerHTML = textMap[typeName];
     };
 
     if (!inDashboardSection && window.dashboardPaymentFilter) {
         window.dashboardPaymentFilter = null;
-        resetHighlight(document.getElementById('dashboard-th-cash'));
-        resetHighlight(document.getElementById('dashboard-th-upi'));
-        resetHighlight(document.getElementById('dashboard-th-dues'));
+        resetHighlight(document.getElementById('dashboard-th-cash'), 'CASH');
+        resetHighlight(document.getElementById('dashboard-th-upi'), 'UPI');
+        resetHighlight(document.getElementById('dashboard-th-dues'), 'DUES');
         needsRender = true;
     }
 
     if (!inHistorySection && window.historyPaymentFilter) {
         window.historyPaymentFilter = null;
-        resetHighlight(document.getElementById('history-th-cash'));
-        resetHighlight(document.getElementById('history-th-upi'));
-        resetHighlight(document.getElementById('history-th-dues'));
+        resetHighlight(document.getElementById('history-th-cash'), 'CASH');
+        resetHighlight(document.getElementById('history-th-upi'), 'UPI');
+        resetHighlight(document.getElementById('history-th-dues'), 'DUES');
         needsRender = true;
     }
 
