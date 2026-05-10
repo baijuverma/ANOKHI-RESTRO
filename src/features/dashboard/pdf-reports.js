@@ -28,6 +28,15 @@ export function initPdfReports() {
         generateSalesReport(`Today's Dues Report (${todayStr})`, data);
     };
 
+    window.downloadTotalDuesReport = () => {
+        const today = new Date();
+        const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : today.toDateString();
+        
+        const data = (window.salesHistory || []).filter(s => parseFloat(s.dues || 0) > 0);
+
+        generateSalesReport(`Total Dues Report (All Time as of ${todayStr})`, data);
+    };
+
     window.downloadProfitReport = () => {
         const today = new Date();
         const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : today.toDateString();

@@ -611,7 +611,10 @@ export const appShellHTML = `
                 <header style="margin-bottom: 20px;">
                     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%;">
                         <!-- Total Dues Card (Clickable to Filter) -->
-                        <div class="glass-panel" onclick="toggleDuesFilter()" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" id="dues-filter-card">
+                        <div class="glass-panel" onclick="toggleDuesFilter()" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer; transition: transform 0.2s; position: relative;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" id="dues-filter-card">
+                            <div onclick="event.stopPropagation(); if(window.downloadTotalDuesReport) window.downloadTotalDuesReport();" style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Download Total Dues Report">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </div>
                             <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #ef4444; margin-bottom: 4px;">Total Dues (Baki)</h3>
                             <p id="history-total-dues" style="font-size: 28px; font-weight: 800; color: #ef4444; margin: 0;">₹0</p>
                             <div id="dues-filter-status" style="font-size: 11px; margin-top: 8px; color: var(--text-secondary); background: rgba(239, 68, 68, 0.1); padding: 2px 8px; border-radius: 4px; display: inline-block;">Click to Filter Dues</div>
