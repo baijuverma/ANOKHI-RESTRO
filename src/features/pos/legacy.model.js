@@ -521,7 +521,14 @@ window.renderActiveOrders = function() {
     });
 };
 
-function finalizeSaleRecord(custName = null, custMobile = null) {
+async function finalizeSaleRecord(custName = null, custMobile = null) {
+    const processBtn = document.getElementById('btn-process-sale');
+    const originalBtnHtml = processBtn ? processBtn.innerHTML : '';
+    if (processBtn) {
+        processBtn.disabled = true;
+        processBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+    }
+
     const totals = window.calculateTotal() || { total: 0, discount: 0, roundOff: 0, advance: 0 };
     const total = totals.total;
     const discount = totals.discount;
@@ -531,7 +538,7 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
     const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
 
-    let finalSaleId = Math.floor(100000 + Math.random() * 900000).toString();
+    let finalSaleId = Date.now().toString() + Math.floor(100 + Math.random() * 900).toString();
     let finalCustName = custName;
     let finalCustMobile = custMobile;
     let finalSaleDate = new Date().toISOString();
@@ -622,7 +629,18 @@ function finalizeSaleRecord(custName = null, custMobile = null) {
     if (!window.salesHistory) window.salesHistory = [];
     window.salesHistory.unshift(sale);
     
-    if (typeof window.saveData === 'function') window.saveData();
+    if (typeof window.saveData === 'function') {
+        try {
+            await window.saveData();
+        } catch (e) {
+            console.error("Failed to save data:", e);
+        }
+    }
+
+    if (processBtn) {
+        processBtn.disabled = false;
+        processBtn.innerHTML = originalBtnHtml;
+    }
 
     // Reset editing state
     window.editingSaleId = null;
