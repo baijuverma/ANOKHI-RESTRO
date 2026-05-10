@@ -95,7 +95,14 @@ export const appShellHTML = `
         <main class="main-content">
             <!-- Dashboard View -->
             <section id="dashboard" class="view-section active">
-                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 0;">
+                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 0;">
+                    <!-- Today Dues Card -->
+                    <div class="glass-panel" onclick="if(typeof window.togglePaymentFilter === 'function') { window.togglePaymentFilter('DUES', 'dashboard'); }" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" id="dashboard-dues-filter-card">
+                        <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #ef4444; margin-bottom: 4px;">Today Dues (Baki)</h3>
+                        <p id="today-dues-card" style="font-size: 28px; font-weight: 800; color: #ef4444; margin: 0;">₹0</p>
+                        <div id="dashboard-dues-filter-status" style="font-size: 11px; margin-top: 8px; color: var(--text-secondary); background: rgba(239, 68, 68, 0.1); padding: 2px 8px; border-radius: 4px; display: inline-block;">Click to Filter Dues</div>
+                    </div>
+
                     <!-- Today Sale Card -->
                     <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #6366f1; background: rgba(99, 102, 241, 0.05); cursor: pointer; position: relative;" onclick="if(window.downloadTodaySalesReport) window.downloadTodaySalesReport()">
                         <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">

@@ -225,6 +225,26 @@ window.togglePaymentFilter = (type, view) => {
         applyHighlight(document.getElementById('dashboard-th-cash'), 'CASH', window.dashboardPaymentFilter === 'CASH');
         applyHighlight(document.getElementById('dashboard-th-upi'), 'UPI', window.dashboardPaymentFilter === 'UPI');
         applyHighlight(document.getElementById('dashboard-th-dues'), 'DUES', window.dashboardPaymentFilter === 'DUES');
+        
+        // Sync the TODAY DUES card UI
+        const statusText = document.getElementById('dashboard-dues-filter-status');
+        const card = document.getElementById('dashboard-dues-filter-card');
+        if (window.dashboardPaymentFilter === 'DUES') {
+            if(statusText) {
+                statusText.innerText = 'Filter: DUES ONLY (Click to Clear)';
+                statusText.style.background = '#ef4444';
+                statusText.style.color = 'white';
+            }
+            if(card) card.style.background = 'rgba(239, 68, 68, 0.15)';
+        } else {
+            if(statusText) {
+                statusText.innerText = 'Click to Filter Dues';
+                statusText.style.background = 'rgba(239, 68, 68, 0.1)';
+                statusText.style.color = 'var(--text-secondary)';
+            }
+            if(card) card.style.background = 'rgba(239, 68, 68, 0.05)';
+        }
+        if(typeof window.renderHistory === 'function') window.renderHistory();
     } else {
         window.historyPaymentFilter = window.historyPaymentFilter === type ? null : type;
         applyHighlight(document.getElementById('history-th-cash'), 'CASH', window.historyPaymentFilter === 'CASH');
@@ -430,7 +450,7 @@ window.updateDashboard = () => {
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    let todayRevenue = 0, todayCash = 0, todayUpi = 0;
+    let todayRevenue = 0, todayCash = 0, todayUpi = 0, todayDues = 0;
     let monthRevenue = 0, monthCash = 0, monthUpi = 0;
 
     (window.salesHistory || []).forEach(s => {
@@ -461,6 +481,7 @@ window.updateDashboard = () => {
             todayCash += sCash;
             todayUpi += sUpi;
             todayRevenue += (sCash + sUpi);
+            todayDues += parseFloat(s.dues || 0);
         }
         if (isThisMonth) {
             monthCash += sCash;
@@ -486,6 +507,7 @@ window.updateDashboard = () => {
         todayRevenue: todayRevenue.toFixed(2),
         todayCash: todayCash.toFixed(2),
         todayUpi: todayUpi.toFixed(2),
+        todayDues: todayDues.toFixed(2),
         monthRevenue: monthRevenue.toFixed(2),
         monthCash: monthCash.toFixed(2),
         monthUpi: monthUpi.toFixed(2),

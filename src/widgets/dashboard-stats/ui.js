@@ -23,6 +23,10 @@ export const renderDashboardStats = (stats) => {
     // Update Today Expense
     if (elTodayExpense) elTodayExpense.textContent = format(stats.totalExpenseToday);
 
+    // Update Today Dues
+    const elTodayDues = document.getElementById('today-dues-card');
+    if (elTodayDues) elTodayDues.textContent = format(stats.todayDues);
+
     // Update Today Profit
     if (elTodayProfit) {
         const profit = parseFloat(stats.profitToday || 0);
