@@ -133,7 +133,8 @@ export function initPdfReports() {
             i + 1,
             s.id.toString().slice(-6),
             formatDate(s.date),
-            s.orderType || 'Counter',
+            s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
+            (s.orderType || 'Counter').toUpperCase(),
             (s.payment_mode || 'CASH').toUpperCase(),
             `Rs. ${parseFloat(s.total || 0).toFixed(2)}`
         ]);
@@ -145,12 +146,13 @@ export function initPdfReports() {
             '',
             '',
             '',
+            '',
             { content: 'TOTAL', styles: { fontStyle: 'bold' } },
             { content: `Rs. ${totalRevenue.toFixed(2)}`, styles: { fontStyle: 'bold' } }
         ]);
 
         doc.autoTable({
-            head: [['Sr.', 'Bill ID', 'Date', 'Type', 'Mode', 'Amount']],
+            head: [['Sr.', 'Bill ID', 'Date', 'Customer', 'Type', 'Mode', 'Amount']],
             body: billTableBody,
             startY: margin + 32,
             margin: { left: margin, right: margin },
@@ -347,13 +349,14 @@ function generateSalesReport(title, data) {
         i + 1,
         s.orderId || s.id.substring(0, 8),
         new Date(s.date).toLocaleString(),
-        s.customer_name || 'Walk-in',
+        s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
+        (s.orderType || 'Counter').toUpperCase(),
         (s.payment_mode || 'CASH').toUpperCase(),
         `Rs. ${parseFloat(s.total || 0).toFixed(2)}`
     ]);
 
     doc.autoTable({
-        head: [['Sr.', 'Order ID', 'Date & Time', 'Customer', 'Mode', 'Amount']],
+        head: [['Sr.', 'Order ID', 'Date & Time', 'Customer', 'Type', 'Mode', 'Amount']],
         body: tableBody,
         startY: margin + 25,
         margin: { left: margin, right: margin, top: margin, bottom: margin + 10 },
