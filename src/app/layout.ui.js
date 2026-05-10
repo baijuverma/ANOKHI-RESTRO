@@ -247,7 +247,54 @@ export const appShellHTML = `
                     </div>
                 </header>
 
-                <div class="glass-panel mt-4" style="padding: 24px;">
+                <style>
+                    #expense-form-container {
+                        background: #FDF9F1 !important; /* Soft Cream */
+                        color: #2D3748 !important;
+                        border: 1px solid #E2E8F0 !important;
+                    }
+                    #expense-form-container label {
+                        color: #4A5568 !important;
+                        font-weight: 600;
+                    }
+                    #expense-form-container input, #expense-form-container textarea {
+                        background: #FFFFFF !important;
+                        color: #1A202C !important;
+                        border: 1px solid #CBD5E0 !important;
+                    }
+                    #expense-form-container input::placeholder, #expense-form-container textarea::placeholder {
+                        color: #A0AEC0 !important;
+                    }
+                    /* Floating label overrides */
+                    #expense-form-container .input-group-floating label {
+                        color: #718096 !important;
+                        background: transparent !important;
+                        text-shadow: none !important;
+                    }
+                    #expense-form-container .input-group-floating input:focus + label,
+                    #expense-form-container .input-group-floating input:not(:placeholder-shown) + label {
+                        background: #FFFFFF !important;
+                        color: #2D3748 !important;
+                        padding: 0 4px !important;
+                    }
+                    /* Suggestions panel */
+                    #expense-form-container .suggestions-panel {
+                        background: #FFFFFF !important;
+                        color: #1A202C !important;
+                        border: 1px solid #E2E8F0 !important;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+                    }
+                    #expense-form-container .suggestion-item:hover {
+                        background: #EDF2F7 !important;
+                    }
+                    #expense-form-container .clear-dropdown-btn, #expense-form-container .dropdown-arrow, #expense-form-container .clear-input-btn {
+                        color: #A0AEC0 !important;
+                    }
+                    #expense-form-container .clear-dropdown-btn:hover, #expense-form-container .clear-input-btn:hover {
+                        color: #4A5568 !important;
+                    }
+                </style>
+                <div id="expense-form-container" class="glass-panel mt-4" style="padding: 24px;">
                     <form id="expense-form" class="expense-entry-form">
                         <div class="expense-entry-layout" style="display: flex; flex-direction: column; gap: 20px;">
                             <!-- Top Row -->
