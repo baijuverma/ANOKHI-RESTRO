@@ -219,6 +219,39 @@ window.togglePaymentFilter = (type, view) => {
     window.renderHistory();
 };
 
+document.addEventListener('click', (e) => {
+    const inDashboardSection = e.target.closest('#dashboard .recent-activity');
+    const inHistorySection = e.target.closest('#history');
+    
+    let needsRender = false;
+
+    if (!inDashboardSection && window.dashboardPaymentFilter) {
+        window.dashboardPaymentFilter = null;
+        const cashTh = document.getElementById('dashboard-th-cash');
+        const upiTh = document.getElementById('dashboard-th-upi');
+        const duesTh = document.getElementById('dashboard-th-dues');
+        if (cashTh) cashTh.style.color = '';
+        if (upiTh) upiTh.style.color = '';
+        if (duesTh) duesTh.style.color = '';
+        needsRender = true;
+    }
+
+    if (!inHistorySection && window.historyPaymentFilter) {
+        window.historyPaymentFilter = null;
+        const cashTh = document.getElementById('history-th-cash');
+        const upiTh = document.getElementById('history-th-upi');
+        const duesTh = document.getElementById('history-th-dues');
+        if (cashTh) cashTh.style.color = '';
+        if (upiTh) upiTh.style.color = '';
+        if (duesTh) duesTh.style.color = '';
+        needsRender = true;
+    }
+
+    if (needsRender && typeof window.renderHistory === 'function') {
+        window.renderHistory();
+    }
+});
+
 window.renderHistory = () => {
     if (window.salesHistory) {
         // Dashboard recent sales

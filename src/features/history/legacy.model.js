@@ -170,8 +170,8 @@ window.downloadGrossReport = function() {
     const startDateStr = document.getElementById('history-start-date')?.value;
     const endDateStr = document.getElementById('history-end-date')?.value;
 
-    // Filter by date range
-    if (startDateStr || endDateStr) {
+    // Filter by date range and payment filter
+    if (startDateStr || endDateStr || window.historyPaymentFilter) {
         sales = sales.filter(sale => {
             const saleDate = new Date(sale.date);
             saleDate.setHours(0,0,0,0);
@@ -185,6 +185,28 @@ window.downloadGrossReport = function() {
                 e.setHours(23,59,59,999);
                 if (saleDate > e) return false;
             }
+            
+            // Apply payment filter for PDF report
+            if (window.historyPaymentFilter) {
+                const totalPaid = parseFloat(sale.total || 0) - parseFloat(sale.dues || 0);
+                const split = sale.split_amounts || sale.splitAmounts;
+                const pMode = (sale.payment_mode || sale.paymentMode || 'CASH').toUpperCase();
+                let sCash = 0, sUpi = 0;
+                if (pMode === 'UPI') {
+                    sUpi = totalPaid;
+                } else if ((pMode === 'BOTH' || pMode === 'SPLIT') && split) {
+                    sCash = parseFloat(split.cash || 0);
+                    sUpi = parseFloat(split.upi || 0);
+                } else {
+                    sCash = totalPaid;
+                }
+                const sDues = parseFloat(sale.dues || 0);
+
+                if (window.historyPaymentFilter === 'CASH' && sCash <= 0) return false;
+                if (window.historyPaymentFilter === 'UPI' && sUpi <= 0) return false;
+                if (window.historyPaymentFilter === 'DUES' && sDues <= 0) return false;
+            }
+
             return true;
         });
     }
