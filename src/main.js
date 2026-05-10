@@ -313,8 +313,9 @@ window.renderHistory = () => {
         let historyOrders = [...window.salesHistory];
         const startDateStr = document.getElementById('history-start-date')?.value;
         const endDateStr = document.getElementById('history-end-date')?.value;
+        const historySearch = document.getElementById('history-search')?.value?.toLowerCase() || '';
 
-        if (startDateStr || endDateStr || window.historyPaymentFilter) {
+        if (startDateStr || endDateStr || window.historyPaymentFilter || historySearch) {
             historyOrders = historyOrders.filter(sale => {
                 const saleDate = new Date(sale.date);
                 saleDate.setHours(0, 0, 0, 0);
@@ -348,6 +349,12 @@ window.renderHistory = () => {
                     if (window.historyPaymentFilter === 'CASH' && sCash <= 0) return false;
                     if (window.historyPaymentFilter === 'UPI' && sUpi <= 0) return false;
                     if (window.historyPaymentFilter === 'DUES' && sDues <= 0) return false;
+                }
+                
+                if (historySearch) {
+                    const cName = (sale.customerName || sale.customer_name || '').toLowerCase();
+                    const sId = String(sale.id || '').toLowerCase();
+                    if (!cName.includes(historySearch) && !sId.includes(historySearch)) return false;
                 }
                 
                 return true;
