@@ -268,6 +268,10 @@ export const appShellHTML = `
                                     <div id="sub-suggestions" class="suggestions-panel hidden"></div>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label>Quantity</label>
+                                <input type="number" id="expense-qty" placeholder="Enter quantity (Optional)" min="0" step="any" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                            </div>
                             <!-- Floating Label Expense Fields -->
                             <div class="expense-payment-row" style="display: flex; gap: 10px; margin-top: 10px;">
                                 <div class="input-group-floating" style="flex: 1; position: relative;">

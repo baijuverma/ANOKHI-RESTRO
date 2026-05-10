@@ -18,10 +18,13 @@ window.showSuggestions = function(inputId, panelId) {
 
     let items = [];
     if (inputId === 'expense-main-cat') {
-        items = expenseData.main;
+        const invCategories = [...new Set((window.inventory || []).map(i => i.category).filter(Boolean))];
+        items = [...new Set([...expenseData.main, ...invCategories])];
     } else {
         const mainValue = document.getElementById('expense-main-cat').value;
-        items = expenseData.sub[mainValue] || [];
+        const defaultSubs = expenseData.sub[mainValue] || [];
+        const invItems = (window.inventory || []).filter(i => i.category === mainValue).map(i => i.name);
+        items = [...new Set([...defaultSubs, ...invItems])];
     }
 
     renderSuggestions(items, input, panel);
@@ -36,10 +39,15 @@ window.handleSearchableInput = function(inputId, panelId) {
 
     let items = [];
     if (inputId === 'expense-main-cat') {
-        items = expenseData.main.filter(i => i.toLowerCase().includes(query));
+        const invCategories = [...new Set((window.inventory || []).map(i => i.category).filter(Boolean))];
+        const allMain = [...new Set([...expenseData.main, ...invCategories])];
+        items = allMain.filter(i => i.toLowerCase().includes(query));
     } else {
         const mainValue = document.getElementById('expense-main-cat').value;
-        items = (expenseData.sub[mainValue] || []).filter(i => i.toLowerCase().includes(query));
+        const defaultSubs = expenseData.sub[mainValue] || [];
+        const invItems = (window.inventory || []).filter(i => i.category === mainValue).map(i => i.name);
+        const allSub = [...new Set([...defaultSubs, ...invItems])];
+        items = allSub.filter(i => i.toLowerCase().includes(query));
     }
 
     renderSuggestions(items, input, panel);
@@ -124,6 +132,7 @@ window.handleExpenseSubmit = async function(e) {
     const subCat = document.getElementById('expense-sub-cat').value;
     const desc = document.getElementById('expense-desc').value;
 
+    const qty = parseFloat(document.getElementById('expense-qty').value) || 0;
     const cash = parseFloat(document.getElementById('expense-cash').value) || 0;
     const upi = parseFloat(document.getElementById('expense-upi').value) || 0;
     const udhar = parseFloat(document.getElementById('expense-udhar').value) || 0;
@@ -142,10 +151,24 @@ window.handleExpenseSubmit = async function(e) {
                 sub_category: subCat,
                 amount: m.v,
                 payment_mode: m.n,
-                description: desc
+                description: qty > 0 ? `Qty: ${qty} | ${desc}` : desc,
+                qty: qty
             });
         }
     });
+
+    // Auto-update Inventory Stock if not Kitchen/Raw Material
+    const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
+    if (!isRawMaterial && qty > 0 && window.inventory) {
+        // Try to find the matching item in inventory by Sub Category name
+        const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase() && i.category === mainCat);
+        if (invItem) {
+            invItem.quantity = (parseFloat(invItem.quantity) || 0) + qty;
+            localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
+            if (typeof window.renderInventory === 'function') window.renderInventory();
+            console.log(`Auto-updated inventory: ${invItem.name} +${qty}`);
+        }
+    }
 
     if (typeof window.saveData === 'function') window.saveData();
     e.target.reset();
