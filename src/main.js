@@ -237,6 +237,7 @@ window.togglePaymentFilter = (type, view) => {
 document.addEventListener('click', (e) => {
     const inDashboardSection = e.target.closest('#dashboard .recent-activity');
     const inHistorySection = e.target.closest('#history-transactions-panel');
+    const isDuesCard = e.target.closest('#dues-filter-card') || e.target.closest('[onclick="toggleDuesFilter()"]');
     
     let needsRender = false;
 
@@ -259,7 +260,7 @@ document.addEventListener('click', (e) => {
         needsRender = true;
     }
 
-    if (!inHistorySection && window.historyPaymentFilter) {
+    if (!inHistorySection && window.historyPaymentFilter && !isDuesCard) {
         window.historyPaymentFilter = null;
         resetHighlight(document.getElementById('history-th-cash'), 'CASH');
         resetHighlight(document.getElementById('history-th-upi'), 'UPI');
