@@ -42,6 +42,18 @@ export const renderCalendarChart = (dailyTotals) => {
         html += `<div class="calendar-day empty"></div>`;
     }
     
+    let maxTotal = 0;
+    let minTotal = Infinity;
+    
+    // Pre-calculate max and min for the current month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dStr = String(day).padStart(2, '0') + '/' + String(month + 1).padStart(2, '0') + '/' + year;
+        const total = dailyTotals[dStr] ? dailyTotals[dStr].total : 0;
+        if (total > maxTotal) maxTotal = total;
+        if (total > 0 && total < minTotal) minTotal = total;
+    }
+    if (minTotal === Infinity) minTotal = 0;
+    
     for (let day = 1; day <= daysInMonth; day++) {
         const dStr = String(day).padStart(2, '0') + '/' + String(month + 1).padStart(2, '0') + '/' + year;
         const total = dailyTotals[dStr] ? dailyTotals[dStr].total : 0;
@@ -49,6 +61,9 @@ export const renderCalendarChart = (dailyTotals) => {
         const cashAmt = dailyTotals[dStr] ? dailyTotals[dStr].cash : 0;
         const upiAmt = dailyTotals[dStr] ? dailyTotals[dStr].upi : 0;
         
+        let isMax = total > 0 && total === maxTotal;
+        let isMin = total > 0 && total === minTotal && total !== maxTotal;
+
         let extraClass = total > 0 ? 'has-sales' : '';
         let displayTotal = total > 0 ? (window.formatCurrency ? window.formatCurrency(total) : '₹' + total) : '-';
         let displayOrders = orders > 0 ? `${orders} order(s)` : '';
@@ -59,13 +74,26 @@ export const renderCalendarChart = (dailyTotals) => {
             </div>
         ` : '';
 
+        let styleHtml = '';
+        let amtStyle = '';
+        let dateNumStyle = '';
+        if (isMax) {
+            styleHtml = 'background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4);';
+            amtStyle = 'color: #10b981; font-weight: 800; font-size: 15px;';
+            dateNumStyle = 'color: #10b981; font-weight: 700;';
+        } else if (isMin) {
+            styleHtml = 'background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4);';
+            amtStyle = 'color: #ef4444; font-weight: 800; font-size: 15px;';
+            dateNumStyle = 'color: #ef4444; font-weight: 700;';
+        }
+
         html += `
-            <div class="calendar-day ${extraClass}" title="${dStr}">
+            <div class="calendar-day ${extraClass}" title="${dStr}" style="${styleHtml}">
                 <div class="flex-between">
-                    <span class="calendar-date-num">${day}</span>
+                    <span class="calendar-date-num" style="${dateNumStyle}">${day}</span>
                     <span style="font-size: 11px; color: var(--text-secondary);">${displayOrders}</span>
                 </div>
-                <div class="calendar-sales-amt">${displayTotal}</div>
+                <div class="calendar-sales-amt" style="${amtStyle}">${displayTotal}</div>
                 ${breakdownHtml}
             </div>
         `;
