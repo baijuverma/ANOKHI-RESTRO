@@ -177,8 +177,17 @@ export function initPdfReports() {
         sales.forEach(sale => {
             totalDiscount += parseFloat(sale.discount || 0);
             (sale.items || []).forEach(item => {
-                const cat = item.category || "General";
+                let cat = item.category || "General";
                 const name = item.name || "Unknown";
+                
+                // Lookup current category from inventory if available
+                if (window.inventory && window.inventory.length > 0) {
+                    const invItem = window.inventory.find(i => String(i.id) === String(item.id) || i.name.toLowerCase() === name.toLowerCase());
+                    if (invItem && invItem.category) {
+                        cat = invItem.category;
+                    }
+                }
+                
                 const qty = parseFloat(item.cartQty || item.qty || 0);
                 const revenue = parseFloat(item.price || 0) * qty;
                 
@@ -376,8 +385,17 @@ function generateSalesReport(title, data) {
     data.forEach(sale => {
         totalDiscount += parseFloat(sale.discount || 0);
         (sale.items || []).forEach(item => {
-            const cat = item.category || "General";
+            let cat = item.category || "General";
             const name = item.name || "Unknown";
+            
+            // Lookup current category from inventory if available
+            if (window.inventory && window.inventory.length > 0) {
+                const invItem = window.inventory.find(i => String(i.id) === String(item.id) || i.name.toLowerCase() === name.toLowerCase());
+                if (invItem && invItem.category) {
+                    cat = invItem.category;
+                }
+            }
+            
             const qty = parseFloat(item.cartQty || item.qty || 0);
             const revenue = parseFloat(item.price || 0) * qty;
             
