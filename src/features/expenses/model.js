@@ -134,6 +134,10 @@ function renderSuggestions(items, input, panel) {
                 if (priceContainer) {
                     priceContainer.style.display = (isRaw || isBuiltIn) ? 'none' : 'block';
                 }
+                const qtyContainer = document.getElementById('expense-qty-container');
+                if (qtyContainer) {
+                    qtyContainer.style.display = isBuiltIn ? 'none' : 'block';
+                }
             } else if (input.id === 'expense-sub-cat') {
                 const invItem = (window.inventory || []).find(i => i.name.trim().toLowerCase() === item.trim().toLowerCase());
                 const priceInput = document.getElementById('expense-sell-price');
@@ -162,7 +166,16 @@ window.handleExpenseSubmit = async function(e) {
     const subCat = document.getElementById('expense-sub-cat').value;
     const desc = document.getElementById('expense-desc').value;
 
+    const qtyContainer = document.getElementById('expense-qty-container');
+    const isQtyVisible = qtyContainer && qtyContainer.style.display !== 'none';
     const qty = parseFloat(document.getElementById('expense-qty').value) || 0;
+    
+    if (isQtyVisible && qty <= 0) {
+        alert('Please enter a valid quantity.');
+        setTimeout(() => document.getElementById('expense-qty').focus(), 10);
+        return;
+    }
+
     const sellPrice = parseFloat(document.getElementById('expense-sell-price').value) || 0;
     const cash = parseFloat(document.getElementById('expense-cash').value) || 0;
     const upi = parseFloat(document.getElementById('expense-upi').value) || 0;

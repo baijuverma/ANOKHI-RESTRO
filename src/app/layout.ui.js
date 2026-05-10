@@ -322,7 +322,7 @@ export const appShellHTML = `
                                         <div id="sub-suggestions" class="suggestions-panel hidden"></div>
                                     </div>
                                 </div>
-                                <div class="form-group" style="flex: 1; max-width: 120px; min-width: 80px;">
+                                <div class="form-group" id="expense-qty-container" style="flex: 1; max-width: 120px; min-width: 80px;">
                                     <label>Quantity</label>
                                     <input type="number" id="expense-qty" placeholder="Qty" min="0" step="any" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
                                 </div>
