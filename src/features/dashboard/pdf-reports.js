@@ -129,30 +129,41 @@ export function initPdfReports() {
         doc.setFont(undefined, 'bold');
         doc.text("1. Bill-wise Transactions", margin, margin + 28);
         
-        const billTableBody = sales.map((s, i) => [
-            i + 1,
-            s.id.toString().slice(-6),
-            formatDate(s.date),
-            s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
-            (s.orderType || 'Counter').toUpperCase(),
-            (s.payment_mode || 'CASH').toUpperCase(),
-            `Rs. ${parseFloat(s.total || 0).toFixed(2)}`
-        ]);
+        const billTableBody = sales.map((s, i) => {
+            const paymentMode = (s.payment_mode || 'CASH').toUpperCase();
+            const total = parseFloat(s.total || 0);
+            return [
+                i + 1,
+                s.id.toString().slice(-6),
+                formatDate(s.date),
+                s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
+                (s.orderType || 'Counter').toUpperCase(),
+                paymentMode === 'CASH' ? `Rs. ${total.toFixed(2)}` : '-',
+                paymentMode === 'UPI' ? `Rs. ${total.toFixed(2)}` : '-',
+                paymentMode === 'DUES' ? `Rs. ${total.toFixed(2)}` : '-',
+                `Rs. ${total.toFixed(2)}`
+            ];
+        });
 
         const totalRevenue = sales.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
+        const totalCash = sales.reduce((sum, s) => sum + ((s.payment_mode || 'CASH').toUpperCase() === 'CASH' ? parseFloat(s.total || 0) : 0), 0);
+        const totalUPI = sales.reduce((sum, s) => sum + ((s.payment_mode || 'CASH').toUpperCase() === 'UPI' ? parseFloat(s.total || 0) : 0), 0);
+        const totalDues = sales.reduce((sum, s) => sum + ((s.payment_mode || 'CASH').toUpperCase() === 'DUES' ? parseFloat(s.total || 0) : 0), 0);
 
         billTableBody.push([
             '',
             '',
             '',
             '',
-            '',
             { content: 'TOTAL', styles: { fontStyle: 'bold' } },
+            { content: `Rs. ${totalCash.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+            { content: `Rs. ${totalUPI.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+            { content: `Rs. ${totalDues.toFixed(2)}`, styles: { fontStyle: 'bold' } },
             { content: `Rs. ${totalRevenue.toFixed(2)}`, styles: { fontStyle: 'bold' } }
         ]);
 
         doc.autoTable({
-            head: [['Sr.', 'Bill ID', 'Date', 'Customer', 'Type', 'Mode', 'Amount']],
+            head: [['Sr.', 'Bill ID', 'Date', 'Customer', 'Type', 'Cash', 'UPI', 'Dues', 'Amount']],
             body: billTableBody,
             startY: margin + 32,
             margin: { left: margin, right: margin },
@@ -345,18 +356,24 @@ function generateSalesReport(title, data) {
     doc.text(`Generated on: ${new Date().toLocaleString()}`, margin, margin + 18);
 
     // Table Data
-    const tableBody = data.map((s, i) => [
-        i + 1,
-        s.orderId || s.id.substring(0, 8),
-        new Date(s.date).toLocaleString(),
-        s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
-        (s.orderType || 'Counter').toUpperCase(),
-        (s.payment_mode || 'CASH').toUpperCase(),
-        `Rs. ${parseFloat(s.total || 0).toFixed(2)}`
-    ]);
+    const tableBody = data.map((s, i) => {
+        const paymentMode = (s.payment_mode || 'CASH').toUpperCase();
+        const total = parseFloat(s.total || 0);
+        return [
+            i + 1,
+            s.orderId || s.id.substring(0, 8),
+            new Date(s.date).toLocaleString(),
+            s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
+            (s.orderType || 'Counter').toUpperCase(),
+            paymentMode === 'CASH' ? `Rs. ${total.toFixed(2)}` : '-',
+            paymentMode === 'UPI' ? `Rs. ${total.toFixed(2)}` : '-',
+            paymentMode === 'DUES' ? `Rs. ${total.toFixed(2)}` : '-',
+            `Rs. ${total.toFixed(2)}`
+        ];
+    });
 
     doc.autoTable({
-        head: [['Sr.', 'Order ID', 'Date & Time', 'Customer', 'Type', 'Mode', 'Amount']],
+        head: [['Sr.', 'Order ID', 'Date & Time', 'Customer', 'Type', 'Cash', 'UPI', 'Dues', 'Amount']],
         body: tableBody,
         startY: margin + 25,
         margin: { left: margin, right: margin, top: margin, bottom: margin + 10 },
@@ -514,17 +531,23 @@ function generateExpensesReport(title, data) {
     doc.text(`Generated on: ${new Date().toLocaleString()}`, margin, margin + 18);
 
     // Table Data
-    const tableBody = data.map((e, i) => [
-        i + 1,
-        new Date(e.date).toLocaleDateString(),
-        e.category || 'General',
-        e.description || '-',
-        e.payment_mode || 'CASH',
-        `Rs. ${parseFloat(e.amount || 0).toFixed(2)}`
-    ]);
+    const tableBody = data.map((e, i) => {
+        const paymentMode = (e.payment_mode || 'CASH').toUpperCase();
+        const amount = parseFloat(e.amount || 0);
+        return [
+            i + 1,
+            new Date(e.date).toLocaleDateString(),
+            e.category || 'General',
+            e.description || '-',
+            paymentMode === 'CASH' ? `Rs. ${amount.toFixed(2)}` : '-',
+            paymentMode === 'UPI' ? `Rs. ${amount.toFixed(2)}` : '-',
+            paymentMode === 'DUES' ? `Rs. ${amount.toFixed(2)}` : '-',
+            `Rs. ${amount.toFixed(2)}`
+        ];
+    });
 
     doc.autoTable({
-        head: [['Sr.', 'Date', 'Category', 'Description', 'Mode', 'Amount']],
+        head: [['Sr.', 'Date', 'Category', 'Description', 'Cash', 'UPI', 'Dues', 'Amount']],
         body: tableBody,
         startY: margin + 25,
         margin: { left: margin, right: margin, top: margin, bottom: margin + 10 },
