@@ -364,7 +364,13 @@ window.renderHistory = () => {
 
                 if (window.dashboardPaymentFilter === 'CASH' && sCash <= 0) return false;
                 if (window.dashboardPaymentFilter === 'UPI' && sUpi <= 0) return false;
-                if (window.dashboardPaymentFilter === 'DUES' && sDues <= 0) return false;
+                if (window.dashboardPaymentFilter === 'DUES') {
+                    if (sDues <= 0) return false;
+                    const now = new Date();
+                    const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(now) : '';
+                    const sDateStr = sale.date ? (window.getDDMMYYYY ? window.getDDMMYYYY(new Date(sale.date)) : '') : '';
+                    if (sDateStr !== todayStr) return false;
+                }
 
                 if (dashboardSearch) {
                     const cName = (sale.customerName || sale.customer_name || '').toLowerCase();
