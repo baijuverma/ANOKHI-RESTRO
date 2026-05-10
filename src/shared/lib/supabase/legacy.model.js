@@ -401,7 +401,8 @@ export function initSupabaseLogic() {
                     sub_category: e.sub_category,
                     amount: e.amount,
                     payment_mode: e.payment_mode,
-                    description: e.description
+                    description: e.description,
+                    qty: e.qty || 0
                 })));
             }
         } catch (err) {
