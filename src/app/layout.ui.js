@@ -97,7 +97,7 @@ export const appShellHTML = `
             <section id="dashboard" class="view-section active">
                 <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 0;">
                     <!-- Today Dues Card -->
-                    <div class="glass-panel" onclick="if(typeof window.togglePaymentFilter === 'function') { window.togglePaymentFilter('DUES', 'dashboard'); }" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer; transition: transform 0.2s; position: relative;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" id="dashboard-dues-filter-card">
+                    <div class="glass-panel" onclick="if(typeof window.togglePaymentFilter === 'function') { window.togglePaymentFilter('TODAY_DUES', 'dashboard'); }" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer; transition: transform 0.2s; position: relative;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" id="dashboard-dues-filter-card">
                         <div onclick="event.stopPropagation(); if(window.downloadTodayDuesReport) window.downloadTodayDuesReport();" style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Download Today Dues Report">
                             <i class="fa-solid fa-file-pdf"></i>
                         </div>

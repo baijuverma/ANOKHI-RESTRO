@@ -229,7 +229,7 @@ window.togglePaymentFilter = (type, view) => {
         // Sync the TODAY DUES card UI
         const statusText = document.getElementById('dashboard-dues-filter-status');
         const card = document.getElementById('dashboard-dues-filter-card');
-        if (window.dashboardPaymentFilter === 'DUES') {
+        if (window.dashboardPaymentFilter === 'TODAY_DUES') {
             if(statusText) {
                 statusText.innerText = 'Filter: DUES ONLY (Click to Clear)';
                 statusText.style.background = '#ef4444';
@@ -279,6 +279,7 @@ document.addEventListener('click', (e) => {
     const inDashboardSection = e.target.closest('#dashboard .recent-activity');
     const inHistorySection = e.target.closest('#history-transactions-panel');
     const isDuesCard = e.target.closest('#dues-filter-card') || e.target.closest('[onclick="toggleDuesFilter()"]');
+    const isDashboardDuesCard = e.target.closest('#dashboard-dues-filter-card');
     
     let needsRender = false;
 
@@ -293,11 +294,21 @@ document.addEventListener('click', (e) => {
         if (typeName) el.innerHTML = `${textMap[typeName]} <i class="fa-solid fa-filter" style="font-size: 10px; margin-left: 3px; opacity: 0.5;"></i>`;
     };
 
-    if (!inDashboardSection && window.dashboardPaymentFilter) {
+    if (!inDashboardSection && window.dashboardPaymentFilter && !isDashboardDuesCard) {
         window.dashboardPaymentFilter = null;
         resetHighlight(document.getElementById('dashboard-th-cash'), 'CASH');
         resetHighlight(document.getElementById('dashboard-th-upi'), 'UPI');
         resetHighlight(document.getElementById('dashboard-th-dues'), 'DUES');
+
+        const statusText = document.getElementById('dashboard-dues-filter-status');
+        const card = document.getElementById('dashboard-dues-filter-card');
+        if(statusText) {
+            statusText.innerText = 'Click to Filter Dues';
+            statusText.style.background = 'rgba(239, 68, 68, 0.1)';
+            statusText.style.color = 'var(--text-secondary)';
+        }
+        if(card) card.style.background = 'rgba(239, 68, 68, 0.05)';
+
         needsRender = true;
     }
 
@@ -364,7 +375,8 @@ window.renderHistory = () => {
 
                 if (window.dashboardPaymentFilter === 'CASH' && sCash <= 0) return false;
                 if (window.dashboardPaymentFilter === 'UPI' && sUpi <= 0) return false;
-                if (window.dashboardPaymentFilter === 'DUES') {
+                if (window.dashboardPaymentFilter === 'DUES' && sDues <= 0) return false;
+                if (window.dashboardPaymentFilter === 'TODAY_DUES') {
                     if (sDues <= 0) return false;
                     const now = new Date();
                     const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(now) : '';
