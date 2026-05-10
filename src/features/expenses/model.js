@@ -157,16 +157,38 @@ window.handleExpenseSubmit = async function(e) {
         }
     });
 
-    // Auto-update Inventory Stock if not Kitchen/Raw Material
+    // Auto-update or Auto-add Inventory Stock if not Kitchen/Raw Material
     const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
+    const isBuiltInExpenseCat = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(mainCat);
+    
     if (!isRawMaterial && qty > 0 && window.inventory) {
         // Try to find the matching item in inventory by Sub Category name
-        const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase() && i.category === mainCat);
+        const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase());
+        
         if (invItem) {
             invItem.quantity = (parseFloat(invItem.quantity) || 0) + qty;
+            // Also update category if it was previously uncategorized or if user is forcing a new category
+            if (invItem.category !== mainCat && !isBuiltInExpenseCat) {
+                invItem.category = mainCat;
+            }
             localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
             if (typeof window.renderInventory === 'function') window.renderInventory();
             console.log(`Auto-updated inventory: ${invItem.name} +${qty}`);
+        } else if (!isBuiltInExpenseCat) {
+            // Auto-Add NEW item to Inventory
+            const newItem = {
+                 id: Date.now().toString() + Math.floor(Math.random() * 1000),
+                 name: subCat.trim(),
+                 category: mainCat.trim(),
+                 type: 'Veg', // Default type
+                 price: 0, // Needs to be updated manually later for selling
+                 quantity: qty,
+                 low_stock_threshold: 5
+            };
+            window.inventory.unshift(newItem);
+            localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
+            if (typeof window.renderInventory === 'function') window.renderInventory();
+            console.log(`Auto-added NEW item to inventory: ${subCat} +${qty}`);
         }
     }
 
