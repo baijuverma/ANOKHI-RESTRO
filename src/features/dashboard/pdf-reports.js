@@ -15,6 +15,19 @@ export function initPdfReports() {
         generateSalesReport(`Today's Sales Report (${todayStr})`, data);
     };
 
+    window.downloadTodayDuesReport = () => {
+        const today = new Date();
+        const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : today.toDateString();
+        
+        const data = (window.salesHistory || []).filter(s => {
+            const dVal = s.date || s.timestamp || s.created_at;
+            const isToday = dVal && window.getDDMMYYYY && window.getDDMMYYYY(new Date(dVal)) === todayStr;
+            return isToday && parseFloat(s.dues || 0) > 0;
+        });
+
+        generateSalesReport(`Today's Dues Report (${todayStr})`, data);
+    };
+
     window.downloadProfitReport = () => {
         const today = new Date();
         const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : today.toDateString();
