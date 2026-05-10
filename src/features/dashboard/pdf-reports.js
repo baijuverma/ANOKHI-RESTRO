@@ -129,26 +129,41 @@ export function initPdfReports() {
         doc.setFont(undefined, 'bold');
         doc.text("1. Bill-wise Transactions", margin, margin + 28);
         
+        let totalRevenue = 0, totalCash = 0, totalUPI = 0, totalDues = 0;
         const billTableBody = sales.map((s, i) => {
-            const paymentMode = (s.payment_mode || 'CASH').toUpperCase();
             const total = parseFloat(s.total || 0);
+            const sDues = parseFloat(s.dues || 0);
+            const totalPaid = total - sDues;
+            const split = s.split_amounts || s.splitAmounts;
+            const pMode = (s.payment_mode || s.paymentMode || 'CASH').toUpperCase();
+            let sCash = 0, sUpi = 0;
+
+            if (pMode === 'UPI') {
+                sUpi = totalPaid;
+            } else if ((pMode === 'BOTH' || pMode === 'SPLIT') && split) {
+                sCash = parseFloat(split.cash || 0);
+                sUpi = parseFloat(split.upi || 0);
+            } else {
+                sCash = totalPaid;
+            }
+
+            totalRevenue += total;
+            totalCash += sCash;
+            totalUPI += sUpi;
+            totalDues += sDues;
+
             return [
                 i + 1,
                 s.id.toString().slice(-6),
                 formatDate(s.date),
                 s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
                 (s.orderType || 'Counter').toUpperCase(),
-                paymentMode === 'CASH' ? `Rs. ${total.toFixed(2)}` : '-',
-                paymentMode === 'UPI' ? `Rs. ${total.toFixed(2)}` : '-',
-                paymentMode === 'DUES' ? `Rs. ${total.toFixed(2)}` : '-',
+                sCash > 0 ? `Rs. ${sCash.toFixed(2)}` : '-',
+                sUpi > 0 ? `Rs. ${sUpi.toFixed(2)}` : '-',
+                sDues > 0 ? `Rs. ${sDues.toFixed(2)}` : '-',
                 `Rs. ${total.toFixed(2)}`
             ];
         });
-
-        const totalRevenue = sales.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
-        const totalCash = sales.reduce((sum, s) => sum + ((s.payment_mode || 'CASH').toUpperCase() === 'CASH' ? parseFloat(s.total || 0) : 0), 0);
-        const totalUPI = sales.reduce((sum, s) => sum + ((s.payment_mode || 'CASH').toUpperCase() === 'UPI' ? parseFloat(s.total || 0) : 0), 0);
-        const totalDues = sales.reduce((sum, s) => sum + ((s.payment_mode || 'CASH').toUpperCase() === 'DUES' ? parseFloat(s.total || 0) : 0), 0);
 
         billTableBody.push([
             '',
@@ -356,21 +371,53 @@ function generateSalesReport(title, data) {
     doc.text(`Generated on: ${new Date().toLocaleString()}`, margin, margin + 18);
 
     // Table Data
+    let totalCash = 0, totalUPI = 0, totalDues = 0, totalRevenue = 0;
     const tableBody = data.map((s, i) => {
-        const paymentMode = (s.payment_mode || 'CASH').toUpperCase();
         const total = parseFloat(s.total || 0);
+        const sDues = parseFloat(s.dues || 0);
+        const totalPaid = total - sDues;
+        const split = s.split_amounts || s.splitAmounts;
+        const pMode = (s.payment_mode || s.paymentMode || 'CASH').toUpperCase();
+        let sCash = 0, sUpi = 0;
+
+        if (pMode === 'UPI') {
+            sUpi = totalPaid;
+        } else if ((pMode === 'BOTH' || pMode === 'SPLIT') && split) {
+            sCash = parseFloat(split.cash || 0);
+            sUpi = parseFloat(split.upi || 0);
+        } else {
+            sCash = totalPaid;
+        }
+
+        totalRevenue += total;
+        totalCash += sCash;
+        totalUPI += sUpi;
+        totalDues += sDues;
+
         return [
             i + 1,
             s.orderId || s.id.substring(0, 8),
             new Date(s.date).toLocaleString(),
             s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
             (s.orderType || 'Counter').toUpperCase(),
-            paymentMode === 'CASH' ? `Rs. ${total.toFixed(2)}` : '-',
-            paymentMode === 'UPI' ? `Rs. ${total.toFixed(2)}` : '-',
-            paymentMode === 'DUES' ? `Rs. ${total.toFixed(2)}` : '-',
+            sCash > 0 ? `Rs. ${sCash.toFixed(2)}` : '-',
+            sUpi > 0 ? `Rs. ${sUpi.toFixed(2)}` : '-',
+            sDues > 0 ? `Rs. ${sDues.toFixed(2)}` : '-',
             `Rs. ${total.toFixed(2)}`
         ];
     });
+
+    tableBody.push([
+        '',
+        '',
+        '',
+        '',
+        { content: 'TOTAL', styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalCash.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalUPI.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalDues.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalRevenue.toFixed(2)}`, styles: { fontStyle: 'bold' } }
+    ]);
 
     doc.autoTable({
         head: [['Sr.', 'Order ID', 'Date & Time', 'Customer', 'Type', 'Cash', 'UPI', 'Dues', 'Amount']],
