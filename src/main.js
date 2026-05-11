@@ -764,6 +764,24 @@ const init = async () => {
                 : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         });
     }, 1000);
+
+    // --- AUTO-SYNC LOGIC (Every 20 Seconds) ---
+    // Pushes local changes to Supabase automatically to keep all computers in sync
+    setInterval(async () => {
+        try {
+            if (typeof window.saveData === 'function') {
+                console.log('Auto-Sync: Starting background push...');
+                await window.saveData(false); // false means no toast notification for auto-sync
+            }
+            
+            if (typeof window.syncFromSupabase === 'function') {
+                // Also pull latest changes to stay updated with other computers
+                await window.syncFromSupabase();
+            }
+        } catch (e) {
+            console.warn('Auto-Sync minor delay/error:', e);
+        }
+    }, 20000); // 20 seconds for optimal performance
 };
 
 // --- GLOBAL KEYBOARD SHORTCUTS ---
