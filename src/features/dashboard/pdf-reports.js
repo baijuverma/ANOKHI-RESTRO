@@ -208,6 +208,8 @@ export function initPdfReports() {
                 sCash = totalPaid;
             }
 
+            const itemsStr = (s.items || []).map(item => `${item.name} (x${item.cartQty || item.qty || 0})`).join(', ');
+
             totalRevenue += total;
             totalCash += sCash;
             totalUPI += sUpi;
@@ -218,7 +220,7 @@ export function initPdfReports() {
                 s.id.toString().slice(-6),
                 formatDate(s.date),
                 s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
-                (s.orderType || 'Counter').toUpperCase(),
+                itemsStr,
                 sCash > 0 ? `Rs. ${sCash.toFixed(2)}` : '-',
                 sUpi > 0 ? `Rs. ${sUpi.toFixed(2)}` : '-',
                 sDues > 0 ? `Rs. ${sDues.toFixed(2)}` : '-',
@@ -239,12 +241,15 @@ export function initPdfReports() {
         ]);
 
         doc.autoTable({
-            head: [['Sr.', 'Bill ID', 'Date', 'Customer', 'Type', 'Cash', 'UPI', 'Dues', 'Amount']],
+            head: [['Sr.', 'Bill ID', 'Date', 'Customer', 'Items Details', 'Cash', 'UPI', 'Dues', 'Amount']],
             body: billTableBody,
             startY: margin + 32,
             margin: { left: margin, right: margin },
             headStyles: { fillColor: [99, 102, 241] }, // Indigo for bills
-            styles: { fontSize: 8 }
+            styles: { fontSize: 7, cellPadding: 2 },
+            columnStyles: {
+                4: { cellWidth: 40 } // Adjust width for items column
+            }
         });
 
         const billY = doc.lastAutoTable.finalY || 100;
@@ -450,6 +455,8 @@ function generateSalesReport(title, data) {
             sCash = totalPaid;
         }
 
+        const itemsStr = (s.items || []).map(item => `${item.name} (x${item.cartQty || item.qty || 0})`).join(', ');
+
         totalRevenue += total;
         totalCash += sCash;
         totalUPI += sUpi;
@@ -460,7 +467,7 @@ function generateSalesReport(title, data) {
             s.orderId || s.id.substring(0, 8),
             new Date(s.date).toLocaleString(),
             s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
-            (s.orderType || 'Counter').toUpperCase(),
+            itemsStr,
             sCash > 0 ? `Rs. ${sCash.toFixed(2)}` : '-',
             sUpi > 0 ? `Rs. ${sUpi.toFixed(2)}` : '-',
             sDues > 0 ? `Rs. ${sDues.toFixed(2)}` : '-',
@@ -481,12 +488,15 @@ function generateSalesReport(title, data) {
     ]);
 
     doc.autoTable({
-        head: [['Sr.', 'Order ID', 'Date & Time', 'Customer', 'Type', 'Cash', 'UPI', 'Dues', 'Amount']],
+        head: [['Sr.', 'Order ID', 'Date & Time', 'Customer', 'Items Details', 'Cash', 'UPI', 'Dues', 'Amount']],
         body: tableBody,
         startY: margin + 25,
         margin: { left: margin, right: margin, top: margin, bottom: margin + 10 },
-        styles: { fontSize: 9 },
-        headStyles: { fillStyle: 'f', fillColor: [99, 102, 241] }
+        styles: { fontSize: 7, cellPadding: 2 },
+        headStyles: { fillStyle: 'f', fillColor: [99, 102, 241] },
+        columnStyles: {
+            4: { cellWidth: 40 }
+        }
     });
 
     const total = data.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
