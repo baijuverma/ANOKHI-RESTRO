@@ -399,7 +399,10 @@ export const appShellHTML = `
 
                             <!-- Third Row (Payments) -->
                             <div class="form-group mt-3">
-                                <label style="margin-bottom: 8px; display: block; color: var(--text-secondary);">Payment Split</label>
+                                <label style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; color: var(--text-secondary);">
+                                    <span>Payment Split</span>
+                                    <span id="payment-limit-warning" style="color: #ef4444; font-size: 12px; font-weight: 700; display: none;"><i class="fa-solid fa-triangle-exclamation"></i> Limit Exceeded!</span>
+                                </label>
                                 <div class="expense-payment-row" style="display: flex; gap: 10px; flex: 3; min-width: 250px;">
                                     <div class="input-group-floating" style="flex: 1; position: relative;">
                                         <input type="number" id="expense-cash" placeholder=" " min="0" step="0.01" style="padding-right: 30px;" oninput="window.calcExpensePaymentSplit('cash')">
@@ -412,9 +415,9 @@ export const appShellHTML = `
                                         <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-upi'); window.calcExpensePaymentSplit('upi');" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
                                     </div>
                                     <div class="input-group-floating" style="flex: 1; position: relative;">
-                                        <input type="number" id="expense-udhar" placeholder=" " min="0" step="0.01" style="padding-right: 30px;">
+                                        <input type="number" id="expense-udhar" placeholder=" " min="0" step="0.01" style="padding-right: 30px;" oninput="window.calcExpensePaymentSplit('udhar')">
                                         <label for="expense-udhar">Udhar</label>
-                                        <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-udhar')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
+                                        <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-udhar'); window.calcExpensePaymentSplit('udhar');" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
                                     </div>
                                 </div>
                             </div>

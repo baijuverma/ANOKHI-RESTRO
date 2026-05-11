@@ -735,6 +735,7 @@ export function initExpensesLogic() {
         const cashEl = document.getElementById('expense-cash');
         const upiEl = document.getElementById('expense-upi');
         const udharEl = document.getElementById('expense-udhar');
+        const warningEl = document.getElementById('payment-limit-warning');
         
         if (!cashEl || !upiEl || !udharEl) return;
         
@@ -745,15 +746,39 @@ export function initExpensesLogic() {
         if (changedField === 'net') {
             if (currentUpi === 0 && currentUdhar === 0) {
                 cashEl.value = net > 0 ? net.toFixed(2) : '';
-                return;
+                currentCash = net;
             }
         }
 
-        let remaining = net - (currentCash + currentUpi);
-        if (remaining > 0) {
-            udharEl.value = remaining.toFixed(2);
+        // Auto zero cash if UPI is exactly net
+        if (changedField === 'upi' && currentUpi === net && net > 0) {
+            cashEl.value = '';
+            currentCash = 0;
+        }
+
+        if (changedField === 'cash' || changedField === 'upi' || changedField === 'net') {
+            let remaining = net - (currentCash + currentUpi);
+            if (remaining > 0) {
+                udharEl.value = remaining.toFixed(2);
+                currentUdhar = remaining;
+            } else {
+                udharEl.value = '';
+                currentUdhar = 0;
+            }
+        }
+
+        // Limit Check
+        let totalPaid = currentCash + currentUpi + currentUdhar;
+        if (net > 0 && (totalPaid - net) > 0.01) {
+            cashEl.style.setProperty('border-color', '#ef4444', 'important');
+            upiEl.style.setProperty('border-color', '#ef4444', 'important');
+            udharEl.style.setProperty('border-color', '#ef4444', 'important');
+            if (warningEl) warningEl.style.display = 'block';
         } else {
-            udharEl.value = '';
+            cashEl.style.removeProperty('border-color');
+            upiEl.style.removeProperty('border-color');
+            udharEl.style.removeProperty('border-color');
+            if (warningEl) warningEl.style.display = 'none';
         }
     };
 
