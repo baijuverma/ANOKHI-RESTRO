@@ -11,6 +11,12 @@ function buildExpenseRow(exp, index) {
     const isUPI = (exp.payment_mode || exp.paymentMode) === 'UPI';
     const isUdhar = (exp.payment_mode || exp.paymentMode) === 'Udhar';
 
+    let cleanDesc = exp.description || exp.reason || '';
+    if (cleanDesc.startsWith('Qty:')) {
+        const parts = cleanDesc.split('|');
+        cleanDesc = parts.length > 1 ? parts.slice(1).join('|').trim() : '';
+    }
+
     return `
         <tr data-id="${exp.id}">
             <td><input type="checkbox" class="expense-row-checkbox" data-id="${exp.id}" onclick="window.syncExpenseHeaderCheckbox()"></td>
@@ -23,7 +29,7 @@ function buildExpenseRow(exp, index) {
             <td style="color: #10b981">${exp.cash > 0 ? '₹' + exp.cash : (exp.cash === 0 ? '₹0' : '-')}</td>
             <td style="color: #3b82f6">${exp.upi > 0 ? '₹' + exp.upi : (exp.upi === 0 ? '₹0' : '-')}</td>
             <td style="color: #f59e0b">${exp.udhar > 0 ? '₹' + exp.udhar : (exp.udhar === 0 ? '₹0' : '-')}</td>
-            <td title="${exp.description || exp.reason || ''}">${exp.description || exp.reason || '-'}</td>
+            <td title="${cleanDesc}">${cleanDesc || '-'}</td>
             <td>
                 <div class="action-menu-container">
                     <button onclick="window.toggleExpenseActionMenu('${exp.id}', event)" class="btn-edit-modern">
