@@ -353,8 +353,15 @@ document.addEventListener('click', (e) => {
 
 window.renderHistory = () => {
     if (window.salesHistory) {
-        // Dashboard recent sales
-        let dashboardOrders = [...window.salesHistory];
+        // Dashboard recent sales - Filter only TODAY'S sales
+        const dashboardNow = new Date();
+        const dashboardTodayStr = window.getDDMMYYYY ? window.getDDMMYYYY(dashboardNow) : '';
+        let dashboardOrders = (window.salesHistory || []).filter(s => {
+            if (!s.date) return false;
+            const sDate = new Date(s.date);
+            const sDateStr = window.getDDMMYYYY ? window.getDDMMYYYY(sDate) : '';
+            return sDateStr === dashboardTodayStr;
+        });
         const dashboardSearch = document.getElementById('dashboard-dues-search')?.value?.toLowerCase() || '';
         
         if (dashboardSearch || window.dashboardPaymentFilter) {
