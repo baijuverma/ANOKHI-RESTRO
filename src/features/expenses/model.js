@@ -22,9 +22,18 @@ window.showSuggestions = function(inputId, panelId) {
         items = [...new Set([...expenseData.main, ...invCategories])];
     } else {
         const mainValue = document.getElementById('expense-main-cat').value;
-        const defaultSubs = expenseData.sub[mainValue] || [];
-        const invItems = (window.inventory || []).filter(i => i.category === mainValue).map(i => i.name);
-        items = [...new Set([...defaultSubs, ...invItems])];
+        if ((mainValue || '').trim().toUpperCase() === 'KITCHEN') {
+            // Only show previous custom entries from expenses history for KITCHEN
+            const historySubs = (window.expensesHistory || [])
+                .filter(e => (e.main_category || '').trim().toUpperCase() === 'KITCHEN')
+                .map(e => e.sub_category || e.subCategory)
+                .filter(Boolean);
+            items = [...new Set(historySubs)];
+        } else {
+            const defaultSubs = expenseData.sub[mainValue] || [];
+            const invItems = (window.inventory || []).filter(i => i.category === mainValue).map(i => i.name);
+            items = [...new Set([...defaultSubs, ...invItems])];
+        }
     }
 
     renderSuggestions(items, input, panel);
@@ -44,9 +53,18 @@ window.handleSearchableInput = function(inputId, panelId) {
         items = allMain.filter(i => i.toLowerCase().includes(query));
     } else {
         const mainValue = document.getElementById('expense-main-cat').value;
-        const defaultSubs = expenseData.sub[mainValue] || [];
-        const invItems = (window.inventory || []).filter(i => i.category === mainValue).map(i => i.name);
-        const allSub = [...new Set([...defaultSubs, ...invItems])];
+        let allSub = [];
+        if ((mainValue || '').trim().toUpperCase() === 'KITCHEN') {
+            const historySubs = (window.expensesHistory || [])
+                .filter(e => (e.main_category || '').trim().toUpperCase() === 'KITCHEN')
+                .map(e => e.sub_category || e.subCategory)
+                .filter(Boolean);
+            allSub = [...new Set(historySubs)];
+        } else {
+            const defaultSubs = expenseData.sub[mainValue] || [];
+            const invItems = (window.inventory || []).filter(i => i.category === mainValue).map(i => i.name);
+            allSub = [...new Set([...defaultSubs, ...invItems])];
+        }
         items = allSub.filter(i => i.toLowerCase().includes(query));
     }
 
