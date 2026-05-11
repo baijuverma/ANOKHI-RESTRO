@@ -710,9 +710,24 @@ function generateExpensesReport(title, data) {
 
     // Table Data
     const tableBody = data.map((e, i) => {
-        const cash = parseFloat(e.cash || 0);
-        const upi = parseFloat(e.upi || 0);
-        const udhar = parseFloat(e.udhar || 0);
+        const legacyAmount = [e.amount, e.net_amount, e.total_amount, e.gross_amount, e.net, e.total]
+            .map(v => parseFloat(v))
+            .find(v => !isNaN(v) && v > 0) || 0;
+
+        let cash = parseFloat(e.cash);
+        let upi = parseFloat(e.upi);
+        let udhar = parseFloat(e.udhar);
+
+        if (isNaN(cash)) cash = 0;
+        if (isNaN(upi)) upi = 0;
+        if (isNaN(udhar)) udhar = 0;
+
+        const pMode = (e.payment_mode || e.paymentMode || 'CASH').toUpperCase();
+        if ((cash + upi + udhar) < 0.01 && legacyAmount > 0) {
+            if (pMode === 'UPI') { upi = legacyAmount; }
+            else if (pMode === 'UDHAR' || pMode === 'DUES' || pMode === 'UDHAAR') { udhar = legacyAmount; }
+            else { cash = legacyAmount; }
+        }
 
         return [
             i + 1,

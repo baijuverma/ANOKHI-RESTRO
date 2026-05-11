@@ -7,23 +7,26 @@ const EXPENSE_PAGE_SIZE = 25;
 let expensePagination = null;
 
 function buildExpenseRow(exp, index) {
-    const legacyAmount = parseFloat(exp.amount || exp.net_amount || exp.total_amount || 0);
+    // Try to find any legacy amount field that might have data
+    const legacyAmount = [exp.amount, exp.net_amount, exp.total_amount, exp.gross_amount, exp.net, exp.total]
+        .map(v => parseFloat(v))
+        .find(v => !isNaN(v) && v > 0) || 0;
+
     let dCash = parseFloat(exp.cash);
     let dUpi = parseFloat(exp.upi);
     let dUdhar = parseFloat(exp.udhar);
     
+    if (isNaN(dCash)) dCash = 0;
+    if (isNaN(dUpi)) dUpi = 0;
+    if (isNaN(dUdhar)) dUdhar = 0;
+
     const pMode = (exp.payment_mode || exp.paymentMode || 'CASH').toUpperCase();
     
-    // Fallback for older records
-    if (isNaN(dCash) && isNaN(dUpi) && isNaN(dUdhar) && legacyAmount > 0) {
-        if (pMode === 'UPI') { dUpi = legacyAmount; dCash = 0; dUdhar = 0; }
-        else if (pMode === 'UDHAR' || pMode === 'DUES') { dUdhar = legacyAmount; dCash = 0; dUpi = 0; }
-        else { dCash = legacyAmount; dUpi = 0; dUdhar = 0; }
-    } else {
-        // Ensure they are numbers for rendering
-        if (isNaN(dCash)) dCash = 0;
-        if (isNaN(dUpi)) dUpi = 0;
-        if (isNaN(dUdhar)) dUdhar = 0;
+    // Fallback for older records: if all split fields are zero (or evaluating to zero) but there's a legacy amount
+    if ((dCash + dUpi + dUdhar) < 0.01 && legacyAmount > 0) {
+        if (pMode === 'UPI') { dUpi = legacyAmount; }
+        else if (pMode === 'UDHAR' || pMode === 'DUES' || pMode === 'UDHAAR') { dUdhar = legacyAmount; }
+        else { dCash = legacyAmount; }
     }
 
     let cleanDesc = exp.description || exp.reason || '';
