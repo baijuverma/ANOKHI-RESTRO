@@ -1,6 +1,6 @@
-
 // --- Expense Data & Suggestions Logic ---
 window.editingExpenseId = null;
+window.editingExpenseOldData = null; // To track difference for inventory
 // Blacklist for deleted sub-categories
 if (!window.deletedExpenseSubs) {
     window.deletedExpenseSubs = JSON.parse(localStorage.getItem('deleted_expense_subs') || '[]');
@@ -299,40 +299,55 @@ window.handleExpenseSubmit = async function(e) {
         }
     }
 
-    // Auto-update or Auto-add Inventory Stock if not Kitchen/Raw Material
+    // Handle Inventory Stock Sync
     const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
     const isBuiltInExpenseCat = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(mainCat);
-    
-    if (!isRawMaterial && window.inventory && (qty > 0 || sellPrice > 0)) {
-        // Try to find the matching item in inventory by Sub Category name
-        const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase());
-        
-        if (invItem) {
-            if (qty > 0) invItem.quantity = (parseFloat(invItem.quantity) || 0) + qty;
-            if (sellPrice > 0) invItem.price = sellPrice;
-            
-            // Also update category if it was previously uncategorized or if user is forcing a new category
-            if (invItem.category !== mainCat && !isBuiltInExpenseCat) {
-                invItem.category = mainCat;
+
+    if (window.inventory && !isRawMaterial) {
+        // 1. REVERT OLD DATA (if updating)
+        if (window.editingExpenseOldData) {
+            const oldQty = parseFloat(window.editingExpenseOldData.qty) || 0;
+            const oldSubCat = (window.editingExpenseOldData.subCat || '').trim().toLowerCase();
+            const oldMainCat = window.editingExpenseOldData.mainCat || '';
+            const oldIsRaw = oldMainCat.toLowerCase().includes('raw material') || oldMainCat.toLowerCase().includes('kitchen');
+            const oldIsBuiltIn = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(oldMainCat);
+
+            if (oldQty > 0 && !oldIsRaw && !oldIsBuiltIn) {
+                const oldInvItem = window.inventory.find(i => i.name.trim().toLowerCase() === oldSubCat);
+                if (oldInvItem) {
+                    oldInvItem.quantity = Math.max(0, (parseFloat(oldInvItem.quantity) || 0) - oldQty);
+                    console.log(`Reverted old inventory: ${oldInvItem.name} -${oldQty}`);
+                }
             }
+            window.editingExpenseOldData = null; // Clear after revert
+        }
+
+        // 2. APPLY NEW DATA
+        if ((qty > 0 || sellPrice > 0) && !isBuiltInExpenseCat) {
+            const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase());
+            
+            if (invItem) {
+                if (qty > 0) invItem.quantity = (parseFloat(invItem.quantity) || 0) + qty;
+                if (sellPrice > 0) invItem.price = sellPrice;
+                if (invItem.category !== mainCat) invItem.category = mainCat;
+                console.log(`Updated inventory: ${invItem.name} +${qty} (Price: ${sellPrice})`);
+            } else if (qty > 0) {
+                // Auto-Add NEW item to Inventory
+                const newItem = {
+                    id: Date.now().toString() + Math.floor(Math.random() * 1000),
+                    name: subCat.trim(),
+                    category: mainCat.trim(),
+                    type: 'Veg',
+                    price: sellPrice,
+                    quantity: qty,
+                    low_stock_threshold: 5
+                };
+                window.inventory.unshift(newItem);
+                console.log(`Auto-added NEW item to inventory: ${subCat} +${qty}`);
+            }
+            
             localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
             if (typeof window.renderInventory === 'function') window.renderInventory();
-            console.log(`Auto-updated inventory: ${invItem.name} +${qty} (Price: ${sellPrice})`);
-        } else if (!isBuiltInExpenseCat && qty > 0) {
-            // Auto-Add NEW item to Inventory
-            const newItem = {
-                 id: Date.now().toString() + Math.floor(Math.random() * 1000),
-                 name: subCat.trim(),
-                 category: mainCat.trim(),
-                 type: 'Veg', // Default type
-                 price: sellPrice, // Save the new selling price
-                 quantity: qty,
-                 low_stock_threshold: 5
-            };
-            window.inventory.unshift(newItem);
-            localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
-            if (typeof window.renderInventory === 'function') window.renderInventory();
-            console.log(`Auto-added NEW item to inventory: ${subCat} +${qty} (Price: ${sellPrice})`);
         }
     }
 
@@ -498,8 +513,11 @@ export function initExpensesLogic() {
         if (!exp) return;
 
         window.editingExpenseId = id;
-
-        // Populate form
+        window.editingExpenseOldData = {
+            qty: exp.qty,
+            subCat: exp.sub_category,
+            mainCat: exp.main_category
+        };
         document.getElementById('expense-main-cat').value = exp.main_category || '';
         document.getElementById('expense-sub-cat').value = exp.sub_category || '';
         document.getElementById('expense-qty').value = exp.qty || '';
