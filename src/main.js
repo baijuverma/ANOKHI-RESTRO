@@ -765,18 +765,7 @@ const init = async () => {
         });
     }, 1000);
 
-    // --- AUTO-SYNC LOGIC (Every 20 Seconds) ---
-    // Pushes local changes to Supabase automatically to keep all computers in sync
-    setInterval(async () => {
-        try {
-            if (typeof window.saveData === 'function') {
-                // Background push without notification
-                await window.saveData(false); 
-            }
-        } catch (e) {
-            console.warn('Auto-Sync minor delay/error:', e);
-        }
-    }, 20000); // 20 seconds for optimal performance
+
 };
 
 // --- GLOBAL KEYBOARD SHORTCUTS ---

@@ -133,6 +133,22 @@ export function initSupabaseLogic() {
 
         console.log('Initializing Supabase Realtime...');
 
+        let renderTimeout;
+        const debouncedRender = () => {
+            clearTimeout(renderTimeout);
+            renderTimeout = setTimeout(() => {
+                if (typeof window.renderInventory === 'function') window.renderInventory();
+                if (typeof window.renderPOSItems === 'function') window.renderPOSItems();
+                if (typeof window.updateDashboard === 'function') window.updateDashboard();
+                if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
+                if (typeof window.renderCart === 'function') window.renderCart();
+                if (typeof window.renderHistory === 'function') window.renderHistory();
+                if (typeof window.renderExpenses === 'function') window.renderExpenses();
+                if (typeof window.updateExpenseStats === 'function') window.updateExpenseStats();
+                if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
+            }, 300);
+        };
+
         // 1. Inventory Realtime
         db.channel('inventory-changes')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'inventory' }, payload => {
@@ -163,12 +179,7 @@ export function initSupabaseLogic() {
                 }
                 
                 localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
-                if (typeof window.renderInventory === 'function') {
-                    console.log('Refreshing Inventory UI...');
-                    window.renderInventory();
-                }
-                if (typeof window.renderPOSItems === 'function') window.renderPOSItems();
-                if (typeof window.updateDashboard === 'function') window.updateDashboard();
+                debouncedRender();
             })
             .subscribe();
 
@@ -201,13 +212,11 @@ export function initSupabaseLogic() {
                 }
                 
                 localStorage.setItem('anokhi_tables', JSON.stringify(window.tables));
-                if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
-                
                 if (window.currentSelectedTable && String(window.currentSelectedTable.id) === String(newTable.id)) {
                     window.currentSelectedTable = window.tables.find(t => String(t.id) === String(newTable.id));
                     window.cart = window.currentSelectedTable.cart || [];
-                    if (typeof window.renderCart === 'function') window.renderCart();
                 }
+                debouncedRender();
             })
             .subscribe();
 
@@ -245,8 +254,7 @@ export function initSupabaseLogic() {
                 }
                 
                 localStorage.setItem('anokhi_sales', JSON.stringify(window.salesHistory));
-                if (typeof window.renderHistory === 'function') window.renderHistory();
-                if (typeof window.updateDashboard === 'function') window.updateDashboard();
+                debouncedRender();
             })
             .subscribe();
 
@@ -268,9 +276,7 @@ export function initSupabaseLogic() {
                 }
                 
                 localStorage.setItem('anokhi_expenses', JSON.stringify(window.expensesHistory));
-                if (typeof window.renderExpenses === 'function') window.renderExpenses();
-                if (typeof window.updateExpenseStats === 'function') window.updateExpenseStats();
-                if (typeof window.updateDashboard === 'function') window.updateDashboard();
+                debouncedRender();
             })
             .subscribe();
 
@@ -300,7 +306,7 @@ export function initSupabaseLogic() {
                 }
                 
                 localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders));
-                if (typeof window.renderActiveOrders === 'function') window.renderActiveOrders();
+                debouncedRender();
             })
             .subscribe();
     }
