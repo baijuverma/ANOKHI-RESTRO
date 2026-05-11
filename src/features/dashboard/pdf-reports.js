@@ -384,6 +384,22 @@ export function initPdfReports() {
 
         const finalY = doc.lastAutoTable.finalY || 150;
         
+        // Order Type Summary (Left of Total)
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+        const typeTotals = sales.reduce((acc, s) => {
+            const type = (s.orderType || 'Counter').toUpperCase();
+            acc[type] = (acc[type] || 0) + parseFloat(s.total || 0);
+            return acc;
+        }, {});
+        
+        let summaryX = margin;
+        let summaryY = finalY + 8;
+        doc.text("Sales Breakdown by Type:", summaryX, summaryY);
+        Object.entries(typeTotals).forEach(([type, val], idx) => {
+            doc.text(`${type}: Rs. ${val.toFixed(2)}`, summaryX, summaryY + 5 + (idx * 4));
+        });
+
         doc.setFontSize(12);
         doc.setFont(undefined, 'bold');
         doc.text(`Total Period Revenue: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 80, finalY + 12);
@@ -528,6 +544,22 @@ function generateSalesReport(title, data) {
     const total = data.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
     const finalY = doc.lastAutoTable.finalY || 40;
     
+    // Order Type Summary (Left of Total)
+    doc.setFontSize(9);
+    doc.setFont(undefined, 'normal');
+    const typeTotals = data.reduce((acc, s) => {
+        const type = (s.orderType || 'Counter').toUpperCase();
+        acc[type] = (acc[type] || 0) + parseFloat(s.total || 0);
+        return acc;
+    }, {});
+    
+    let summaryX = margin;
+    let summaryY = finalY + 8;
+    doc.text("Sales Breakdown by Type:", summaryX, summaryY);
+    Object.entries(typeTotals).forEach(([type, val], idx) => {
+        doc.text(`${type}: Rs. ${val.toFixed(2)}`, summaryX, summaryY + 5 + (idx * 4));
+    });
+
     doc.setFontSize(12);
     doc.setFont(undefined, 'bold');
     doc.text(`Grand Total: Rs. ${total.toFixed(2)}`, pageWidth - margin - 60, finalY + 10);
