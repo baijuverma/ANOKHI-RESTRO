@@ -399,7 +399,12 @@ export function initSupabaseLogic() {
                     udhar: e.udhar || 0,
                     description: e.description,
                     qty: e.qty || 0,
-                    selling_price: e.selling_price || e.sell_price || 0
+                    unit: e.unit || 'QTY',
+                    selling_price: e.selling_price || e.sell_price || 0,
+                    gross_amount: e.gross_amount || 0,
+                    discount_percent: e.discount_percent || 0,
+                    discount_fixed: e.discount_fixed || 0,
+                    net_amount: e.net_amount || 0
                 });
 
                 const { error } = await db.from('expenses').upsert(window.expensesHistory.map(mapExpense));
