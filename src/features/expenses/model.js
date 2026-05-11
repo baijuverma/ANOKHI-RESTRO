@@ -1,5 +1,10 @@
 
 // --- Expense Data & Suggestions Logic ---
+// Blacklist for deleted sub-categories
+if (!window.deletedExpenseSubs) {
+    window.deletedExpenseSubs = JSON.parse(localStorage.getItem('deleted_expense_subs') || '[]');
+}
+
 // Moved to top-level to ensure global availability
 const expenseData = {
     main: ['Staff & Payroll', 'Raw Material/Ingredients', 'Operations & Maintenance', 'Other Expenses'],
@@ -28,11 +33,11 @@ window.showSuggestions = function(inputId, panelId) {
                 .filter(e => (e.main_category || '').trim().toUpperCase() === 'KITCHEN')
                 .map(e => e.sub_category || e.subCategory)
                 .filter(Boolean);
-            items = [...new Set(historySubs)];
+            items = [...new Set(historySubs)].filter(item => !window.deletedExpenseSubs.includes(item));
         } else {
             const defaultSubs = expenseData.sub[mainValue] || [];
             const invItems = (window.inventory || []).filter(i => i.category === mainValue).map(i => i.name);
-            items = [...new Set([...defaultSubs, ...invItems])];
+            items = [...new Set([...defaultSubs, ...invItems])].filter(item => !window.deletedExpenseSubs.includes(item));
         }
     }
 
@@ -59,11 +64,11 @@ window.handleSearchableInput = function(inputId, panelId) {
                 .filter(e => (e.main_category || '').trim().toUpperCase() === 'KITCHEN')
                 .map(e => e.sub_category || e.subCategory)
                 .filter(Boolean);
-            allSub = [...new Set(historySubs)];
+            allSub = [...new Set(historySubs)].filter(item => !window.deletedExpenseSubs.includes(item));
         } else {
             const defaultSubs = expenseData.sub[mainValue] || [];
             const invItems = (window.inventory || []).filter(i => i.category === mainValue).map(i => i.name);
-            allSub = [...new Set([...defaultSubs, ...invItems])];
+            allSub = [...new Set([...defaultSubs, ...invItems])].filter(item => !window.deletedExpenseSubs.includes(item));
         }
         items = allSub.filter(i => i.toLowerCase().includes(query));
     }
@@ -130,8 +135,33 @@ function renderSuggestions(items, input, panel) {
     items.forEach(item => {
         const div = document.createElement('div');
         div.className = 'suggestion-item';
-        div.textContent = item;
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+
+        const textSpan = document.createElement('span');
+        textSpan.textContent = item;
+        div.appendChild(textSpan);
+
+        // Add delete button for sub-category suggestions
+        if (input.id === 'expense-sub-cat') {
+            const delBtn = document.createElement('i');
+            delBtn.className = 'fa-solid fa-xmark delete-suggestion-btn';
+            delBtn.style.padding = '4px 8px';
+            delBtn.style.fontSize = '12px';
+            delBtn.title = 'Delete from suggestions';
+            delBtn.onmousedown = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (confirm(`Delete "${item}" from suggestions permanentally?`)) {
+                    window.deleteExpenseSuggestion(item);
+                }
+            };
+            div.appendChild(delBtn);
+        }
+
         div.onmousedown = (e) => {
+            if (e.target.classList.contains('delete-suggestion-btn')) return;
             e.preventDefault();
             input.value = item;
             panel.classList.add('hidden');
@@ -167,6 +197,19 @@ function renderSuggestions(items, input, panel) {
         panel.appendChild(div);
     });
 }
+
+window.deleteExpenseSuggestion = function(item) {
+    if (!window.deletedExpenseSubs.includes(item)) {
+        window.deletedExpenseSubs.push(item);
+        localStorage.setItem('deleted_expense_subs', JSON.stringify(window.deletedExpenseSubs));
+        
+        // Re-render the current suggestions
+        const subInput = document.getElementById('expense-sub-cat');
+        if (subInput) {
+            window.handleSearchableInput('expense-sub-cat', 'sub-suggestions');
+        }
+    }
+};
 
 // Global click listener for hiding panels
 document.addEventListener('mousedown', (e) => {

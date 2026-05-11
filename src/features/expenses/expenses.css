@@ -51,6 +51,21 @@
 .suggestion-item.empty { color: var(--text-secondary); font-style: italic; cursor: default; }
 .suggestion-item.empty:hover { background: transparent; }
 
+.delete-suggestion-btn {
+    opacity: 0;
+    transition: all 0.2s;
+    color: rgba(255,255,255,0.4);
+}
+.suggestion-item:hover .delete-suggestion-btn {
+    opacity: 0.6;
+}
+.suggestion-item:hover .delete-suggestion-btn:hover {
+    opacity: 1;
+    color: #ef4444 !important;
+    transform: scale(1.2);
+}
+
+
 /* Custom Scrollbar for panel */
 .suggestions-panel::-webkit-scrollbar { width: 6px; }
 .suggestions-panel::-webkit-scrollbar-track { background: transparent; }
