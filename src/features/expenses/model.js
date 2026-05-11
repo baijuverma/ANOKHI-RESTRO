@@ -308,6 +308,7 @@ function renderSuggestions(items, input, panel) {
                 const subInput = document.getElementById('expense-sub-cat');
                 if (subInput) {
                     subInput.value = '';
+                    subInput.focus(); // Auto focus next field
                     window.showSuggestions('expense-sub-cat', 'sub-suggestions');
                 }
                 const priceInput = document.getElementById('expense-sell-price');
@@ -352,6 +353,19 @@ function renderSuggestions(items, input, panel) {
                 if (priceInput) {
                     priceInput.value = (invItem && invItem.price) ? invItem.price : '';
                 }
+
+                // Auto focus next field
+                setTimeout(() => {
+                    const qtyContainer = document.getElementById('expense-qty-container');
+                    const qtyInput = document.getElementById('expense-qty');
+                    const cashInput = document.getElementById('expense-cash');
+                    
+                    if (qtyInput && qtyContainer && qtyContainer.style.display !== 'none') {
+                        qtyInput.focus();
+                    } else if (cashInput) {
+                        cashInput.focus();
+                    }
+                }, 10);
             }
         };
         panel.appendChild(div);
