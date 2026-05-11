@@ -273,6 +273,8 @@ window.handleExpenseSubmit = async function(e) {
             exp.selling_price = sellPrice;
             
             window.editingExpenseId = null;
+            window.editingExpenseOldData = null;
+            
             if (typeof window.showToast === 'function') {
                 window.showToast('Expense updated successfully!', 'success', null, 1000);
             }

@@ -20,9 +20,9 @@ function buildExpenseRow(exp, index) {
             <td>${exp.sub_category || exp.subCategory || '-'}</td>
             <td>${exp.qty || '-'}</td>
             <td>${exp.selling_price || exp.sell_price ? '₹' + (exp.selling_price || exp.sell_price) : '-'}</td>
-            <td style="color: ${isCash ? '#10b981' : 'inherit'}">${isCash || exp.cash > 0 ? '₹' + (exp.cash || exp.amount) : '-'}</td>
-            <td style="color: ${isUPI ? '#3b82f6' : 'inherit'}">${isUPI || exp.upi > 0 ? '₹' + (exp.upi || exp.amount) : '-'}</td>
-            <td style="color: ${isUdhar ? '#f59e0b' : 'inherit'}">${isUdhar || exp.udhar > 0 ? '₹' + (exp.udhar || exp.amount) : '-'}</td>
+            <td style="color: #10b981">${exp.cash > 0 ? '₹' + exp.cash : (exp.cash === 0 ? '₹0' : '-')}</td>
+            <td style="color: #3b82f6">${exp.upi > 0 ? '₹' + exp.upi : (exp.upi === 0 ? '₹0' : '-')}</td>
+            <td style="color: #f59e0b">${exp.udhar > 0 ? '₹' + exp.udhar : (exp.udhar === 0 ? '₹0' : '-')}</td>
             <td title="${exp.description || exp.reason || ''}">${exp.description || exp.reason || '-'}</td>
             <td>
                 <div class="action-menu-container">
