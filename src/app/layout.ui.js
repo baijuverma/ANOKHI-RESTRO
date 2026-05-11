@@ -351,18 +351,55 @@ export const appShellHTML = `
                                         <div id="sub-suggestions" class="suggestions-panel hidden"></div>
                                     </div>
                                 </div>
-                                <div class="form-group" id="expense-qty-container" style="flex: 1; max-width: 150px; min-width: 120px;">
+                                <div class="form-group" id="expense-qty-container" style="flex: 1; max-width: 180px; min-width: 140px;">
                                     <div style="position: relative; display: flex; align-items: center; background: #ffffff; border-radius: 8px; border: 2px solid #3b82f6; overflow: hidden; height: 42px; padding-left: 10px;">
                                         <input type="number" id="expense-qty" placeholder="" min="0" step="any" style="flex: 1; padding: 0; background: transparent; color: #333; border: none; font-size: 14px; font-weight: 600; outline: none; width: 40px; box-shadow: none;">
-                                        <div class="unit-toggle" style="display: flex; background: #f3f4f6; border-radius: 20px; margin: 3px 4px 3px 4px; padding: 2px; position: relative; width: 70px; cursor: pointer; border: 1px solid #e5e7eb; user-select: none;" onclick="window.toggleExpenseUnit()">
-                                            <div id="unit-slider" style="position: absolute; top: 2px; left: 34px; width: 32px; height: 26px; background: #1e40af; border-radius: 14px; transition: 0.3s ease;"></div>
-                                            <span id="unit-kg-label" style="flex: 1; text-align: center; font-size: 11px; font-weight: bold; color: #9ca3af; z-index: 1; line-height: 26px; transition: 0.3s;">KG</span>
-                                            <span id="unit-qty-label" style="flex: 1; text-align: center; font-size: 11px; font-weight: bold; color: #ffffff; z-index: 1; line-height: 26px; transition: 0.3s;">QTY</span>
+                                        <div class="unit-toggle" style="display: flex; background: #f3f4f6; border-radius: 20px; margin: 3px 4px 3px 4px; padding: 2px; position: relative; width: 80px; cursor: pointer; border: 1px solid #e5e7eb; user-select: none;" onclick="window.toggleExpenseUnit()">
+                                            <div id="unit-slider" style="position: absolute; top: 2px; left: 38px; width: 38px; height: 26px; background: #1e40af; border-radius: 14px; transition: 0.3s ease;"></div>
+                                            <span id="unit-kg-label" style="flex: 1; text-align: center; font-size: 12px; font-weight: bold; color: #9ca3af; z-index: 1; line-height: 26px; transition: 0.3s;">KG</span>
+                                            <span id="unit-qty-label" style="flex: 1; text-align: center; font-size: 12px; font-weight: bold; color: #ffffff; z-index: 1; line-height: 26px; transition: 0.3s;">QTY</span>
                                         </div>
                                         <input type="hidden" id="expense-unit" value="QTY">
                                     </div>
                                 </div>
-                                <!-- Floating Label Expense Fields -->
+                                <div class="form-group" id="expense-sell-price-container" style="flex: 1; max-width: 200px;">
+                                    <label>Selling Price (₹)</label>
+                                    <div style="position: relative;">
+                                        <input type="number" id="expense-sell-price" placeholder="For new/updated item" min="0" step="any" style="width:100%; padding: 10px 30px 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                                        <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-sell-price')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Second Row (Billing) -->
+                            <div style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;">
+                                <div class="input-group-floating" style="flex: 1; position: relative; min-width: 130px;">
+                                    <input type="number" id="expense-gross" placeholder=" " min="0" step="0.01" style="padding-right: 30px;" oninput="window.calcExpenseNet('gross')">
+                                    <label for="expense-gross">Gross Amount ₹</label>
+                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-gross'); window.calcExpenseNet('gross');" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
+                                </div>
+                                
+                                <div class="input-group-floating" style="flex: 1; position: relative; min-width: 130px;">
+                                    <input type="number" id="expense-disc-percent" placeholder=" " min="0" max="100" step="any" style="padding-right: 30px;" oninput="window.calcExpenseNet('percent')">
+                                    <label for="expense-disc-percent">Discount %</label>
+                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-disc-percent'); window.calcExpenseNet('percent');" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
+                                </div>
+
+                                <div class="input-group-floating" style="flex: 1; position: relative; min-width: 130px;">
+                                    <input type="number" id="expense-disc-fixed" placeholder=" " min="0" step="0.01" style="padding-right: 30px;" oninput="window.calcExpenseNet('fixed')">
+                                    <label for="expense-disc-fixed">Discount ₹</label>
+                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-disc-fixed'); window.calcExpenseNet('fixed');" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
+                                </div>
+
+                                <div class="input-group-floating" style="flex: 1; position: relative; min-width: 130px;">
+                                    <input type="number" id="expense-net" placeholder=" " readonly style="padding-right: 10px; background: rgba(16, 185, 129, 0.1); border-color: #10b981; color: #10b981; font-weight: bold;">
+                                    <label for="expense-net" style="color: #10b981;">Net Amount ₹</label>
+                                </div>
+                            </div>
+
+                            <!-- Third Row (Payments) -->
+                            <div class="form-group mt-3">
+                                <label style="margin-bottom: 8px; display: block; color: var(--text-secondary);">Payment Split</label>
                                 <div class="expense-payment-row" style="display: flex; gap: 10px; flex: 3; min-width: 250px;">
                                     <div class="input-group-floating" style="flex: 1; position: relative;">
                                         <input type="number" id="expense-cash" placeholder=" " min="0" step="0.01" style="padding-right: 30px;">
@@ -378,17 +415,6 @@ export const appShellHTML = `
                                         <input type="number" id="expense-udhar" placeholder=" " min="0" step="0.01" style="padding-right: 30px;">
                                         <label for="expense-udhar">Udhar</label>
                                         <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-udhar')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Second Row -->
-                            <div style="display: flex; gap: 15px;">
-                                <div class="form-group" id="expense-sell-price-container" style="flex: 1; max-width: 200px;">
-                                    <label>Selling Price (₹)</label>
-                                    <div style="position: relative;">
-                                        <input type="number" id="expense-sell-price" placeholder="For new/updated item" min="0" step="any" style="width:100%; padding: 10px 30px 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
-                                        <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-sell-price')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
                                     </div>
                                 </div>
                             </div>

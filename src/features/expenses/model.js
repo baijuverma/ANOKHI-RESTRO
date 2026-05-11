@@ -254,12 +254,24 @@ window.handleExpenseSubmit = async function(e) {
         return;
     }
 
+    const gross = parseFloat(document.getElementById('expense-gross')?.value) || 0;
+    const discPercent = parseFloat(document.getElementById('expense-disc-percent')?.value) || 0;
+    const discFixed = parseFloat(document.getElementById('expense-disc-fixed')?.value) || 0;
+    const net = parseFloat(document.getElementById('expense-net')?.value) || 0;
     const sellPrice = parseFloat(document.getElementById('expense-sell-price').value) || 0;
     const cash = parseFloat(document.getElementById('expense-cash').value) || 0;
     const upi = parseFloat(document.getElementById('expense-upi').value) || 0;
     const udhar = parseFloat(document.getElementById('expense-udhar').value) || 0;
 
-    if (cash === 0 && upi === 0 && udhar === 0) {
+    if (net > 0 && (cash + upi + udhar) === 0) {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Please enter payment split matching the Net Amount.', 'error', null, 2500);
+        } else {
+            alert('Please enter payment split matching the Net Amount.');
+        }
+        setTimeout(() => document.getElementById('expense-cash').focus(), 10);
+        return;
+    } else if (cash === 0 && upi === 0 && udhar === 0) {
         if (typeof window.showToast === 'function') {
             window.showToast('Please enter an amount.', 'error', null, 2000);
         } else {
@@ -277,6 +289,10 @@ window.handleExpenseSubmit = async function(e) {
             exp.main_category = mainCat;
             exp.sub_category = subCat;
             exp.amount = cash + upi + udhar;
+            exp.gross_amount = gross;
+            exp.discount_percent = discPercent;
+            exp.discount_fixed = discFixed;
+            exp.net_amount = net;
             exp.cash = cash;
             exp.upi = upi;
             exp.udhar = udhar;
@@ -305,6 +321,10 @@ window.handleExpenseSubmit = async function(e) {
             main_category: mainCat,
             sub_category: subCat,
             amount: cash + upi + udhar,
+            gross_amount: gross,
+            discount_percent: discPercent,
+            discount_fixed: discFixed,
+            net_amount: net,
             cash: cash,
             upi: upi,
             udhar: udhar,
@@ -375,7 +395,7 @@ window.handleExpenseSubmit = async function(e) {
     e.target.reset();
     
     // Explicitly clear inputs for safety after edit mode
-    ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc', 'expense-sell-price'].forEach(id => {
+    ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc', 'expense-sell-price', 'expense-gross', 'expense-disc-percent', 'expense-disc-fixed', 'expense-net'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
@@ -552,6 +572,18 @@ export function initExpensesLogic() {
         document.getElementById('expense-upi').value = exp.upi || '';
         document.getElementById('expense-udhar').value = exp.udhar || '';
         document.getElementById('expense-sell-price').value = exp.selling_price || exp.sell_price || '';
+
+        const grossEl = document.getElementById('expense-gross');
+        if (grossEl) grossEl.value = exp.gross_amount || '';
+        
+        const discPEl = document.getElementById('expense-disc-percent');
+        if (discPEl) discPEl.value = exp.discount_percent || '';
+        
+        const discFEl = document.getElementById('expense-disc-fixed');
+        if (discFEl) discFEl.value = exp.discount_fixed || '';
+        
+        const netEl = document.getElementById('expense-net');
+        if (netEl) netEl.value = exp.net_amount || (exp.amount || '');
         
         if (exp.unit && typeof window.setExpenseUnit === 'function') {
             window.setExpenseUnit(exp.unit);
@@ -623,5 +655,42 @@ export function initExpensesLogic() {
     };
 
     // Initial render
+    window.calcExpenseNet = function(changedField) {
+        const grossEl = document.getElementById('expense-gross');
+        const discPercentEl = document.getElementById('expense-disc-percent');
+        const discFixedEl = document.getElementById('expense-disc-fixed');
+        const netEl = document.getElementById('expense-net');
+        
+        if (!grossEl || !netEl) return;
+
+        let gross = parseFloat(grossEl.value) || 0;
+        let discP = parseFloat(discPercentEl?.value) || 0;
+        let discF = parseFloat(discFixedEl?.value) || 0;
+
+        if (discP > 100) {
+            discP = 100;
+            if (discPercentEl) discPercentEl.value = 100;
+        }
+
+        let totalDisc = (gross * (discP / 100)) + discF;
+        if (totalDisc > gross) totalDisc = gross;
+
+        let net = gross - totalDisc;
+        netEl.value = net > 0 ? net.toFixed(2) : '';
+        
+        // Auto fill cash if no payment entered yet
+        const cashEl = document.getElementById('expense-cash');
+        const upiEl = document.getElementById('expense-upi');
+        const udharEl = document.getElementById('expense-udhar');
+        
+        if (cashEl && upiEl && udharEl) {
+            if (!cashEl.value && !upiEl.value && !udharEl.value && net > 0) {
+                cashEl.value = net.toFixed(2);
+            } else if (cashEl.value || upiEl.value || udharEl.value) {
+                // Adjust cash if it equals the old net to the new net? Too complex, just let user adjust.
+            }
+        }
+    };
+
     if (typeof window.renderExpenses === 'function') window.renderExpenses();
 }
