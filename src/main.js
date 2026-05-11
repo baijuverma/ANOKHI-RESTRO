@@ -598,15 +598,15 @@ window.updateDashboard = () => {
     const categoryHtml = Object.entries(categorySales)
         .sort((a,b) => b[1] - a[1]) // Sort by value desc
         .map(([cat, val]) => `
-            <div style="display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 4px;">
-                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100px;">${cat}</span>
-                <span style="font-weight: 700; color: #818cf8;">₹${val.toFixed(0)}</span>
+            <div style="display: flex; align-items: center; gap: 8px; background: rgba(99, 102, 241, 0.1); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(99, 102, 241, 0.2); backdrop-filter: blur(4px);">
+                <span style="font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500;">${cat}</span>
+                <span style="font-weight: 800; color: white; font-size: 14px;">₹${val.toFixed(0)}</span>
             </div>
         `).join('');
     
     const catContainer = document.getElementById('today-category-sales');
     if (catContainer) {
-        catContainer.innerHTML = categoryHtml || '<div style="font-size:10px; color:rgba(255,255,255,0.3); text-align:center; margin-top:10px;">No sales by category yet</div>';
+        catContainer.innerHTML = categoryHtml || '<div style="font-size:12px; color:rgba(255,255,255,0.3); padding: 10px;">No sales by category today</div>';
     }
 };
 

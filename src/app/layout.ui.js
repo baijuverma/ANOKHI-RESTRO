@@ -117,9 +117,6 @@ export const appShellHTML = `
                             <span><i class="fa-solid fa-money-bill-wave" style="color:#22c55e;"></i> <span id="today-cash-card">₹0</span></span>
                             <span><i class="fa-brands fa-google-pay" style="color:#818cf8;"></i> <span id="today-upi-card">₹0</span></span>
                         </div>
-                        <div id="today-category-sales" style="margin-top: 12px; max-height: 80px; overflow-y: auto; padding-right: 4px;">
-                            <!-- Category wise sales will appear here -->
-                        </div>
                     </div>
 
                     <!-- Today Profit/Loss Card -->
@@ -141,6 +138,11 @@ export const appShellHTML = `
                         <p id="today-expense-card" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
                         <div style="font-size: 11px; margin-top: 8px; color: var(--text-secondary);">Total expenses recorded today</div>
                     </div>
+                </div>
+                
+                <!-- Horizontal Category Sales Bar -->
+                <div id="today-category-sales" style="display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0; padding: 5px 0;">
+                    <!-- Category stats will appear here horizontally as pills -->
                 </div>
 
                 <div class="recent-activity glass-panel mt-4">
