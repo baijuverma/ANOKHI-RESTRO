@@ -91,6 +91,20 @@ window.handleSearchableInput = function(inputId, panelId) {
         if (priceContainer) {
             priceContainer.style.display = (isRaw || isBuiltIn) ? 'none' : 'block';
         }
+        
+        // Auto-fill 18% discount for ICE CREAM
+        if (input.value.trim().toUpperCase() === 'ICE CREAM') {
+            const discTypeBtn = document.getElementById('expense-disc-type-btn');
+            const discInput = document.getElementById('expense-disc');
+            if (discTypeBtn && discInput && discInput.value === '') {
+                discTypeBtn.textContent = '%';
+                discTypeBtn.dataset.type = 'percent';
+                discInput.value = '18';
+                if (typeof window.calcExpenseNet === 'function') {
+                    window.calcExpenseNet();
+                }
+            }
+        }
     } else if (inputId === 'expense-sub-cat') {
         const invItem = (window.inventory || []).find(i => i.name.trim().toLowerCase() === query.trim());
         const priceInput = document.getElementById('expense-sell-price');
@@ -196,6 +210,20 @@ function renderSuggestions(items, input, panel) {
                 const qtyContainer = document.getElementById('expense-qty-container');
                 if (qtyContainer) {
                     qtyContainer.style.display = isBuiltIn ? 'none' : 'block';
+                }
+
+                // Auto-fill 18% discount for ICE CREAM
+                if (item.trim().toUpperCase() === 'ICE CREAM') {
+                    const discTypeBtn = document.getElementById('expense-disc-type-btn');
+                    const discInput = document.getElementById('expense-disc');
+                    if (discTypeBtn && discInput) {
+                        discTypeBtn.textContent = '%';
+                        discTypeBtn.dataset.type = 'percent';
+                        discInput.value = '18';
+                        if (typeof window.calcExpenseNet === 'function') {
+                            window.calcExpenseNet();
+                        }
+                    }
                 }
             } else if (input.id === 'expense-sub-cat') {
                 const invItem = (window.inventory || []).find(i => i.name.trim().toLowerCase() === item.trim().toLowerCase());
