@@ -466,9 +466,6 @@ window.handleExpenseSubmit = async function(e) {
             exp.unit = unit;
             exp.selling_price = sellPrice;
             
-            window.editingExpenseId = null;
-            window.editingExpenseOldData = null;
-
             // Restore button text
             const submitBtn = document.querySelector('#expense-form button[type="submit"]');
             if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Expense';
@@ -582,6 +579,11 @@ window.handleExpenseSubmit = async function(e) {
     }
 
     if (typeof window.saveData === 'function') window.saveData(); // Non-blocking so UI updates instantly
+    
+    // Cleanup editing state
+    window.editingExpenseId = null;
+    window.editingExpenseOldData = null;
+
     e.target.reset();
     
     // Explicitly clear inputs for safety after edit mode
