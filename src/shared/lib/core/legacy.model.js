@@ -131,6 +131,12 @@ window.showView = function(target) {
         }
     });
 
+    // Toggle global sync container visibility based on view
+    const syncContainer = document.getElementById('global-sync-container');
+    if (syncContainer) {
+        syncContainer.style.display = (target === 'pos') ? 'none' : 'block';
+    }
+
     // Refresh view specific data safely
     if(target === 'dashboard' && typeof window.updateDashboard === 'function') window.updateDashboard();
     if(target === 'inventory' && typeof window.renderInventory === 'function') window.renderInventory();
