@@ -359,6 +359,13 @@ window.handleExpenseSubmit = async function(e) {
 
     if (typeof window.saveData === 'function') await window.saveData();
     e.target.reset();
+    
+    // Explicitly clear inputs for safety after edit mode
+    ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc', 'expense-sell-price'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    
     if (typeof window.renderExpenses === 'function') {
         window.renderExpenses();
     }
