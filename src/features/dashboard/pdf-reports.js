@@ -265,8 +265,30 @@ export function initPdfReports() {
 
         const billY = doc.lastAutoTable.finalY || 100;
 
-        // --- Section 2: Item-wise Ranking Summary ---
-        let itemStartY = billY + 28;
+        // --- Section 2: Order Type Summary & Grand Total (Moved before Rankings) ---
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'bold');
+        const typeTotals = sales.reduce((acc, s) => {
+            const type = (s.orderType || 'Counter').toUpperCase();
+            acc[type] = (acc[type] || 0) + parseFloat(s.total || 0);
+            return acc;
+        }, {});
+        
+        let currentX = margin;
+        let summaryY = billY + 12; 
+        Object.entries(typeTotals).forEach(([type, val], idx) => {
+            const text = `${type}: Rs. ${val.toFixed(2)}`;
+            doc.text(text, currentX, summaryY);
+            currentX += doc.getTextWidth(text) + 8; // Horizontal gap
+        });
+
+        doc.setFontSize(12);
+        doc.setTextColor(34, 197, 94); // Green
+        doc.text(`Grand Total: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 60, summaryY);
+        doc.setTextColor(0); // Reset to black
+
+        // --- Section 3: Item-wise Ranking Summary ---
+        let itemStartY = billY + 28; // Reduced gap per previous request
         if (itemStartY > 240) {
             doc.addPage();
             itemStartY = 20;
@@ -276,7 +298,7 @@ export function initPdfReports() {
         doc.setFont(undefined, 'bold');
         doc.text("2. Item-wise Sales Ranking", margin, itemStartY - 5);
 
-        // Aggregate items by category
+        // (Aggregate items logic follows...)
         const categoryMap = {};
         let totalDiscount = 0;
         sales.forEach(sale => {
@@ -381,30 +403,6 @@ export function initPdfReports() {
             headStyles: { fillColor: [34, 197, 94] }, // Green for rankings
             styles: { fontSize: 9 }
         });
-
-        const finalY = doc.lastAutoTable.finalY || 150;
-        
-        // Order Type Summary (Left of Total, Bold, No Header)
-        doc.setFontSize(10);
-        doc.setFont(undefined, 'bold');
-        const typeTotals = sales.reduce((acc, s) => {
-            const type = (s.orderType || 'Counter').toUpperCase();
-            acc[type] = (acc[type] || 0) + parseFloat(s.total || 0);
-            return acc;
-        }, {});
-        
-        let currentX = margin;
-        let summaryY = finalY + 12; 
-        Object.entries(typeTotals).forEach(([type, val], idx) => {
-            const text = `${type}: Rs. ${val.toFixed(2)}`;
-            doc.text(text, currentX, summaryY);
-            currentX += doc.getTextWidth(text) + 8; // Horizontal gap
-        });
-
-        doc.setFontSize(12);
-        doc.setTextColor(34, 197, 94); // Green
-        doc.text(`Total Period Revenue: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 80, finalY + 12);
-        doc.setTextColor(0); // Reset to black
 
         // --- Add Footers to All Pages at Once ---
         const totalPagesCount = doc.internal.getNumberOfPages();
