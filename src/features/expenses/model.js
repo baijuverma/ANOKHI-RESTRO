@@ -92,9 +92,9 @@ window.handleSearchableInput = function(inputId, panelId) {
             priceContainer.style.display = (isRaw || isBuiltIn) ? 'none' : 'block';
         }
         
-        // Auto-fill 18% discount for ICE CREAM
+        // Auto-fill 18% discount for ICE CREAM, or clear it for others
+        const discInput = document.getElementById('expense-disc-value');
         if (input.value.trim().toUpperCase() === 'ICE CREAM') {
-            const discInput = document.getElementById('expense-disc-value');
             if (discInput && discInput.value === '') {
                 if (typeof window.setExpenseDiscType === 'function') {
                     window.setExpenseDiscType('%');
@@ -103,6 +103,11 @@ window.handleSearchableInput = function(inputId, panelId) {
                 if (typeof window.calcExpenseNet === 'function') {
                     window.calcExpenseNet();
                 }
+            }
+        } else if (discInput && discInput.value) {
+            discInput.value = '';
+            if (typeof window.calcExpenseNet === 'function') {
+                window.calcExpenseNet();
             }
         }
     } else if (inputId === 'expense-sub-cat') {
@@ -322,9 +327,9 @@ function renderSuggestions(items, input, panel) {
                     qtyContainer.style.display = isBuiltIn ? 'none' : 'block';
                 }
 
-                // Auto-fill 18% discount for ICE CREAM
+                // Auto-fill 18% discount for ICE CREAM, or clear for others
+                const discInput = document.getElementById('expense-disc-value');
                 if (item.trim().toUpperCase() === 'ICE CREAM') {
-                    const discInput = document.getElementById('expense-disc-value');
                     if (discInput) {
                         if (typeof window.setExpenseDiscType === 'function') {
                             window.setExpenseDiscType('%');
@@ -333,6 +338,11 @@ function renderSuggestions(items, input, panel) {
                         if (typeof window.calcExpenseNet === 'function') {
                             window.calcExpenseNet();
                         }
+                    }
+                } else if (discInput && discInput.value) {
+                    discInput.value = '';
+                    if (typeof window.calcExpenseNet === 'function') {
+                        window.calcExpenseNet();
                     }
                 }
             } else if (input.id === 'expense-sub-cat') {
