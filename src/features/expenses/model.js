@@ -368,6 +368,7 @@ function renderSuggestions(items, input, panel) {
                     }
                 }, 10);
             }
+            if (typeof window.checkExpenseFormDirty === 'function') window.checkExpenseFormDirty();
         };
         panel.appendChild(div);
     });
@@ -889,10 +890,10 @@ export function initExpensesLogic() {
         if (cancelBtn) {
             if (isDirty) {
                 cancelBtn.classList.remove('hidden');
-                cancelBtn.style.display = 'flex';
+                cancelBtn.style.setProperty('display', 'flex', 'important');
             } else {
                 cancelBtn.classList.add('hidden');
-                cancelBtn.style.display = 'none';
+                cancelBtn.style.setProperty('display', 'none', 'important');
             }
         }
     };
@@ -1054,6 +1055,7 @@ export function initExpensesLogic() {
             udharEl.style.removeProperty('border-color');
             if (warningEl) warningEl.style.display = 'none';
         }
+        if (typeof window.checkExpenseFormDirty === 'function') window.checkExpenseFormDirty();
     };
 
     if (typeof window.renderExpenses === 'function') window.renderExpenses();
