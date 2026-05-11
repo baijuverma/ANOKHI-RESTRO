@@ -457,16 +457,16 @@ window.renderHistory = () => {
 window.renderExpenses = () => {
     if (window.expensesHistory) {
         let filtered = [...window.expensesHistory];
-        const searchVal = document.getElementById('expenses-search')?.value?.toLowerCase() || '';
-        const startDateStr = document.getElementById('expenses-start-date')?.value;
-        const endDateStr = document.getElementById('expenses-end-date')?.value;
+        const searchVal = document.getElementById('expense-search-history')?.value?.toLowerCase() || '';
+        const startDateStr = document.getElementById('expense-from-date')?.value;
+        const endDateStr = document.getElementById('expense-to-date')?.value;
 
         if (searchVal || startDateStr || endDateStr) {
             filtered = filtered.filter(exp => {
                 // Search filter
                 if (searchVal) {
-                    const cat = (exp.category || '').toLowerCase();
-                    const subCat = (exp.subCategory || exp.sub_category || '').toLowerCase();
+                    const cat = (exp.main_category || exp.category || '').toLowerCase();
+                    const subCat = (exp.sub_category || exp.subCategory || '').toLowerCase();
                     const reason = (exp.description || exp.reason || '').toLowerCase();
                     if (!cat.includes(searchVal) && !subCat.includes(searchVal) && !reason.includes(searchVal)) {
                         return false;

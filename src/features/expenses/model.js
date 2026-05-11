@@ -1,5 +1,6 @@
 
 // --- Expense Data & Suggestions Logic ---
+window.editingExpenseId = null;
 // Blacklist for deleted sub-categories
 if (!window.deletedExpenseSubs) {
     window.deletedExpenseSubs = JSON.parse(localStorage.getItem('deleted_expense_subs') || '[]');
@@ -335,9 +336,11 @@ window.handleExpenseSubmit = async function(e) {
         }
     }
 
-    if (typeof window.saveData === 'function') window.saveData();
+    if (typeof window.saveData === 'function') await window.saveData();
     e.target.reset();
-    if (typeof window.renderExpenses === 'function') window.renderExpenses();
+    if (typeof window.renderExpenses === 'function') {
+        window.renderExpenses();
+    }
     if (typeof window.updateExpenseStats === 'function') window.updateExpenseStats();
     if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
     if (typeof window.updateDashboard === 'function') window.updateDashboard();
@@ -490,7 +493,6 @@ export function initExpensesLogic() {
         }
     }
 
-    window.editingExpenseId = null;
     window.editExpense = function(id) {
         const exp = (window.expensesHistory || []).find(e => e.id === id);
         if (!exp) return;
