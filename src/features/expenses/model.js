@@ -896,7 +896,6 @@ export function initExpensesLogic() {
         // Close menu
         const menu = document.getElementById(`action-menu-${id}`);
         if (menu) menu.classList.add('hidden');
-    };
 
         if (typeof window.checkExpenseFormDirty === 'function') window.checkExpenseFormDirty();
     };
