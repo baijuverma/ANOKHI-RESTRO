@@ -255,8 +255,10 @@ window.handleExpenseSubmit = async function(e) {
     }
 
     const gross = parseFloat(document.getElementById('expense-gross')?.value) || 0;
-    const discPercent = parseFloat(document.getElementById('expense-disc-percent')?.value) || 0;
-    const discFixed = parseFloat(document.getElementById('expense-disc-fixed')?.value) || 0;
+    const discValue = parseFloat(document.getElementById('expense-disc-value')?.value) || 0;
+    const discType = document.getElementById('expense-disc-type')?.value || '%';
+    const discPercent = discType === '%' ? discValue : 0;
+    const discFixed = discType === '₹' ? discValue : 0;
     const net = parseFloat(document.getElementById('expense-net')?.value) || 0;
     const sellPrice = parseFloat(document.getElementById('expense-sell-price').value) || 0;
     const cash = parseFloat(document.getElementById('expense-cash').value) || 0;
@@ -395,7 +397,7 @@ window.handleExpenseSubmit = async function(e) {
     e.target.reset();
     
     // Explicitly clear inputs for safety after edit mode
-    ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc', 'expense-sell-price', 'expense-gross', 'expense-disc-percent', 'expense-disc-fixed', 'expense-net'].forEach(id => {
+    ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc', 'expense-sell-price', 'expense-gross', 'expense-disc-value', 'expense-net'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
@@ -576,11 +578,18 @@ export function initExpensesLogic() {
         const grossEl = document.getElementById('expense-gross');
         if (grossEl) grossEl.value = exp.gross_amount || '';
         
-        const discPEl = document.getElementById('expense-disc-percent');
-        if (discPEl) discPEl.value = exp.discount_percent || '';
-        
-        const discFEl = document.getElementById('expense-disc-fixed');
-        if (discFEl) discFEl.value = exp.discount_fixed || '';
+        const discValEl = document.getElementById('expense-disc-value');
+        if (discValEl) {
+            if (exp.discount_percent > 0) {
+                discValEl.value = exp.discount_percent;
+                if (typeof window.setExpenseDiscType === 'function') window.setExpenseDiscType('%');
+            } else if (exp.discount_fixed > 0) {
+                discValEl.value = exp.discount_fixed;
+                if (typeof window.setExpenseDiscType === 'function') window.setExpenseDiscType('₹');
+            } else {
+                discValEl.value = '';
+            }
+        }
         
         const netEl = document.getElementById('expense-net');
         if (netEl) netEl.value = exp.net_amount || (exp.amount || '');
@@ -654,22 +663,55 @@ export function initExpensesLogic() {
         }
     };
 
+    window.setExpenseDiscType = function(type) {
+        const hiddenInput = document.getElementById('expense-disc-type');
+        const slider = document.getElementById('disc-slider');
+        const labelP = document.getElementById('disc-percent-label');
+        const labelF = document.getElementById('disc-fixed-label');
+        
+        if (!hiddenInput || !slider || !labelP || !labelF) return;
+        
+        hiddenInput.value = type;
+        if (type === '%') {
+            slider.style.left = '2px';
+            labelP.style.color = '#ffffff';
+            labelF.style.color = 'rgba(255,255,255,0.5)';
+        } else {
+            slider.style.left = '36px';
+            labelP.style.color = 'rgba(255,255,255,0.5)';
+            labelF.style.color = '#ffffff';
+        }
+        window.calcExpenseNet('discount');
+    };
+
+    window.toggleExpenseDiscType = function() {
+        const hiddenInput = document.getElementById('expense-disc-type');
+        if (!hiddenInput) return;
+        if (hiddenInput.value === '%') {
+            window.setExpenseDiscType('₹');
+        } else {
+            window.setExpenseDiscType('%');
+        }
+    };
+
     // Initial render
     window.calcExpenseNet = function(changedField) {
         const grossEl = document.getElementById('expense-gross');
-        const discPercentEl = document.getElementById('expense-disc-percent');
-        const discFixedEl = document.getElementById('expense-disc-fixed');
+        const discValEl = document.getElementById('expense-disc-value');
+        const discType = document.getElementById('expense-disc-type')?.value || '%';
         const netEl = document.getElementById('expense-net');
         
         if (!grossEl || !netEl) return;
 
         let gross = parseFloat(grossEl.value) || 0;
-        let discP = parseFloat(discPercentEl?.value) || 0;
-        let discF = parseFloat(discFixedEl?.value) || 0;
+        let discVal = parseFloat(discValEl?.value) || 0;
+        
+        let discP = discType === '%' ? discVal : 0;
+        let discF = discType === '₹' ? discVal : 0;
 
         if (discP > 100) {
             discP = 100;
-            if (discPercentEl) discPercentEl.value = 100;
+            if (discValEl) discValEl.value = 100;
         }
 
         let totalDisc = (gross * (discP / 100)) + discF;

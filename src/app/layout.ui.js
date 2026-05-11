@@ -378,17 +378,17 @@ export const appShellHTML = `
                                     <label for="expense-gross">Gross Amount ₹</label>
                                     <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-gross'); window.calcExpenseNet('gross');" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
                                 </div>
-                                
-                                <div class="input-group-floating" style="flex: 1; position: relative; min-width: 130px;">
-                                    <input type="number" id="expense-disc-percent" placeholder=" " min="0" max="100" step="any" style="padding-right: 30px;" oninput="window.calcExpenseNet('percent')">
-                                    <label for="expense-disc-percent">Discount %</label>
-                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-disc-percent'); window.calcExpenseNet('percent');" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
-                                </div>
-
-                                <div class="input-group-floating" style="flex: 1; position: relative; min-width: 130px;">
-                                    <input type="number" id="expense-disc-fixed" placeholder=" " min="0" step="0.01" style="padding-right: 30px;" oninput="window.calcExpenseNet('fixed')">
-                                    <label for="expense-disc-fixed">Discount ₹</label>
-                                    <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-disc-fixed'); window.calcExpenseNet('fixed');" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
+                                <div class="form-group" style="flex: 1; position: relative; min-width: 160px; max-width: 200px;">
+                                    <label style="position: absolute; top: -8px; left: 10px; background: var(--panel-bg); padding: 0 4px; font-size: 12px; color: var(--text-secondary); z-index: 5;">Discount</label>
+                                    <div style="position: relative; display: flex; align-items: center; background: transparent; border-radius: 8px; border: 1px solid var(--panel-border); overflow: hidden; height: 48px; padding-left: 12px;">
+                                        <input type="number" id="expense-disc-value" placeholder="0" min="0" step="any" style="flex: 1; padding: 0; background: transparent; color: white; border: none; font-size: 15px; outline: none; width: 40px; box-shadow: none;" oninput="window.calcExpenseNet('discount')">
+                                        <div class="unit-toggle" style="display: flex; background: rgba(255,255,255,0.1); border-radius: 20px; margin: 4px 6px 4px 4px; padding: 2px; position: relative; width: 70px; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); user-select: none;" onclick="window.toggleExpenseDiscType()">
+                                            <div id="disc-slider" style="position: absolute; top: 2px; left: 2px; width: 32px; height: 26px; background: #6d28d9; border-radius: 14px; transition: 0.3s ease;"></div>
+                                            <span id="disc-percent-label" style="flex: 1; text-align: center; font-size: 14px; font-weight: bold; color: #ffffff; z-index: 1; line-height: 26px; transition: 0.3s;">%</span>
+                                            <span id="disc-fixed-label" style="flex: 1; text-align: center; font-size: 14px; font-weight: bold; color: rgba(255,255,255,0.5); z-index: 1; line-height: 26px; transition: 0.3s;">₹</span>
+                                        </div>
+                                        <input type="hidden" id="expense-disc-type" value="%">
+                                    </div>
                                 </div>
 
                                 <div class="input-group-floating" style="flex: 1; position: relative; min-width: 130px;">
