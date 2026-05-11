@@ -640,26 +640,31 @@ function generateExpensesReport(title, data) {
 
     // Table Data
     const tableBody = data.map((e, i) => {
-        const paymentMode = (e.payment_mode || 'CASH').toUpperCase();
+        const paymentMode = (e.payment_mode || e.paymentMode || 'CASH').toUpperCase();
         const amount = parseFloat(e.amount || 0);
+        const cashAmt = paymentMode === 'CASH' ? `Rs. ${amount.toFixed(2)}` : '-';
+        const upiAmt = paymentMode === 'UPI' ? `Rs. ${amount.toFixed(2)}` : '-';
+        const udharAmt = (paymentMode === 'UDHAR' || paymentMode === 'DUES') ? `Rs. ${amount.toFixed(2)}` : '-';
+
         return [
             i + 1,
-            new Date(e.date).toLocaleDateString(),
-            e.category || 'General',
-            e.description || '-',
-            paymentMode === 'CASH' ? `Rs. ${amount.toFixed(2)}` : '-',
-            paymentMode === 'UPI' ? `Rs. ${amount.toFixed(2)}` : '-',
-            paymentMode === 'DUES' ? `Rs. ${amount.toFixed(2)}` : '-',
-            `Rs. ${amount.toFixed(2)}`
+            new Date(e.date).toLocaleDateString('en-GB'),
+            e.main_category || e.category || 'General',
+            e.sub_category || e.subCategory || '-',
+            e.qty || '-',
+            cashAmt,
+            upiAmt,
+            udharAmt,
+            e.description || e.reason || '-'
         ];
     });
 
     doc.autoTable({
-        head: [['Sr.', 'Date', 'Category', 'Description', 'Cash', 'UPI', 'Dues', 'Amount']],
+        head: [['Sr.', 'Date', 'Category', 'Sub-Category', 'Qty', 'Cash', 'UPI', 'Udhar', 'Reason']],
         body: tableBody,
         startY: margin + 25,
         margin: { left: margin, right: margin, top: margin, bottom: margin + 10 },
-        styles: { fontSize: 9 },
+        styles: { fontSize: 7 }, // Reduced font size to fit more columns
         headStyles: { fillStyle: 'f', fillColor: [239, 68, 68] },
         didDrawPage: (data) => addFooter(doc, data.pageNumber)
     });

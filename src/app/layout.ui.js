@@ -400,12 +400,14 @@ export const appShellHTML = `
                         <table id="expenses-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 50px;">Sr No.</th>
+                                    <th>Sr No.</th>
                                     <th>Date</th>
                                     <th>Category</th>
                                     <th>Sub-Category</th>
-                                    <th>Amount</th>
-                                    <th>Mode</th>
+                                    <th>Qty</th>
+                                    <th>Cash</th>
+                                    <th>UPI</th>
+                                    <th>Udhar</th>
                                     <th>Reason</th>
                                     <th>Action</th>
                                 </tr>
