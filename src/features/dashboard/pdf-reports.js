@@ -208,6 +208,9 @@ export function initPdfReports() {
                 sCash = totalPaid;
             }
 
+            const d = new Date(s.date);
+            const dateStr = formatDate(d);
+            const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const itemsStr = (s.items || []).map(item => `${item.name} (x${item.cartQty || item.qty || 0})`).join(', ');
 
             totalRevenue += total;
@@ -218,9 +221,10 @@ export function initPdfReports() {
             return [
                 i + 1,
                 s.id.toString().slice(-6),
-                formatDate(s.date),
+                `${dateStr}\n${timeStr}`,
                 s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
                 itemsStr,
+                (s.orderType || 'Counter').toUpperCase(),
                 sCash > 0 ? `Rs. ${sCash.toFixed(2)}` : '-',
                 sUpi > 0 ? `Rs. ${sUpi.toFixed(2)}` : '-',
                 sDues > 0 ? `Rs. ${sDues.toFixed(2)}` : '-',
@@ -233,6 +237,7 @@ export function initPdfReports() {
             '',
             '',
             '',
+            '',
             { content: 'TOTAL', styles: { fontStyle: 'bold' } },
             { content: `Rs. ${totalCash.toFixed(2)}`, styles: { fontStyle: 'bold' } },
             { content: `Rs. ${totalUPI.toFixed(2)}`, styles: { fontStyle: 'bold' } },
@@ -241,14 +246,16 @@ export function initPdfReports() {
         ]);
 
         doc.autoTable({
-            head: [['Sr.', 'Bill ID', 'Date', 'Customer', 'Items Details', 'Cash', 'UPI', 'Dues', 'Amount']],
+            head: [['Sr.', 'Bill ID', 'Date & Time', 'Customer', 'Items Details', 'Type', 'Cash', 'UPI', 'Dues', 'Amount']],
             body: billTableBody,
             startY: margin + 32,
             margin: { left: margin, right: margin },
             headStyles: { fillColor: [99, 102, 241] }, // Indigo for bills
             styles: { fontSize: 7, cellPadding: 2 },
             columnStyles: {
-                4: { cellWidth: 40 } // Adjust width for items column
+                2: { cellWidth: 20 }, // Date/Time
+                4: { cellWidth: 35 }, // Items
+                5: { cellWidth: 15 }  // Type
             }
         });
 
@@ -439,6 +446,13 @@ function generateSalesReport(title, data) {
     // Table Data
     let totalCash = 0, totalUPI = 0, totalDues = 0, totalRevenue = 0;
     const tableBody = data.map((s, i) => {
+        const d = new Date(s.date);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        const dateStr = `${day}/${month}/${year}`;
+        const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
         const total = parseFloat(s.total || 0);
         const sDues = parseFloat(s.dues || 0);
         const totalPaid = total - sDues;
@@ -465,9 +479,10 @@ function generateSalesReport(title, data) {
         return [
             i + 1,
             s.orderId || s.id.substring(0, 8),
-            new Date(s.date).toLocaleString(),
+            `${dateStr}\n${timeStr}`,
             s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
             itemsStr,
+            (s.orderType || 'Counter').toUpperCase(),
             sCash > 0 ? `Rs. ${sCash.toFixed(2)}` : '-',
             sUpi > 0 ? `Rs. ${sUpi.toFixed(2)}` : '-',
             sDues > 0 ? `Rs. ${sDues.toFixed(2)}` : '-',
@@ -480,6 +495,7 @@ function generateSalesReport(title, data) {
         '',
         '',
         '',
+        '',
         { content: 'TOTAL', styles: { fontStyle: 'bold' } },
         { content: `Rs. ${totalCash.toFixed(2)}`, styles: { fontStyle: 'bold' } },
         { content: `Rs. ${totalUPI.toFixed(2)}`, styles: { fontStyle: 'bold' } },
@@ -488,14 +504,16 @@ function generateSalesReport(title, data) {
     ]);
 
     doc.autoTable({
-        head: [['Sr.', 'Order ID', 'Date & Time', 'Customer', 'Items Details', 'Cash', 'UPI', 'Dues', 'Amount']],
+        head: [['Sr.', 'Order ID', 'Date & Time', 'Customer', 'Items Details', 'Type', 'Cash', 'UPI', 'Dues', 'Amount']],
         body: tableBody,
         startY: margin + 25,
         margin: { left: margin, right: margin, top: margin, bottom: margin + 10 },
         styles: { fontSize: 7, cellPadding: 2 },
         headStyles: { fillStyle: 'f', fillColor: [99, 102, 241] },
         columnStyles: {
-            4: { cellWidth: 40 }
+            2: { cellWidth: 20 },
+            4: { cellWidth: 35 },
+            5: { cellWidth: 15 }
         }
     });
 
