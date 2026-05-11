@@ -423,7 +423,7 @@ export function initPdfReports() {
 function generateProfitReport(title, sales, expenses) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
-    const margin = 10;
+    const margin = 8.5;
     const pageWidth = doc.internal.pageSize.getWidth();
 
     doc.setFontSize(18);
@@ -698,7 +698,7 @@ function generateSalesReport(title, data) {
 function generateExpensesReport(title, data) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
-    const margin = 10;
+    const margin = 8.5;
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -743,8 +743,9 @@ function generateExpensesReport(title, data) {
     const finalY = doc.lastAutoTable.finalY || 40;
     
     doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
+    doc.setTextColor(34, 197, 94); // Green
     doc.text(`Total Expenses: Rs. ${total.toFixed(2)}`, pageWidth - margin - 60, finalY + 10);
+    doc.setTextColor(0);
 
     if (typeof doc.putTotalPages === 'function') doc.putTotalPages('{totalPages}');
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
@@ -754,7 +755,7 @@ function addFooter(doc, pageNumber) {
     const pageCount = doc.internal.getNumberOfPages();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 10;
+    const margin = 8.5;
 
     doc.setFontSize(10);
     doc.setTextColor(150);
