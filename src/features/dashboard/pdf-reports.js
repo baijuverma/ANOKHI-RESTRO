@@ -402,7 +402,9 @@ export function initPdfReports() {
         });
 
         doc.setFontSize(12);
+        doc.setTextColor(34, 197, 94); // Green
         doc.text(`Total Period Revenue: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 80, finalY + 12);
+        doc.setTextColor(0); // Reset to black
 
         // --- Add Footers to All Pages at Once ---
         const totalPagesCount = doc.internal.getNumberOfPages();
@@ -562,7 +564,9 @@ function generateSalesReport(title, data) {
     });
 
     doc.setFontSize(12);
+    doc.setTextColor(34, 197, 94); // Green
     doc.text(`Grand Total: Rs. ${total.toFixed(2)}`, pageWidth - margin - 60, finalY + 10);
+    doc.setTextColor(0); // Reset to black
 
     // --- Section 2: Item-wise Ranking Summary ---
     let itemStartY = finalY + 28;
