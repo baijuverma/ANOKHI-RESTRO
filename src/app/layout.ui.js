@@ -328,6 +328,10 @@ export const appShellHTML = `
                         color: #4A5568 !important;
                     }
                     .hidden { display: none !important; }
+                    #expense-cancel-btn:hover {
+                        background: rgba(239, 68, 68, 0.2) !important;
+                        border-color: rgba(239, 68, 68, 0.5) !important;
+                    }
                 </style>
                 <div id="expense-form-container" class="glass-panel mt-4" style="padding: 24px;">
                     <form id="expense-form" class="expense-entry-form">
@@ -431,7 +435,7 @@ export const appShellHTML = `
                             <button type="submit" id="expense-submit-btn" class="btn-primary" style="min-width: 200px; height: 48px;">
                                 <i class="fa-solid fa-plus"></i> Log New Expense
                             </button>
-                            <button type="button" id="expense-cancel-btn" class="btn-secondary hidden" onclick="window.cancelExpenseEdit()" style="height: 48px; padding: 0 20px; border: 1px solid var(--panel-border); background: rgba(255,255,255,0.05); color: #cbd5e0; border-radius: 8px; cursor: pointer; transition: 0.2s; align-items: center; gap: 8px; font-weight: 600;">
+                            <button type="button" id="expense-cancel-btn" class="btn-secondary hidden" onclick="window.cancelExpenseEdit()" style="height: 48px; padding: 0 20px; border: 1px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.1); color: #fca5a5; border-radius: 8px; cursor: pointer; transition: 0.2s; align-items: center; gap: 8px; font-weight: 600;">
                                 <i class="fa-solid fa-xmark"></i> Cancel / Clear
                             </button>
                         </div>
