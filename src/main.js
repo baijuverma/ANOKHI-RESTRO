@@ -579,6 +579,35 @@ window.updateDashboard = () => {
         totalExpenseToday: totalExpenseToday.toFixed(2),
         profitToday: (todayRevenue - totalExpenseToday).toFixed(2)
     });
+
+    // Category-wise Sales Calculation for Today
+    const categorySales = {};
+    (window.salesHistory || []).forEach(s => {
+        if (!s.date) return;
+        const sDate = new Date(s.date);
+        const sDateStr = window.getDDMMYYYY ? window.getDDMMYYYY(sDate) : '';
+        if (sDateStr !== todayStr) return;
+
+        (s.items || []).forEach(item => {
+            const cat = item.category || 'Other';
+            const itemTotal = (parseFloat(item.price || 0) * parseFloat(item.cartQty || item.qty || 0));
+            categorySales[cat] = (categorySales[cat] || 0) + itemTotal;
+        });
+    });
+
+    const categoryHtml = Object.entries(categorySales)
+        .sort((a,b) => b[1] - a[1]) // Sort by value desc
+        .map(([cat, val]) => `
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 4px;">
+                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100px;">${cat}</span>
+                <span style="font-weight: 700; color: #818cf8;">₹${val.toFixed(0)}</span>
+            </div>
+        `).join('');
+    
+    const catContainer = document.getElementById('today-category-sales');
+    if (catContainer) {
+        catContainer.innerHTML = categoryHtml || '<div style="font-size:10px; color:rgba(255,255,255,0.3); text-align:center; margin-top:10px;">No sales by category yet</div>';
+    }
 };
 
 window.refreshUI = () => {

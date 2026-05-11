@@ -95,7 +95,7 @@ export const appShellHTML = `
         <main class="main-content">
             <!-- Dashboard View -->
             <section id="dashboard" class="view-section active">
-                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 0;">
+                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 0; max-width: 1100px;">
                     <!-- Today Dues Card -->
                     <div class="glass-panel" onclick="if(typeof window.togglePaymentFilter === 'function') { window.togglePaymentFilter('TODAY_DUES', 'dashboard'); }" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer; transition: transform 0.2s; position: relative;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" id="dashboard-dues-filter-card">
                         <div onclick="event.stopPropagation(); if(window.downloadTodayDuesReport) window.downloadTodayDuesReport();" style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Download Today Dues Report">
@@ -116,6 +116,9 @@ export const appShellHTML = `
                         <div style="font-size: 12px; margin-top: 8px; color: var(--text-secondary); display: flex; gap: 12px;">
                             <span><i class="fa-solid fa-money-bill-wave" style="color:#22c55e;"></i> <span id="today-cash-card">₹0</span></span>
                             <span><i class="fa-brands fa-google-pay" style="color:#818cf8;"></i> <span id="today-upi-card">₹0</span></span>
+                        </div>
+                        <div id="today-category-sales" style="margin-top: 12px; max-height: 80px; overflow-y: auto; padding-right: 4px;">
+                            <!-- Category wise sales will appear here -->
                         </div>
                     </div>
 
