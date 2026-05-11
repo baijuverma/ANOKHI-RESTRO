@@ -5,6 +5,9 @@ window.editingExpenseOldData = null; // To track difference for inventory
 if (!window.deletedExpenseSubs) {
     window.deletedExpenseSubs = JSON.parse(localStorage.getItem('deleted_expense_subs') || '[]');
 }
+if (!window.deletedExpenseMains) {
+    window.deletedExpenseMains = JSON.parse(localStorage.getItem('deleted_expense_mains') || '[]');
+}
 
 // Moved to top-level to ensure global availability
 const expenseData = {
@@ -25,7 +28,7 @@ window.showSuggestions = function(inputId, panelId) {
     let items = [];
     if (inputId === 'expense-main-cat') {
         const invCategories = [...new Set((window.inventory || []).map(i => i.category).filter(Boolean))];
-        items = [...new Set([...expenseData.main, ...invCategories])];
+        items = [...new Set([...expenseData.main, ...invCategories])].filter(item => !window.deletedExpenseMains.includes(item));
     } else {
         const mainValue = document.getElementById('expense-main-cat').value;
         if ((mainValue || '').trim().toUpperCase() === 'KITCHEN') {
@@ -55,7 +58,7 @@ window.handleSearchableInput = function(inputId, panelId) {
     let items = [];
     if (inputId === 'expense-main-cat') {
         const invCategories = [...new Set((window.inventory || []).map(i => i.category).filter(Boolean))];
-        const allMain = [...new Set([...expenseData.main, ...invCategories])];
+        const allMain = [...new Set([...expenseData.main, ...invCategories])].filter(item => !window.deletedExpenseMains.includes(item));
         items = allMain.filter(i => i.toLowerCase().includes(query));
     } else {
         const mainValue = document.getElementById('expense-main-cat').value;
@@ -275,24 +278,22 @@ function renderSuggestions(items, input, panel) {
         
         div.appendChild(leftSideDiv);
 
-        // Add delete button for sub-category suggestions
-        if (input.id === 'expense-sub-cat') {
-            const delBtn = document.createElement('i');
-            delBtn.className = 'fa-solid fa-xmark delete-suggestion-btn';
-            delBtn.style.padding = '4px 8px';
-            delBtn.style.fontSize = '12px';
-            delBtn.style.color = '#ef4444';
-            delBtn.style.cursor = 'pointer';
-            delBtn.title = 'Delete from suggestions';
-            delBtn.onmousedown = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (confirm(`Delete "${item}" from suggestions permanentally?`)) {
-                    window.deleteExpenseSuggestion(item);
-                }
-            };
-            actionDiv.appendChild(delBtn);
-        }
+        // Add delete button for suggestions
+        const delBtn = document.createElement('i');
+        delBtn.className = 'fa-solid fa-xmark delete-suggestion-btn';
+        delBtn.style.padding = '4px 8px';
+        delBtn.style.fontSize = '12px';
+        delBtn.style.color = '#ef4444';
+        delBtn.style.cursor = 'pointer';
+        delBtn.title = 'Delete from suggestions';
+        delBtn.onmousedown = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (confirm(`Delete "${item}" from suggestions permanentally?`)) {
+                window.deleteExpenseSuggestion(item, input.id);
+            }
+        };
+        actionDiv.appendChild(delBtn);
         
         div.appendChild(actionDiv);
 
@@ -357,15 +358,28 @@ function renderSuggestions(items, input, panel) {
     });
 }
 
-window.deleteExpenseSuggestion = function(item) {
-    if (!window.deletedExpenseSubs.includes(item)) {
-        window.deletedExpenseSubs.push(item);
-        localStorage.setItem('deleted_expense_subs', JSON.stringify(window.deletedExpenseSubs));
-        
-        // Re-render the current suggestions
-        const subInput = document.getElementById('expense-sub-cat');
-        if (subInput) {
-            window.handleSearchableInput('expense-sub-cat', 'sub-suggestions');
+window.deleteExpenseSuggestion = function(item, inputId) {
+    if (inputId === 'expense-main-cat') {
+        if (!window.deletedExpenseMains.includes(item)) {
+            window.deletedExpenseMains.push(item);
+            localStorage.setItem('deleted_expense_mains', JSON.stringify(window.deletedExpenseMains));
+            
+            // Re-render the current suggestions
+            const mainInput = document.getElementById('expense-main-cat');
+            if (mainInput) {
+                window.handleSearchableInput('expense-main-cat', 'main-suggestions');
+            }
+        }
+    } else {
+        if (!window.deletedExpenseSubs.includes(item)) {
+            window.deletedExpenseSubs.push(item);
+            localStorage.setItem('deleted_expense_subs', JSON.stringify(window.deletedExpenseSubs));
+            
+            // Re-render the current suggestions
+            const subInput = document.getElementById('expense-sub-cat');
+            if (subInput) {
+                window.handleSearchableInput('expense-sub-cat', 'sub-suggestions');
+            }
         }
     }
 };
