@@ -391,7 +391,6 @@ export function initSupabaseLogic() {
                     cash: e.cash || 0,
                     upi: e.upi || 0,
                     udhar: e.udhar || 0,
-                    payment_mode: e.payment_mode || 'Cash',
                     description: e.description,
                     qty: e.qty || 0,
                     selling_price: e.selling_price || e.sell_price || 0
