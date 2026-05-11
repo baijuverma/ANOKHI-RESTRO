@@ -94,11 +94,11 @@ window.handleSearchableInput = function(inputId, panelId) {
         
         // Auto-fill 18% discount for ICE CREAM
         if (input.value.trim().toUpperCase() === 'ICE CREAM') {
-            const discTypeBtn = document.getElementById('expense-disc-type-btn');
-            const discInput = document.getElementById('expense-disc');
-            if (discTypeBtn && discInput && discInput.value === '') {
-                discTypeBtn.textContent = '%';
-                discTypeBtn.dataset.type = 'percent';
+            const discInput = document.getElementById('expense-disc-value');
+            if (discInput && discInput.value === '') {
+                if (typeof window.setExpenseDiscType === 'function') {
+                    window.setExpenseDiscType('%');
+                }
                 discInput.value = '18';
                 if (typeof window.calcExpenseNet === 'function') {
                     window.calcExpenseNet();
@@ -214,11 +214,11 @@ function renderSuggestions(items, input, panel) {
 
                 // Auto-fill 18% discount for ICE CREAM
                 if (item.trim().toUpperCase() === 'ICE CREAM') {
-                    const discTypeBtn = document.getElementById('expense-disc-type-btn');
-                    const discInput = document.getElementById('expense-disc');
-                    if (discTypeBtn && discInput) {
-                        discTypeBtn.textContent = '%';
-                        discTypeBtn.dataset.type = 'percent';
+                    const discInput = document.getElementById('expense-disc-value');
+                    if (discInput) {
+                        if (typeof window.setExpenseDiscType === 'function') {
+                            window.setExpenseDiscType('%');
+                        }
                         discInput.value = '18';
                         if (typeof window.calcExpenseNet === 'function') {
                             window.calcExpenseNet();
