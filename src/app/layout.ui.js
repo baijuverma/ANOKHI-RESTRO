@@ -406,16 +406,25 @@ export const appShellHTML = `
                         <table id="expenses-table">
                             <thead>
                                 <tr>
-                                    <th>Sr No.</th>
+                                    <th style="width: 40px;"><input type="checkbox" id="expenses-select-all" onclick="window.toggleSelectAllExpenses(this)"></th>
+                                    <th style="width: 50px;">Sr No.</th>
                                     <th>Date</th>
                                     <th>Category</th>
                                     <th>Sub-Category</th>
                                     <th>Qty</th>
+                                    <th>Selling Price</th>
                                     <th>Cash</th>
                                     <th>UPI</th>
                                     <th>Udhar</th>
                                     <th>Reason</th>
-                                    <th>Action</th>
+                                    <th style="width: 120px;">
+                                        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                            Actions
+                                            <button id="delete-selected-expenses-btn" onclick="window.deleteSelectedExpenses()" class="btn-danger force-hidden" style="padding: 4px 8px; font-size: 12px; border-radius: 4px; min-width: auto; height: auto;" title="Delete Selected Expenses">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="expenses-tbody">

@@ -12,20 +12,32 @@ function buildExpenseRow(exp, index) {
     const isUdhar = (exp.payment_mode || exp.paymentMode) === 'Udhar';
 
     return `
-        <tr>
+        <tr data-id="${exp.id}">
+            <td><input type="checkbox" class="expense-row-checkbox" data-id="${exp.id}" onclick="window.syncExpenseHeaderCheckbox()"></td>
             <td style="font-size: 11px; color: var(--text-secondary);">${index + 1}</td>
             <td>${new Date(exp.date).toLocaleDateString('en-GB')}</td>
             <td><span class="category-tag">${exp.main_category || exp.category}</span></td>
             <td>${exp.sub_category || exp.subCategory || '-'}</td>
             <td>${exp.qty || '-'}</td>
-            <td style="color: ${isCash ? '#10b981' : 'inherit'}">${isCash ? '₹' + exp.amount : '-'}</td>
-            <td style="color: ${isUPI ? '#3b82f6' : 'inherit'}">${isUPI ? '₹' + exp.amount : '-'}</td>
-            <td style="color: ${isUdhar ? '#f59e0b' : 'inherit'}">${isUdhar ? '₹' + exp.amount : '-'}</td>
+            <td>${exp.selling_price || exp.sell_price ? '₹' + (exp.selling_price || exp.sell_price) : '-'}</td>
+            <td style="color: ${isCash ? '#10b981' : 'inherit'}">${isCash || exp.cash > 0 ? '₹' + (exp.cash || exp.amount) : '-'}</td>
+            <td style="color: ${isUPI ? '#3b82f6' : 'inherit'}">${isUPI || exp.upi > 0 ? '₹' + (exp.upi || exp.amount) : '-'}</td>
+            <td style="color: ${isUdhar ? '#f59e0b' : 'inherit'}">${isUdhar || exp.udhar > 0 ? '₹' + (exp.udhar || exp.amount) : '-'}</td>
             <td title="${exp.description || exp.reason || ''}">${exp.description || exp.reason || '-'}</td>
             <td>
-                <button onclick="window.deleteExpense('${exp.id}')" class="btn-icon" style="color: var(--danger-color);">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
+                <div class="action-menu-container">
+                    <button onclick="window.toggleExpenseActionMenu('${exp.id}', event)" class="btn-edit-modern">
+                        <i class="fa-solid fa-pencil"></i> Edit
+                    </button>
+                    <div id="action-menu-${exp.id}" class="action-dropdown-menu hidden">
+                        <button onclick="window.editExpense('${exp.id}')">
+                            <i class="fa-solid fa-pen-to-square"></i> Update
+                        </button>
+                        <button onclick="window.deleteExpense('${exp.id}')" style="color: var(--danger-color);">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
             </td>
         </tr>
     `;

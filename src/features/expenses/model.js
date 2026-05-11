@@ -267,7 +267,8 @@ window.handleExpenseSubmit = async function(e) {
         upi: upi,
         udhar: udhar,
         description: qty > 0 ? `Qty: ${qty} | ${desc}` : desc,
-        qty: qty
+        qty: qty,
+        selling_price: sellPrice
     };
     window.expensesHistory.unshift(expenseRecord);
 
@@ -330,24 +331,6 @@ export function initExpensesLogic() {
     }
 
 
-    window.renderExpenses = function() {
-        const tbody = document.getElementById('expenses-tbody');
-        if(!tbody) return;
-        tbody.innerHTML = (window.expensesHistory || []).map((exp, index) => `
-            <tr>
-                <td style="color: var(--text-secondary); font-size: 11px;">${index + 1}</td>
-                <td>${window.getDDMMYYYY ? window.getDDMMYYYY(new Date(exp.date)) : exp.date}</td>
-                <td>${exp.main_category}</td>
-                <td>${exp.sub_category}</td>
-                <td>${exp.qty || '-'}</td>
-                <td>₹${(exp.cash || 0).toFixed(2)}</td>
-                <td>₹${(exp.upi || 0).toFixed(2)}</td>
-                <td>₹${(exp.udhar || 0).toFixed(2)}</td>
-                <td title="${exp.description || ''}">${exp.description || '-'}</td>
-                <td><button class="btn-danger" onclick="deleteExpense('${exp.id}')"><i class="fa-solid fa-trash"></i></button></td>
-            </tr>
-        `).join('');
-    };
 
     window.deleteExpense = async function(id) {
         if(confirm('Delete this expense?')) {
@@ -379,6 +362,135 @@ export function initExpensesLogic() {
             window.updateExpenseStats();
         }
     };
+
+    window.toggleExpenseActionMenu = function(id, event) {
+        if (event) event.stopPropagation();
+        
+        // Close all other menus first
+        document.querySelectorAll('.action-dropdown-menu').forEach(menu => {
+            if (menu.id !== `action-menu-${id}`) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        const menu = document.getElementById(`action-menu-${id}`);
+        if (menu) {
+            menu.classList.toggle('hidden');
+        }
+    };
+
+    window.toggleSelectAllExpenses = function(headerCheckbox) {
+        const checkboxes = document.querySelectorAll('.expense-row-checkbox');
+        checkboxes.forEach(cb => cb.checked = headerCheckbox.checked);
+        window.syncExpenseHeaderCheckbox();
+    };
+
+    window.syncExpenseHeaderCheckbox = function() {
+        const checkboxes = document.querySelectorAll('.expense-row-checkbox');
+        const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+        const headerCheckbox = document.getElementById('expenses-select-all');
+        const deleteBtn = document.getElementById('delete-selected-expenses-btn');
+
+        if (headerCheckbox) {
+            headerCheckbox.checked = checkedCount > 0 && checkedCount === checkboxes.length;
+            headerCheckbox.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+        }
+
+        if (deleteBtn) {
+            if (checkedCount > 0) {
+                deleteBtn.classList.remove('force-hidden');
+            } else {
+                deleteBtn.classList.add('force-hidden');
+            }
+        }
+    };
+
+    window.deleteSelectedExpenses = async function() {
+        const checkboxes = document.querySelectorAll('.expense-row-checkbox:checked');
+        const idsToDelete = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
+
+        if (idsToDelete.length === 0) return;
+
+        if (confirm(`Delete ${idsToDelete.length} selected expenses?`)) {
+            // Revert inventory stock for each
+            idsToDelete.forEach(id => {
+                const exp = (window.expensesHistory || []).find(e => e.id === id);
+                if (exp) {
+                    const mainCat = exp.main_category || '';
+                    const subCat = exp.sub_category || '';
+                    const qty = parseFloat(exp.qty) || 0;
+                    
+                    const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
+                    const isBuiltInExpenseCat = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(mainCat);
+                    
+                    if (!isRawMaterial && !isBuiltInExpenseCat && qty > 0 && window.inventory) {
+                        const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase());
+                        if (invItem) {
+                            invItem.quantity = Math.max(0, (parseFloat(invItem.quantity) || 0) - qty);
+                        }
+                    }
+                }
+            });
+
+            localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
+            window.expensesHistory = window.expensesHistory.filter(e => !idsToDelete.includes(e.id));
+            
+            window.saveData();
+            if (window.db) {
+                await window.db.from('expenses').delete().in('id', idsToDelete);
+            }
+            
+            if (typeof window.renderInventory === 'function') window.renderInventory();
+            window.renderExpenses();
+            window.updateExpenseStats();
+            
+            if (typeof window.showToast === 'function') {
+                window.showToast(`${idsToDelete.length} expenses deleted.`, 'success');
+            }
+        }
+    };
+
+    window.editExpense = function(id) {
+        const exp = (window.expensesHistory || []).find(e => e.id === id);
+        if (!exp) return;
+
+        // Populate form
+        document.getElementById('expense-main-cat').value = exp.main_category || '';
+        document.getElementById('expense-sub-cat').value = exp.sub_category || '';
+        document.getElementById('expense-qty').value = exp.qty || '';
+        document.getElementById('expense-cash').value = exp.cash || '';
+        document.getElementById('expense-upi').value = exp.upi || '';
+        document.getElementById('expense-udhar').value = exp.udhar || '';
+        document.getElementById('expense-sell-price').value = exp.selling_price || exp.sell_price || '';
+        
+        // Description clean up (remove Qty prefix if present)
+        let desc = exp.description || '';
+        if (desc.startsWith('Qty:')) {
+            const parts = desc.split('|');
+            if (parts.length > 1) desc = parts.slice(1).join('|').trim();
+        }
+        document.getElementById('expense-desc').value = desc;
+
+        // Scroll to form
+        document.getElementById('expense-form-container').scrollIntoView({ behavior: 'smooth' });
+        
+        // Remove old record and let submit handle the rest (effectively an update)
+        // Or we could flag it as edit. For now, let's just delete the old one and add new on submit.
+        // But that might change the date. 
+        // Let's just remove it from the list for now so user can re-save.
+        window.expensesHistory = window.expensesHistory.filter(e => e.id !== id);
+        
+        // Close menu
+        const menu = document.getElementById(`action-menu-${id}`);
+        if (menu) menu.classList.add('hidden');
+    };
+
+    // Close action menus when clicking outside
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.action-dropdown-menu').forEach(menu => {
+            menu.classList.add('hidden');
+        });
+    });
 
     window.updateExpenseStats = function() {
         // Simple logic for summary cards (if any)
