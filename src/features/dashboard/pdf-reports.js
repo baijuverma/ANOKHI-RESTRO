@@ -255,8 +255,9 @@ export function initPdfReports() {
             columnStyles: {
                 2: { cellWidth: 22 }, // Date/Time
                 3: { cellWidth: 25 }, // Customer
-                4: { cellWidth: 55 }, // Items
+                4: { cellWidth: 45 }, // Items
                 5: { cellWidth: 22 }, // Type
+                8: { cellWidth: 15 }, // Dues
                 9: { fontStyle: 'bold' } // Amount
             }
         });
@@ -515,8 +516,9 @@ function generateSalesReport(title, data) {
         columnStyles: {
             2: { cellWidth: 22 }, // Date/Time
             3: { cellWidth: 25 }, // Customer
-            4: { cellWidth: 55 }, // Items
+            4: { cellWidth: 45 }, // Items
             5: { cellWidth: 22 }, // Type
+            8: { cellWidth: 15 }, // Dues
             9: { fontStyle: 'bold' } // Amount
         }
     });
