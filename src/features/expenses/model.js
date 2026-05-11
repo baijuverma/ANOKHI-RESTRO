@@ -475,11 +475,15 @@ export function initExpensesLogic() {
         document.getElementById('expense-form-container').scrollIntoView({ behavior: 'smooth' });
         
         // Remove old record and let submit handle the rest (effectively an update)
-        // Or we could flag it as edit. For now, let's just delete the old one and add new on submit.
-        // But that might change the date. 
-        // Let's just remove it from the list for now so user can re-save.
         window.expensesHistory = window.expensesHistory.filter(e => e.id !== id);
         
+        // Refresh table to show it's being edited
+        if (typeof window.renderExpenses === 'function') window.renderExpenses();
+
+        if (typeof window.showToast === 'function') {
+            window.showToast('Expense details moved to form for editing.', 'info', null, 2000);
+        }
+
         // Close menu
         const menu = document.getElementById(`action-menu-${id}`);
         if (menu) menu.classList.add('hidden');
