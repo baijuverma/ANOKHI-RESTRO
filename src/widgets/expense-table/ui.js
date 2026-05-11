@@ -7,9 +7,24 @@ const EXPENSE_PAGE_SIZE = 25;
 let expensePagination = null;
 
 function buildExpenseRow(exp, index) {
-    const isCash = (exp.payment_mode || exp.paymentMode) === 'Cash';
-    const isUPI = (exp.payment_mode || exp.paymentMode) === 'UPI';
-    const isUdhar = (exp.payment_mode || exp.paymentMode) === 'Udhar';
+    const legacyAmount = parseFloat(exp.amount || exp.net_amount || exp.total_amount || 0);
+    let dCash = parseFloat(exp.cash);
+    let dUpi = parseFloat(exp.upi);
+    let dUdhar = parseFloat(exp.udhar);
+    
+    const pMode = (exp.payment_mode || exp.paymentMode || 'CASH').toUpperCase();
+    
+    // Fallback for older records
+    if (isNaN(dCash) && isNaN(dUpi) && isNaN(dUdhar) && legacyAmount > 0) {
+        if (pMode === 'UPI') { dUpi = legacyAmount; dCash = 0; dUdhar = 0; }
+        else if (pMode === 'UDHAR' || pMode === 'DUES') { dUdhar = legacyAmount; dCash = 0; dUpi = 0; }
+        else { dCash = legacyAmount; dUpi = 0; dUdhar = 0; }
+    } else {
+        // Ensure they are numbers for rendering
+        if (isNaN(dCash)) dCash = 0;
+        if (isNaN(dUpi)) dUpi = 0;
+        if (isNaN(dUdhar)) dUdhar = 0;
+    }
 
     let cleanDesc = exp.description || exp.reason || '';
     if (cleanDesc.startsWith('Qty:')) {
@@ -26,9 +41,9 @@ function buildExpenseRow(exp, index) {
             <td>${exp.sub_category || exp.subCategory || '-'}</td>
             <td>${exp.qty ? exp.qty + ' ' + (exp.unit || ((exp.main_category || exp.category || '').toLowerCase().includes('kitchen') || (exp.main_category || exp.category || '').toLowerCase().includes('raw') ? 'KG' : 'QTY')) : '-'}</td>
             <td>${exp.selling_price || exp.sell_price ? '₹' + (exp.selling_price || exp.sell_price) : '-'}</td>
-            <td style="color: #10b981">${exp.cash > 0 ? '₹' + exp.cash : (exp.cash === 0 ? '₹0' : '-')}</td>
-            <td style="color: #3b82f6">${exp.upi > 0 ? '₹' + exp.upi : (exp.upi === 0 ? '₹0' : '-')}</td>
-            <td style="color: #f59e0b">${exp.udhar > 0 ? '₹' + exp.udhar : (exp.udhar === 0 ? '₹0' : '-')}</td>
+            <td style="color: #10b981">${dCash > 0 ? '₹' + dCash : (dCash === 0 ? '₹0' : '-')}</td>
+            <td style="color: #3b82f6">${dUpi > 0 ? '₹' + dUpi : (dUpi === 0 ? '₹0' : '-')}</td>
+            <td style="color: #f59e0b">${dUdhar > 0 ? '₹' + dUdhar : (dUdhar === 0 ? '₹0' : '-')}</td>
             <td title="${cleanDesc}">${cleanDesc || '-'}</td>
             <td>
                 <div class="action-menu-container">
