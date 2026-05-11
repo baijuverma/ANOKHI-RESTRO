@@ -141,8 +141,8 @@ export const appShellHTML = `
                 </div>
                 
                 <!-- Horizontal Category Sales Bar -->
-                <div id="today-category-sales" style="display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0; padding: 5px 0;">
-                    <!-- Category stats will appear here horizontally as pills -->
+                <div id="today-category-sales" style="display: flex; flex-wrap: wrap; gap: 16px; margin: 20px 0; padding: 5px 0; max-width: 1100px;">
+                    <!-- Category stats will appear here as equal-width cards -->
                 </div>
 
                 <div class="recent-activity glass-panel mt-4">
