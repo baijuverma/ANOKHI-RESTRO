@@ -163,7 +163,7 @@ export function initPdfReports() {
     window.generateGrossReport = (title, sales) => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'mm', 'a4');
-        const margin = 10;
+        const margin = 8.5;
         const pageWidth = doc.internal.pageSize.getWidth();
 
         doc.setFontSize(18);
@@ -253,6 +253,7 @@ export function initPdfReports() {
             headStyles: { fillColor: [99, 102, 241] }, // Indigo for bills
             styles: { fontSize: 7, cellPadding: 2 },
             columnStyles: {
+                0: { cellWidth: 10 }, // Sr. No.
                 2: { cellWidth: 22 }, // Date/Time
                 3: { cellWidth: 25 }, // Customer
                 4: { cellWidth: 45 }, // Items
@@ -434,7 +435,7 @@ function generateProfitReport(title, sales, expenses) {
 function generateSalesReport(title, data) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
-    const margin = 10;
+    const margin = 8.5;
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -514,6 +515,7 @@ function generateSalesReport(title, data) {
         styles: { fontSize: 7, cellPadding: 2 },
         headStyles: { fillStyle: 'f', fillColor: [99, 102, 241] },
         columnStyles: {
+            0: { cellWidth: 10 }, // Sr. No.
             2: { cellWidth: 22 }, // Date/Time
             3: { cellWidth: 25 }, // Customer
             4: { cellWidth: 45 }, // Items
