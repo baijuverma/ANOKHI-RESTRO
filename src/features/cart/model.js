@@ -30,6 +30,7 @@ export const addToCart = (item) => {
     }
 
     syncWithWindow();
+    window.itemJustSelected = true;
     if (window.refreshUI) window.refreshUI();
 };
 

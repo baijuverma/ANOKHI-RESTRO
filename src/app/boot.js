@@ -90,16 +90,23 @@ export function initBoot() {
                 }
 
                 // Focus and Append
-                if (searchInput && active !== searchInput) {
-                    e.preventDefault();
-                    searchInput.focus();
-                    
-                    // Clear search if it was just redirected? No, keep it.
-                    const startValue = searchInput.value;
-                    searchInput.value = startValue + e.key;
-                    
-                    // Trigger real-time filtering
-                    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                if (searchInput) {
+                    // Auto-clear if an item was just selected
+                    if (window.itemJustSelected) {
+                        searchInput.value = '';
+                        window.itemJustSelected = false;
+                    }
+
+                    if (active !== searchInput) {
+                        e.preventDefault();
+                        searchInput.focus();
+                        
+                        const startValue = searchInput.value;
+                        searchInput.value = startValue + e.key;
+                        
+                        // Trigger real-time filtering
+                        searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
                 }
             } 
             
