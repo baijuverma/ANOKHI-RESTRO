@@ -256,22 +256,47 @@ window.handleExpenseSubmit = async function(e) {
         return;
     }
 
-    const expenseId = Date.now().toString() + Math.random();
-    const expenseRecord = {
-        id: expenseId,
-        date: new Date().toISOString(),
-        main_category: mainCat,
-        sub_category: subCat,
-        amount: cash + upi + udhar,
-        cash: cash,
-        upi: upi,
-        udhar: udhar,
-        description: qty > 0 ? `Qty: ${qty} | ${desc}` : desc,
-        qty: qty,
-        selling_price: sellPrice
-    };
-    window.expensesHistory.unshift(expenseRecord);
-
+    if (window.editingExpenseId) {
+        // UPDATE EXISTING RECORD
+        const idx = (window.expensesHistory || []).findIndex(e => e.id === window.editingExpenseId);
+        if (idx > -1) {
+            const exp = window.expensesHistory[idx];
+            exp.main_category = mainCat;
+            exp.sub_category = subCat;
+            exp.amount = cash + upi + udhar;
+            exp.cash = cash;
+            exp.upi = upi;
+            exp.udhar = udhar;
+            exp.description = qty > 0 ? `Qty: ${qty} | ${desc}` : desc;
+            exp.qty = qty;
+            exp.selling_price = sellPrice;
+            
+            window.editingExpenseId = null;
+            if (typeof window.showToast === 'function') {
+                window.showToast('Expense updated successfully!', 'success', null, 1000);
+            }
+        }
+    } else {
+        // CREATE NEW RECORD
+        const expenseId = Date.now().toString() + Math.random();
+        const expenseRecord = {
+            id: expenseId,
+            date: new Date().toISOString(),
+            main_category: mainCat,
+            sub_category: subCat,
+            amount: cash + upi + udhar,
+            cash: cash,
+            upi: upi,
+            udhar: udhar,
+            description: qty > 0 ? `Qty: ${qty} | ${desc}` : desc,
+            qty: qty,
+            selling_price: sellPrice
+        };
+        window.expensesHistory.unshift(expenseRecord);
+        if (typeof window.showToast === 'function') {
+            window.showToast('Expense saved successfully!', 'success', null, 1000);
+        }
+    }
 
     // Auto-update or Auto-add Inventory Stock if not Kitchen/Raw Material
     const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
@@ -316,12 +341,6 @@ window.handleExpenseSubmit = async function(e) {
     if (typeof window.updateExpenseStats === 'function') window.updateExpenseStats();
     if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
     if (typeof window.updateDashboard === 'function') window.updateDashboard();
-    
-    if (typeof window.showToast === 'function') {
-        window.showToast('Expense saved successfully!', 'success', null, 1000);
-    } else {
-        alert('Expense saved successfully!');
-    }
 };
 
 export function initExpensesLogic() {
@@ -333,35 +352,46 @@ export function initExpensesLogic() {
 
 
     window.deleteExpense = async function(id) {
-        if(confirm('Delete this expense?')) {
-            const exp = (window.expensesHistory || []).find(e => e.id === id);
-            if (exp) {
-                // Revert inventory stock if applicable
-                const mainCat = exp.main_category || '';
-                const subCat = exp.sub_category || '';
-                const qty = parseFloat(exp.qty) || 0;
-                
-                const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
-                const isBuiltInExpenseCat = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(mainCat);
-                
-                if (!isRawMaterial && !isBuiltInExpenseCat && qty > 0 && window.inventory) {
-                    const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase());
-                    if (invItem) {
-                        invItem.quantity = Math.max(0, (parseFloat(invItem.quantity) || 0) - qty);
-                        localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
-                        if (typeof window.renderInventory === 'function') window.renderInventory();
-                        console.log(`Reverted inventory stock for ${invItem.name}: -${qty}`);
-                    }
+        if (typeof window.requestAdminVerification !== 'function') {
+             // Fallback if auth module not loaded
+             if(!confirm('Delete this expense?')) return;
+             executeDelete(id);
+             return;
+        }
+
+        window.requestAdminVerification("Are you sure you want to delete this expense history? Admin password is required.", () => {
+             executeDelete(id);
+        });
+    };
+
+    async function executeDelete(id) {
+        const exp = (window.expensesHistory || []).find(e => e.id === id);
+        if (exp) {
+            // Revert inventory stock if applicable
+            const mainCat = exp.main_category || '';
+            const subCat = exp.sub_category || '';
+            const qty = parseFloat(exp.qty) || 0;
+            
+            const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
+            const isBuiltInExpenseCat = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(mainCat);
+            
+            if (!isRawMaterial && !isBuiltInExpenseCat && qty > 0 && window.inventory) {
+                const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase());
+                if (invItem) {
+                    invItem.quantity = Math.max(0, (parseFloat(invItem.quantity) || 0) - qty);
+                    localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
+                    if (typeof window.renderInventory === 'function') window.renderInventory();
                 }
             }
-
-            window.expensesHistory = window.expensesHistory.filter(e => e.id !== id);
-            window.saveData();
-            if (window.db) await window.db.from('expenses').delete().eq('id', id);
-            window.renderExpenses();
-            window.updateExpenseStats();
         }
-    };
+
+        window.expensesHistory = window.expensesHistory.filter(e => e.id !== id);
+        window.saveData();
+        if (window.db) await window.db.from('expenses').delete().eq('id', id);
+        window.renderExpenses();
+        window.updateExpenseStats();
+        if (typeof window.showToast === 'function') window.showToast('Expense deleted successfully.', 'success');
+    }
 
     window.toggleExpenseActionMenu = function(id, event) {
         if (event) event.stopPropagation();
@@ -411,48 +441,61 @@ export function initExpensesLogic() {
 
         if (idsToDelete.length === 0) return;
 
-        if (confirm(`Delete ${idsToDelete.length} selected expenses?`)) {
-            // Revert inventory stock for each
-            idsToDelete.forEach(id => {
-                const exp = (window.expensesHistory || []).find(e => e.id === id);
-                if (exp) {
-                    const mainCat = exp.main_category || '';
-                    const subCat = exp.sub_category || '';
-                    const qty = parseFloat(exp.qty) || 0;
-                    
-                    const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
-                    const isBuiltInExpenseCat = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(mainCat);
-                    
-                    if (!isRawMaterial && !isBuiltInExpenseCat && qty > 0 && window.inventory) {
-                        const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase());
-                        if (invItem) {
-                            invItem.quantity = Math.max(0, (parseFloat(invItem.quantity) || 0) - qty);
-                        }
-                    }
-                }
-            });
-
-            localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
-            window.expensesHistory = window.expensesHistory.filter(e => !idsToDelete.includes(e.id));
-            
-            window.saveData();
-            if (window.db) {
-                await window.db.from('expenses').delete().in('id', idsToDelete);
-            }
-            
-            if (typeof window.renderInventory === 'function') window.renderInventory();
-            window.renderExpenses();
-            window.updateExpenseStats();
-            
-            if (typeof window.showToast === 'function') {
-                window.showToast(`${idsToDelete.length} expenses deleted.`, 'success');
-            }
+        if (typeof window.requestAdminVerification !== 'function') {
+            if (!confirm(`Delete ${idsToDelete.length} selected expenses?`)) return;
+            executeBulkDelete(idsToDelete);
+            return;
         }
+
+        window.requestAdminVerification(`Delete ${idsToDelete.length} selected expenses? Admin password is required.`, () => {
+            executeBulkDelete(idsToDelete);
+        });
     };
 
+    async function executeBulkDelete(idsToDelete) {
+        // Revert inventory stock for each
+        idsToDelete.forEach(id => {
+            const exp = (window.expensesHistory || []).find(e => e.id === id);
+            if (exp) {
+                const mainCat = exp.main_category || '';
+                const subCat = exp.sub_category || '';
+                const qty = parseFloat(exp.qty) || 0;
+                
+                const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
+                const isBuiltInExpenseCat = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(mainCat);
+                
+                if (!isRawMaterial && !isBuiltInExpenseCat && qty > 0 && window.inventory) {
+                    const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase());
+                    if (invItem) {
+                        invItem.quantity = Math.max(0, (parseFloat(invItem.quantity) || 0) - qty);
+                    }
+                }
+            }
+        });
+
+        localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
+        window.expensesHistory = window.expensesHistory.filter(e => !idsToDelete.includes(e.id));
+        
+        window.saveData();
+        if (window.db) {
+            await window.db.from('expenses').delete().in('id', idsToDelete);
+        }
+        
+        if (typeof window.renderInventory === 'function') window.renderInventory();
+        window.renderExpenses();
+        window.updateExpenseStats();
+        
+        if (typeof window.showToast === 'function') {
+            window.showToast(`${idsToDelete.length} expenses deleted.`, 'success');
+        }
+    }
+
+    window.editingExpenseId = null;
     window.editExpense = function(id) {
         const exp = (window.expensesHistory || []).find(e => e.id === id);
         if (!exp) return;
+
+        window.editingExpenseId = id;
 
         // Populate form
         document.getElementById('expense-main-cat').value = exp.main_category || '';
@@ -463,7 +506,7 @@ export function initExpensesLogic() {
         document.getElementById('expense-udhar').value = exp.udhar || '';
         document.getElementById('expense-sell-price').value = exp.selling_price || exp.sell_price || '';
         
-        // Description clean up (remove Qty prefix if present)
+        // Description clean up
         let desc = exp.description || '';
         if (desc.startsWith('Qty:')) {
             const parts = desc.split('|');
@@ -474,14 +517,8 @@ export function initExpensesLogic() {
         // Scroll to form
         document.getElementById('expense-form-container').scrollIntoView({ behavior: 'smooth' });
         
-        // Remove old record and let submit handle the rest (effectively an update)
-        window.expensesHistory = window.expensesHistory.filter(e => e.id !== id);
-        
-        // Refresh table to show it's being edited
-        if (typeof window.renderExpenses === 'function') window.renderExpenses();
-
         if (typeof window.showToast === 'function') {
-            window.showToast('Expense details moved to form for editing.', 'info', null, 2000);
+            window.showToast('Editing: Updates will preserve original date.', 'info', null, 2500);
         }
 
         // Close menu
