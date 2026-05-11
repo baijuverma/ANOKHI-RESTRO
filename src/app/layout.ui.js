@@ -334,7 +334,10 @@ export const appShellHTML = `
                                 </div>
                                 <div class="form-group" id="expense-qty-container" style="flex: 1; max-width: 120px; min-width: 80px;">
                                     <label>Quantity</label>
-                                    <input type="number" id="expense-qty" placeholder="Qty" min="0" step="any" style="width:100%; padding: 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                                    <div style="position: relative;">
+                                        <input type="number" id="expense-qty" placeholder="Qty" min="0" step="any" style="width:100%; padding: 10px 30px 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
+                                        <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-qty')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
+                                    </div>
                                 </div>
                                 <!-- Floating Label Expense Fields -->
                                 <div class="expense-payment-row" style="display: flex; gap: 10px; flex: 3; min-width: 250px;">
