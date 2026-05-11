@@ -305,14 +305,18 @@ export function initSupabaseLogic() {
             .subscribe();
     }
 
-    window.saveData = async function() {
+    window.saveData = async function(showToast = false) {
         localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
         localStorage.setItem('anokhi_sales', JSON.stringify(window.salesHistory));
         localStorage.setItem('anokhi_tables', JSON.stringify(window.tables));
         localStorage.setItem('anokhi_expenses', JSON.stringify(window.expensesHistory));
         localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders));
 
-        if (!db) return;
+        if (!db) {
+            console.warn('Supabase DB not available for saveData');
+            return;
+        }
+        
         try {
             if (window.inventory.length > 0) {
                 await db.from('inventory').upsert(window.inventory.map(i => ({
@@ -349,15 +353,7 @@ export function initSupabaseLogic() {
                     table_name: o.tableName,
                     created_at: o.createdAt
                 });
-                const { error: activeErr } = await db.from('active_orders').upsert(window.activeOrders.map(mapActive));
-                if (activeErr) {
-                    console.error('Bulk Active Orders Push Error:', activeErr);
-                    const newest = window.activeOrders[0];
-                    if (newest) {
-                        const { error: singleErr } = await db.from('active_orders').upsert(mapActive(newest));
-                        if (singleErr) console.error('Single Active Order Push Error:', singleErr);
-                    }
-                }
+                await db.from('active_orders').upsert(window.activeOrders.map(mapActive));
             }
 
             if (window.salesHistory && window.salesHistory.length > 0) {
@@ -378,19 +374,7 @@ export function initSupabaseLogic() {
                     customer_mobile: s.customerMobile,
                     dues: s.dues || 0
                 });
-                
-                // Try bulk upsert first
-                const { error: bulkErr } = await db.from('sales_history').upsert(window.salesHistory.map(mapSale));
-                
-                if (bulkErr) {
-                    console.error('Bulk Sales Push Error:', bulkErr);
-                    // Fallback: try to just save the newest one so it doesn't get lost
-                    const newest = window.salesHistory[0];
-                    if (newest) {
-                        const { error: singleErr } = await db.from('sales_history').upsert(mapSale(newest));
-                        if (singleErr) console.error('Single Sale Push Error:', singleErr);
-                    }
-                }
+                await db.from('sales_history').upsert(window.salesHistory.map(mapSale));
             }
 
             if (window.expensesHistory && window.expensesHistory.length > 0) {
@@ -409,21 +393,26 @@ export function initSupabaseLogic() {
                     selling_price: e.selling_price || e.sell_price || 0
                 });
 
-                const { error: bulkExpErr } = await db.from('expenses').upsert(window.expensesHistory.map(mapExpense));
-                if (bulkExpErr) {
-                    console.error('Bulk Expenses Push Error:', bulkExpErr);
-                    // Fallback: just save the newest one
-                    const newestExp = window.expensesHistory[0];
-                    if (newestExp) {
-                        const { error: singleExpErr } = await db.from('expenses').upsert(mapExpense(newestExp));
-                        if (singleExpErr) console.error('Single Expense Push Error:', singleExpErr);
-                    }
-                }
+                const { error: expErr } = await db.from('expenses').upsert(window.expensesHistory.map(mapExpense));
+                if (expErr) throw expErr;
+            }
+
+            if (showToast && typeof window.showToast === 'function') {
+                window.showToast('Data synced to Cloud successfully!', 'success');
             }
         } catch (err) {
             console.error('Push Error:', err);
+            if (showToast && typeof window.showToast === 'function') {
+                window.showToast('Sync Failed: Check your connection.', 'error');
+            }
         }
     };
+
+    window.forceSyncData = async function() {
+        if (typeof window.showToast === 'function') window.showToast('Starting full sync...', 'info');
+        await window.saveData(true);
+    };
+
 
     // Auto-sync on init
     if (typeof window.syncFromSupabase === 'function') {

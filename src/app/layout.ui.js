@@ -256,10 +256,13 @@ export const appShellHTML = `
             <!-- Expenses View -->
             <section id="expenses" class="view-section">
                 <header class="flex-between">
-                    <div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
                         <h1 style="margin: 0; font-size: 24px;">Business Expenses</h1>
-                        <p style="margin: 5px 0 0; color: var(--text-secondary); font-size: 13px;">Manage your daily business expenses and cash flow</p>
+                        <button onclick="window.forceSyncData()" class="btn-primary" style="background: #3b82f6; padding: 6px 12px; font-size: 12px; border-radius: 6px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Sync to Cloud
+                        </button>
                     </div>
+                    <p style="margin: 5px 0 0; color: var(--text-secondary); font-size: 13px;">Manage your daily business expenses and cash flow</p>
                 </header>
 
                 <style>
