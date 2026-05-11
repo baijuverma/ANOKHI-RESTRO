@@ -770,13 +770,8 @@ const init = async () => {
     setInterval(async () => {
         try {
             if (typeof window.saveData === 'function') {
-                console.log('Auto-Sync: Starting background push...');
-                await window.saveData(false); // false means no toast notification for auto-sync
-            }
-            
-            if (typeof window.syncFromSupabase === 'function') {
-                // Also pull latest changes to stay updated with other computers
-                await window.syncFromSupabase();
+                // Background push without notification
+                await window.saveData(false); 
             }
         } catch (e) {
             console.warn('Auto-Sync minor delay/error:', e);
