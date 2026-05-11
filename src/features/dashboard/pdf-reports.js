@@ -253,9 +253,11 @@ export function initPdfReports() {
             headStyles: { fillColor: [99, 102, 241] }, // Indigo for bills
             styles: { fontSize: 7, cellPadding: 2 },
             columnStyles: {
-                2: { cellWidth: 20 }, // Date/Time
-                4: { cellWidth: 35 }, // Items
-                5: { cellWidth: 15 }  // Type
+                2: { cellWidth: 22 }, // Date/Time
+                3: { cellWidth: 25 }, // Customer
+                4: { cellWidth: 55 }, // Items
+                5: { cellWidth: 22 }, // Type
+                9: { fontStyle: 'bold' } // Amount
             }
         });
 
@@ -511,9 +513,11 @@ function generateSalesReport(title, data) {
         styles: { fontSize: 7, cellPadding: 2 },
         headStyles: { fillStyle: 'f', fillColor: [99, 102, 241] },
         columnStyles: {
-            2: { cellWidth: 20 },
-            4: { cellWidth: 35 },
-            5: { cellWidth: 15 }
+            2: { cellWidth: 22 }, // Date/Time
+            3: { cellWidth: 25 }, // Customer
+            4: { cellWidth: 55 }, // Items
+            5: { cellWidth: 22 }, // Type
+            9: { fontStyle: 'bold' } // Amount
         }
     });
 
