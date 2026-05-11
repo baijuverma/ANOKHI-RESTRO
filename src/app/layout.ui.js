@@ -374,8 +374,30 @@ export const appShellHTML = `
                     </form>
                 </div>
 
-                <div class="glass-panel mt-4">
-                    <h2 style="padding: 20px 20px 0 20px; font-size: 18px;">Expense History</h2>
+                <div id="expenses-transactions-panel" class="glass-panel mt-4">
+                    <div class="flex-between" style="padding: 15px 20px; border-bottom: 1px solid var(--panel-border); flex-wrap: wrap; gap: 15px;">
+                        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                            <h2 style="font-size: 18px; margin: 0;">Expense History</h2>
+                            <div class="search-bar" style="margin: 0; min-width: 250px; position: relative;">
+                                <i class="fa-solid fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 14px;"></i>
+                                <input type="text" id="expenses-search" placeholder="Search category, reason..." oninput="window.renderExpenses()" style="width: 100%; padding: 8px 35px 8px 32px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; font-size: 13px;">
+                                <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expenses-search')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.4); font-size: 14px;"></i>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 8px; border: 1px solid var(--panel-border);">
+                                <label style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">From:</label>
+                                <input type="date" id="expenses-start-date" onchange="window.renderExpenses()" style="background: transparent; border: none; color: white; font-size: 13px; outline: none;">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 8px; border: 1px solid var(--panel-border);">
+                                <label style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">To:</label>
+                                <input type="date" id="expenses-end-date" onchange="window.renderExpenses()" style="background: transparent; border: none; color: white; font-size: 13px; outline: none;">
+                            </div>
+                            <button onclick="window.downloadGrossExpensesReport()" style="padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; height: auto; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; cursor: pointer;">
+                                <i class="fa-solid fa-file-pdf" style="font-size: 15px;"></i> Gross Expenses PDF
+                            </button>
+                        </div>
+                    </div>
                     <div class="table-container">
                         <table id="expenses-table">
                             <thead>

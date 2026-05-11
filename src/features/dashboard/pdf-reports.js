@@ -98,6 +98,45 @@ export function initPdfReports() {
         generateExpensesReport(`Monthly Expenses Report (${monthName} ${year})`, data);
     };
 
+    window.downloadGrossExpensesReport = () => {
+        let filtered = [...(window.expensesHistory || [])];
+        const searchVal = document.getElementById('expenses-search')?.value?.toLowerCase() || '';
+        const startDateStr = document.getElementById('expenses-start-date')?.value;
+        const endDateStr = document.getElementById('expenses-end-date')?.value;
+
+        if (searchVal || startDateStr || endDateStr) {
+            filtered = filtered.filter(exp => {
+                if (searchVal) {
+                    const cat = (exp.category || '').toLowerCase();
+                    const subCat = (exp.subCategory || exp.sub_category || '').toLowerCase();
+                    const reason = (exp.description || exp.reason || '').toLowerCase();
+                    if (!cat.includes(searchVal) && !subCat.includes(searchVal) && !reason.includes(searchVal)) return false;
+                }
+                if (exp.date) {
+                    const expDate = new Date(exp.date);
+                    expDate.setHours(0, 0, 0, 0);
+                    if (startDateStr) {
+                        const start = new Date(startDateStr);
+                        start.setHours(0, 0, 0, 0);
+                        if (expDate < start) return false;
+                    }
+                    if (endDateStr) {
+                        const end = new Date(endDateStr);
+                        end.setHours(23, 59, 59, 999);
+                        if (expDate > end) return false;
+                    }
+                }
+                return true;
+            });
+        }
+
+        const title = (startDateStr && endDateStr) 
+            ? `Expenses Report (${startDateStr} to ${endDateStr})`
+            : `Gross Expenses Report (${new Date().toLocaleDateString()})`;
+
+        generateExpensesReport(title, filtered);
+    };
+
     window.downloadMonthProfitReport = () => {
         const now = new Date();
         const monthName = now.toLocaleString('default', { month: 'long' });
