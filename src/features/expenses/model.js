@@ -274,6 +274,10 @@ window.handleExpenseSubmit = async function(e) {
             
             window.editingExpenseId = null;
             window.editingExpenseOldData = null;
+
+            // Restore button text
+            const submitBtn = document.querySelector('#expense-form button[type="submit"]');
+            if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Expense';
             
             if (typeof window.showToast === 'function') {
                 window.showToast('Expense updated successfully!', 'success', null, 1000);
@@ -542,6 +546,10 @@ export function initExpensesLogic() {
         if (typeof window.showToast === 'function') {
             window.showToast('Editing: Updates will preserve original date.', 'info', null, 2500);
         }
+
+        // Change button text to indicate update mode
+        const submitBtn = document.querySelector('#expense-form button[type="submit"]');
+        if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Update Expense';
 
         // Close menu
         const menu = document.getElementById(`action-menu-${id}`);
