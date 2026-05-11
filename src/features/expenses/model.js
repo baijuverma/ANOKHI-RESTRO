@@ -622,6 +622,54 @@ window.handleExpenseSubmit = async function(e) {
 };
 
 export function initExpensesLogic() {
+    window.checkExpenseFormDirty = function() {
+        const ids = ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc'];
+        let isDirty = !!window.editingExpenseId;
+        
+        if (!isDirty) {
+            for (const id of ids) {
+                const el = document.getElementById(id);
+                if (el && el.value && el.value.trim() !== '') {
+                    isDirty = true;
+                    break;
+                }
+            }
+        }
+        
+        const cancelBtn = document.getElementById('expense-cancel-btn');
+        if (cancelBtn) {
+            if (isDirty) {
+                cancelBtn.classList.remove('hidden');
+                cancelBtn.style.setProperty('display', 'flex', 'important');
+            } else {
+                cancelBtn.classList.add('hidden');
+                cancelBtn.style.setProperty('display', 'none', 'important');
+            }
+        }
+    };
+
+    window.cancelExpenseEdit = function() {
+        const form = document.getElementById('expense-form');
+        if (form) form.reset();
+        
+        window.editingExpenseId = null;
+        window.editingExpenseOldData = null;
+        
+        const submitBtn = document.getElementById('expense-submit-btn');
+        if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Log New Expense';
+        
+        const cancelBtn = document.getElementById('expense-cancel-btn');
+        if (cancelBtn) {
+            cancelBtn.classList.add('hidden');
+            cancelBtn.style.setProperty('display', 'none', 'important');
+        }
+
+        ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc', 'expense-sell-price', 'expense-gross', 'expense-disc-value', 'expense-net'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+    };
+
     const form = document.getElementById('expense-form');
     if (form) {
         form.addEventListener('submit', window.handleExpenseSubmit);
@@ -850,52 +898,7 @@ export function initExpensesLogic() {
         if (menu) menu.classList.add('hidden');
     };
 
-    window.cancelExpenseEdit = function() {
-        const form = document.getElementById('expense-form');
-        if (form) form.reset();
-        
-        window.editingExpenseId = null;
-        window.editingExpenseOldData = null;
-        
-        const submitBtn = document.getElementById('expense-submit-btn');
-        if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Log New Expense';
-        
-        const cancelBtn = document.getElementById('expense-cancel-btn');
-        if (cancelBtn) {
-            cancelBtn.classList.add('hidden');
-            cancelBtn.style.display = 'none';
-        }
-
-        ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc', 'expense-sell-price', 'expense-gross', 'expense-disc-value', 'expense-net'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.value = '';
-        });
-    };
-
-    window.checkExpenseFormDirty = function() {
-        const ids = ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc'];
-        let isDirty = !!window.editingExpenseId;
-        
-        if (!isDirty) {
-            for (const id of ids) {
-                const el = document.getElementById(id);
-                if (el && el.value.trim() !== '') {
-                    isDirty = true;
-                    break;
-                }
-            }
-        }
-        
-        const cancelBtn = document.getElementById('expense-cancel-btn');
-        if (cancelBtn) {
-            if (isDirty) {
-                cancelBtn.classList.remove('hidden');
-                cancelBtn.style.setProperty('display', 'flex', 'important');
-            } else {
-                cancelBtn.classList.add('hidden');
-                cancelBtn.style.setProperty('display', 'none', 'important');
-            }
-        }
+        if (typeof window.checkExpenseFormDirty === 'function') window.checkExpenseFormDirty();
     };
 
     // Close action menus when clicking outside
