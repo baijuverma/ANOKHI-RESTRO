@@ -719,7 +719,7 @@ function generateExpensesReport(title, data) {
             new Date(e.date).toLocaleDateString('en-GB'),
             e.main_category || e.category || 'General',
             e.sub_category || e.subCategory || '-',
-            e.qty || '-',
+            e.qty ? e.qty + ' ' + (e.unit || ((e.main_category || e.category || '').toLowerCase().includes('kitchen') || (e.main_category || e.category || '').toLowerCase().includes('raw') ? 'KG' : 'QTY')) : '-',
             cash > 0 ? `Rs. ${cash.toFixed(2)}` : '-',
             upi > 0 ? `Rs. ${upi.toFixed(2)}` : '-',
             udhar > 0 ? `Rs. ${udhar.toFixed(2)}` : '-',
@@ -728,7 +728,7 @@ function generateExpensesReport(title, data) {
     });
 
     doc.autoTable({
-        head: [['Sr.', 'Date', 'Category', 'Sub-Category', 'Qty', 'Cash', 'UPI', 'Udhar', 'Reason']],
+        head: [['Sr.', 'Date', 'Category', 'Sub-Category', 'KG/QTY', 'Cash', 'UPI', 'Udhar', 'Reason']],
         body: tableBody,
         startY: margin + 25,
         margin: { left: margin, right: margin, top: margin, bottom: margin + 10 },

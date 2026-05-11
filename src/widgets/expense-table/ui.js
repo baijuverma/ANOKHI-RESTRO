@@ -24,7 +24,7 @@ function buildExpenseRow(exp, index) {
             <td>${new Date(exp.date).toLocaleDateString('en-GB')}</td>
             <td><span class="category-tag">${exp.main_category || exp.category}</span></td>
             <td>${exp.sub_category || exp.subCategory || '-'}</td>
-            <td>${exp.qty ? exp.qty + ' ' + (exp.unit || '') : '-'}</td>
+            <td>${exp.qty ? exp.qty + ' ' + (exp.unit || ((exp.main_category || exp.category || '').toLowerCase().includes('kitchen') || (exp.main_category || exp.category || '').toLowerCase().includes('raw') ? 'KG' : 'QTY')) : '-'}</td>
             <td>${exp.selling_price || exp.sell_price ? '₹' + (exp.selling_price || exp.sell_price) : '-'}</td>
             <td style="color: #10b981">${exp.cash > 0 ? '₹' + exp.cash : (exp.cash === 0 ? '₹0' : '-')}</td>
             <td style="color: #3b82f6">${exp.upi > 0 ? '₹' + exp.upi : (exp.upi === 0 ? '₹0' : '-')}</td>

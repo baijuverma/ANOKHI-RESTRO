@@ -463,7 +463,7 @@ export const appShellHTML = `
                                     <th>Date</th>
                                     <th>Category</th>
                                     <th>Sub-Category</th>
-                                    <th>Qty</th>
+                                    <th>KG/QTY</th>
                                     <th>Selling Price</th>
                                     <th>Cash</th>
                                     <th>UPI</th>
