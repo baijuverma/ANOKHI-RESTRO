@@ -259,7 +259,7 @@ export const appShellHTML = `
 
                 <style>
                     #expense-form-container {
-                        background: #FDF9F1 !important; /* Soft Cream */
+                        background: #F2E8D5 !important; /* Slightly Darker Cream */
                         color: #2D3748 !important;
                         border: 1px solid #E2E8F0 !important;
                     }
