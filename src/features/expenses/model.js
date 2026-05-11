@@ -232,7 +232,11 @@ window.handleExpenseSubmit = async function(e) {
     const qty = parseFloat(document.getElementById('expense-qty').value) || 0;
     
     if (isQtyVisible && qty <= 0) {
-        alert('Please enter a valid quantity.');
+        if (typeof window.showToast === 'function') {
+            window.showToast('Please enter a valid quantity.', 'error', null, 2000);
+        } else {
+            alert('Please enter a valid quantity.');
+        }
         setTimeout(() => document.getElementById('expense-qty').focus(), 10);
         return;
     }
@@ -243,7 +247,11 @@ window.handleExpenseSubmit = async function(e) {
     const udhar = parseFloat(document.getElementById('expense-udhar').value) || 0;
 
     if (cash === 0 && upi === 0 && udhar === 0) {
-        alert('Please enter an amount.');
+        if (typeof window.showToast === 'function') {
+            window.showToast('Please enter an amount.', 'error', null, 2000);
+        } else {
+            alert('Please enter an amount.');
+        }
         setTimeout(() => document.getElementById('expense-cash').focus(), 10);
         return;
     }
@@ -308,7 +316,11 @@ window.handleExpenseSubmit = async function(e) {
     if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
     if (typeof window.updateDashboard === 'function') window.updateDashboard();
     
-    alert('Expense saved!');
+    if (typeof window.showToast === 'function') {
+        window.showToast('Expense saved successfully!', 'success', null, 1000);
+    } else {
+        alert('Expense saved successfully!');
+    }
 };
 
 export function initExpensesLogic() {

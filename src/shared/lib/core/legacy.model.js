@@ -227,7 +227,7 @@ window.undoLastAction = function() {
     }
 };
 
-window.showToast = function(message, type = "success", undoCallback = null) {
+window.showToast = function(message, type = "success", undoCallback = null, duration = null) {
     let container = document.querySelector(".toast-container");
     if (!container) {
         container = document.createElement("div");
@@ -255,12 +255,13 @@ window.showToast = function(message, type = "success", undoCallback = null) {
     container.appendChild(toast);
 
     // Auto-remove toast
+    const timeout = duration || (undoCallback ? 6000 : 3000);
     setTimeout(() => {
         if (toast.parentElement) {
             toast.classList.add("fade-out");
             setTimeout(() => toast.remove(), 300);
         }
-    }, undoCallback ? 6000 : 3000); // Give more time if undo is available
+    }, timeout);
 }
 
 }
