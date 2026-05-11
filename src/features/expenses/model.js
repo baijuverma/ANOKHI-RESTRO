@@ -357,7 +357,7 @@ window.handleExpenseSubmit = async function(e) {
         }
     }
 
-    if (typeof window.saveData === 'function') await window.saveData();
+    if (typeof window.saveData === 'function') window.saveData(); // Non-blocking so UI updates instantly
     e.target.reset();
     
     // Explicitly clear inputs for safety after edit mode

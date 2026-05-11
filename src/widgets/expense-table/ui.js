@@ -64,14 +64,10 @@ export const renderExpenseTable = (containerId, expenses) => {
     const sorted = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
 
     if (typeof window.LocalPagination !== 'undefined') {
-        if (!expensePagination) {
-            expensePagination = new window.LocalPagination(sorted, EXPENSE_PAGE_SIZE);
-        } else {
-            expensePagination.fullArray = sorted;
-            const maxPage = expensePagination.getTotalPages();
-            if (expensePagination.currentPage > maxPage) {
-                expensePagination.currentPage = Math.max(1, maxPage);
-            }
+        const prevPage = expensePagination ? expensePagination.currentPage : 1;
+        expensePagination = new window.LocalPagination(sorted, EXPENSE_PAGE_SIZE);
+        if (prevPage > 1 && prevPage <= expensePagination.getTotalPages()) {
+            expensePagination.goToPage(prevPage);
         }
         
         const pageItems = expensePagination.getPageItems();
