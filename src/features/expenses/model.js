@@ -289,7 +289,7 @@ function renderSuggestions(items, input, panel) {
         delBtn.onmousedown = (e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (confirm(`Delete "${item}" from suggestions permanentally?`)) {
+            if (confirm(`Kya aap sach me "${item}" ko list se delete karna chahte hai? \n\n(YES = OK dabaye, NO = Cancel dabaye)`)) {
                 window.deleteExpenseSuggestion(item, input.id);
             }
         };
