@@ -319,7 +319,7 @@ export function initSupabaseLogic() {
         
         try {
             if (window.inventory.length > 0) {
-                await db.from('inventory').upsert(window.inventory.map(i => ({
+                const { error } = await db.from('inventory').upsert(window.inventory.map(i => ({
                     id: i.id,
                     name: i.name,
                     category: i.category,
@@ -328,16 +328,18 @@ export function initSupabaseLogic() {
                     quantity: i.quantity,
                     low_stock_threshold: i.lowStockThreshold || 5
                 })));
+                if (error) throw error;
             }
             
             if (window.tables.length > 0) {
-                await db.from('tables').upsert(window.tables.map(t => ({
+                const { error } = await db.from('tables').upsert(window.tables.map(t => ({
                     id: t.id,
                     name: t.name,
                     cart: t.cart,
                     advance: t.advance,
                     advance_mode: t.advanceMode
                 })));
+                if (error) throw error;
             }
 
             if (window.activeOrders && window.activeOrders.length > 0) {
@@ -353,7 +355,8 @@ export function initSupabaseLogic() {
                     table_name: o.tableName,
                     created_at: o.createdAt
                 });
-                await db.from('active_orders').upsert(window.activeOrders.map(mapActive));
+                const { error } = await db.from('active_orders').upsert(window.activeOrders.map(mapActive));
+                if (error) throw error;
             }
 
             if (window.salesHistory && window.salesHistory.length > 0) {
@@ -374,7 +377,8 @@ export function initSupabaseLogic() {
                     customer_mobile: s.customerMobile,
                     dues: s.dues || 0
                 });
-                await db.from('sales_history').upsert(window.salesHistory.map(mapSale));
+                const { error } = await db.from('sales_history').upsert(window.salesHistory.map(mapSale));
+                if (error) throw error;
             }
 
             if (window.expensesHistory && window.expensesHistory.length > 0) {
@@ -393,8 +397,8 @@ export function initSupabaseLogic() {
                     selling_price: e.selling_price || e.sell_price || 0
                 });
 
-                const { error: expErr } = await db.from('expenses').upsert(window.expensesHistory.map(mapExpense));
-                if (expErr) throw expErr;
+                const { error } = await db.from('expenses').upsert(window.expensesHistory.map(mapExpense));
+                if (error) throw error;
             }
 
             if (showToast && typeof window.showToast === 'function') {
@@ -402,8 +406,12 @@ export function initSupabaseLogic() {
             }
         } catch (err) {
             console.error('Push Error:', err);
+            let msg = 'Sync Failed: Check your connection.';
+            if (err.message) msg = `Sync Failed: ${err.message}`;
+            else if (err.details) msg = `Sync Failed: ${err.details}`;
+            
             if (showToast && typeof window.showToast === 'function') {
-                window.showToast('Sync Failed: Check your connection.', 'error');
+                window.showToast(msg, 'error');
             }
         }
     };
