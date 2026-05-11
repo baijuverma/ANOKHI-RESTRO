@@ -268,7 +268,7 @@ window.handleExpenseSubmit = async function(e) {
             exp.cash = cash;
             exp.upi = upi;
             exp.udhar = udhar;
-            exp.description = qty > 0 ? `Qty: ${qty} | ${desc}` : desc;
+            exp.description = desc;
             exp.qty = qty;
             exp.selling_price = sellPrice;
             
@@ -295,7 +295,7 @@ window.handleExpenseSubmit = async function(e) {
             cash: cash,
             upi: upi,
             udhar: udhar,
-            description: qty > 0 ? `Qty: ${qty} | ${desc}` : desc,
+            description: desc,
             qty: qty,
             selling_price: sellPrice
         };
