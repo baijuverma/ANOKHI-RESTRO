@@ -141,8 +141,59 @@ window.toggleSuggestions = function(inputId, panelId) {
     }
 };
 
+window.getExpenseSuggestionOrder = function(type) {
+    const data = localStorage.getItem(`expense_order_${type}`);
+    return data ? JSON.parse(data) : [];
+};
+
+window.saveExpenseSuggestionOrder = function(type, orderArr) {
+    localStorage.setItem(`expense_order_${type}`, JSON.stringify(orderArr));
+};
+
+window.moveExpenseSuggestion = function(inputId, panelId, currentItems, index, direction) {
+    const orderType = inputId === 'expense-sub-cat' ? `sub_${document.getElementById('expense-main-cat').value}` : 'main';
+    let currentOrder = window.getExpenseSuggestionOrder(orderType);
+    
+    // If currentOrder doesn't have all items, initialize it with current visual order
+    if (currentOrder.length === 0 || currentOrder.length !== currentItems.length) {
+        currentOrder = [...currentItems];
+    }
+    
+    // Safety bounds
+    if (index + direction < 0 || index + direction >= currentOrder.length) return;
+    
+    // Swap
+    const temp = currentOrder[index];
+    currentOrder[index] = currentOrder[index + direction];
+    currentOrder[index + direction] = temp;
+    
+    window.saveExpenseSuggestionOrder(orderType, currentOrder);
+    
+    // Re-render
+    const input = document.getElementById(inputId);
+    const panel = document.getElementById(panelId);
+    if (input && panel) {
+        renderSuggestions(currentOrder, input, panel);
+    }
+};
+
 function renderSuggestions(items, input, panel) {
     panel.innerHTML = '';
+    
+    // Sort items based on saved order
+    const orderType = input.id === 'expense-sub-cat' ? `sub_${document.getElementById('expense-main-cat').value}` : 'main';
+    const currentOrder = window.getExpenseSuggestionOrder(orderType);
+    if (currentOrder.length > 0) {
+        items.sort((a, b) => {
+            const idxA = currentOrder.indexOf(a);
+            const idxB = currentOrder.indexOf(b);
+            if (idxA === -1 && idxB === -1) return 0;
+            if (idxA === -1) return 1;
+            if (idxB === -1) return -1;
+            return idxA - idxB;
+        });
+    }
+
     if (items.length === 0) {
         const div = document.createElement('div');
         div.className = 'suggestion-item empty';
@@ -153,16 +204,71 @@ function renderSuggestions(items, input, panel) {
         return;
     }
 
-    items.forEach(item => {
+    items.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'suggestion-item';
         div.style.display = 'flex';
         div.style.justifyContent = 'space-between';
         div.style.alignItems = 'center';
+        div.style.padding = '8px 12px';
 
         const textSpan = document.createElement('span');
         textSpan.textContent = item;
-        div.appendChild(textSpan);
+        textSpan.style.flex = '1';
+
+        const actionDiv = document.createElement('div');
+        actionDiv.style.display = 'flex';
+        actionDiv.style.gap = '8px';
+        actionDiv.style.alignItems = 'center';
+
+        // Order Buttons Container
+        const orderDiv = document.createElement('div');
+        orderDiv.style.display = 'flex';
+        orderDiv.style.flexDirection = 'column';
+        orderDiv.style.gap = '2px';
+        orderDiv.style.marginRight = '8px';
+
+        // Up Arrow
+        const upBtn = document.createElement('i');
+        upBtn.className = 'fa-solid fa-chevron-up order-btn';
+        upBtn.style.fontSize = '10px';
+        upBtn.style.cursor = 'pointer';
+        upBtn.style.color = index > 0 ? '#6b7280' : '#d1d5db';
+        upBtn.title = 'Move Up';
+        if (index > 0) {
+            upBtn.onmousedown = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.moveExpenseSuggestion(input.id, panel.id, items, index, -1);
+            };
+        }
+
+        // Down Arrow
+        const downBtn = document.createElement('i');
+        downBtn.className = 'fa-solid fa-chevron-down order-btn';
+        downBtn.style.fontSize = '10px';
+        downBtn.style.cursor = 'pointer';
+        downBtn.style.color = index < items.length - 1 ? '#6b7280' : '#d1d5db';
+        downBtn.title = 'Move Down';
+        if (index < items.length - 1) {
+            downBtn.onmousedown = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.moveExpenseSuggestion(input.id, panel.id, items, index, 1);
+            };
+        }
+
+        orderDiv.appendChild(upBtn);
+        orderDiv.appendChild(downBtn);
+        
+        // Put the orderDiv at the beginning of the item row
+        const leftSideDiv = document.createElement('div');
+        leftSideDiv.style.display = 'flex';
+        leftSideDiv.style.alignItems = 'center';
+        leftSideDiv.appendChild(orderDiv);
+        leftSideDiv.appendChild(textSpan);
+        
+        div.appendChild(leftSideDiv);
 
         // Add delete button for sub-category suggestions
         if (input.id === 'expense-sub-cat') {
@@ -170,6 +276,8 @@ function renderSuggestions(items, input, panel) {
             delBtn.className = 'fa-solid fa-xmark delete-suggestion-btn';
             delBtn.style.padding = '4px 8px';
             delBtn.style.fontSize = '12px';
+            delBtn.style.color = '#ef4444';
+            delBtn.style.cursor = 'pointer';
             delBtn.title = 'Delete from suggestions';
             delBtn.onmousedown = (e) => {
                 e.preventDefault();
@@ -178,11 +286,13 @@ function renderSuggestions(items, input, panel) {
                     window.deleteExpenseSuggestion(item);
                 }
             };
-            div.appendChild(delBtn);
+            actionDiv.appendChild(delBtn);
         }
+        
+        div.appendChild(actionDiv);
 
         div.onmousedown = (e) => {
-            if (e.target.classList.contains('delete-suggestion-btn')) return;
+            if (e.target.classList.contains('delete-suggestion-btn') || e.target.classList.contains('order-btn')) return;
             e.preventDefault();
             input.value = item;
             panel.classList.add('hidden');
