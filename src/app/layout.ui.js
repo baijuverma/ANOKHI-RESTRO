@@ -259,31 +259,31 @@ export const appShellHTML = `
 
                 <style>
                     #expense-form-container {
-                        background: #F2E8D5 !important; /* Slightly Darker Cream */
-                        color: #2D3748 !important;
-                        border: 1px solid #E2E8F0 !important;
-                    }
-                    #expense-form-container label {
-                        color: #4A5568 !important;
-                        font-weight: 600;
-                    }
-                    #expense-form-container input, #expense-form-container textarea {
-                        background: #E2E8F0 !important; /* Slightly Darker Input */
+                        background: #E2E8F0 !important; /* Darker Container */
                         color: #1A202C !important;
                         border: 1px solid #CBD5E0 !important;
                     }
+                    #expense-form-container label {
+                        color: #2D3748 !important;
+                        font-weight: 700;
+                    }
+                    #expense-form-container input, #expense-form-container textarea {
+                        background: #CBD5E0 !important; /* Darker Input */
+                        color: #1A202C !important;
+                        border: 1px solid #A0AEC0 !important;
+                    }
                     #expense-form-container input::placeholder, #expense-form-container textarea::placeholder {
-                        color: #A0AEC0 !important;
+                        color: #4A5568 !important;
                     }
                     /* Floating label overrides */
                     #expense-form-container .input-group-floating label {
-                        color: #718096 !important;
+                        color: #2D3748 !important;
                         background: transparent !important;
                         text-shadow: none !important;
                     }
                     #expense-form-container .input-group-floating input:focus + label,
                     #expense-form-container .input-group-floating input:not(:placeholder-shown) + label {
-                        background: #EDF2F7 !important;
+                        background: #CBD5E0 !important;
                         color: #2D3748 !important;
                         padding: 0 4px !important;
                     }
