@@ -136,6 +136,7 @@ window.clearSearchableInput = function(inputId, panelId) {
         panel.classList.add('hidden');
         panel.style.display = 'none';
     }
+    if (typeof window.checkExpenseFormDirty === 'function') window.checkExpenseFormDirty();
 };
 
 window.toggleSuggestions = function(inputId, panelId) {
@@ -481,8 +482,8 @@ window.handleExpenseSubmit = async function(e) {
             exp.selling_price = sellPrice;
             
             // Restore button text
-            const submitBtn = document.querySelector('#expense-form button[type="submit"]');
-            if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Expense';
+            const submitBtn = document.getElementById('expense-submit-btn');
+            if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Log New Expense';
             
             if (typeof window.showToast === 'function') {
                 window.showToast('Expense updated successfully!', 'success', null, 1000);
@@ -600,11 +601,16 @@ window.handleExpenseSubmit = async function(e) {
 
     e.target.reset();
     
-    // Explicitly clear inputs for safety after edit mode
     ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc', 'expense-sell-price', 'expense-gross', 'expense-disc-value', 'expense-net'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
+    
+    const cancelBtn = document.getElementById('expense-cancel-btn');
+    if (cancelBtn) {
+        cancelBtn.classList.add('hidden');
+        cancelBtn.style.display = 'none';
+    }
     
     if (typeof window.renderExpenses === 'function') {
         window.renderExpenses();
@@ -618,6 +624,16 @@ export function initExpensesLogic() {
     const form = document.getElementById('expense-form');
     if (form) {
         form.addEventListener('submit', window.handleExpenseSubmit);
+        
+        // Add listeners for Cancel button visibility
+        const fields = ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc'];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', window.checkExpenseFormDirty);
+                el.addEventListener('change', window.checkExpenseFormDirty);
+            }
+        });
     }
 
 
@@ -818,12 +834,67 @@ export function initExpensesLogic() {
         }
 
         // Change button text to indicate update mode
-        const submitBtn = document.querySelector('#expense-form button[type="submit"]');
+        const submitBtn = document.getElementById('expense-submit-btn');
         if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Update Expense';
+
+        // Show cancel button
+        const cancelBtn = document.getElementById('expense-cancel-btn');
+        if (cancelBtn) {
+            cancelBtn.classList.remove('hidden');
+            cancelBtn.style.display = 'flex';
+        }
 
         // Close menu
         const menu = document.getElementById(`action-menu-${id}`);
         if (menu) menu.classList.add('hidden');
+    };
+
+    window.cancelExpenseEdit = function() {
+        const form = document.getElementById('expense-form');
+        if (form) form.reset();
+        
+        window.editingExpenseId = null;
+        window.editingExpenseOldData = null;
+        
+        const submitBtn = document.getElementById('expense-submit-btn');
+        if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Log New Expense';
+        
+        const cancelBtn = document.getElementById('expense-cancel-btn');
+        if (cancelBtn) {
+            cancelBtn.classList.add('hidden');
+            cancelBtn.style.display = 'none';
+        }
+
+        ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc', 'expense-sell-price', 'expense-gross', 'expense-disc-value', 'expense-net'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+    };
+
+    window.checkExpenseFormDirty = function() {
+        const ids = ['expense-main-cat', 'expense-sub-cat', 'expense-qty', 'expense-cash', 'expense-upi', 'expense-udhar', 'expense-desc'];
+        let isDirty = !!window.editingExpenseId;
+        
+        if (!isDirty) {
+            for (const id of ids) {
+                const el = document.getElementById(id);
+                if (el && el.value.trim() !== '') {
+                    isDirty = true;
+                    break;
+                }
+            }
+        }
+        
+        const cancelBtn = document.getElementById('expense-cancel-btn');
+        if (cancelBtn) {
+            if (isDirty) {
+                cancelBtn.classList.remove('hidden');
+                cancelBtn.style.display = 'flex';
+            } else {
+                cancelBtn.classList.add('hidden');
+                cancelBtn.style.display = 'none';
+            }
+        }
     };
 
     // Close action menus when clicking outside

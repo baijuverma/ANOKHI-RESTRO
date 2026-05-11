@@ -426,9 +426,14 @@ export const appShellHTML = `
                             <label>Description / Remarks (Reason)</label>
                             <textarea id="expense-desc" placeholder="Enter reason for expense..." style="width: 100%; min-height: 80px; padding: 12px; border-radius: 8px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.3); color: white;"></textarea>
                         </div>
-                        <button type="submit" class="btn-primary mt-2" style="width: 200px; height: 48px;">
-                            <i class="fa-solid fa-plus"></i> Add Expense
-                        </button>
+                        <div style="display: flex; gap: 12px; align-items: center; margin-top: 15px;">
+                            <button type="submit" id="expense-submit-btn" class="btn-primary" style="min-width: 200px; height: 48px;">
+                                <i class="fa-solid fa-plus"></i> Log New Expense
+                            </button>
+                            <button type="button" id="expense-cancel-btn" class="btn-secondary hidden" onclick="window.cancelExpenseEdit()" style="height: 48px; padding: 0 20px; border: 1px solid var(--panel-border); background: rgba(255,255,255,0.05); color: #cbd5e0; border-radius: 8px; cursor: pointer; transition: 0.2s; display: none; align-items: center; gap: 8px; font-weight: 600;">
+                                <i class="fa-solid fa-xmark"></i> Cancel / Clear
+                            </button>
+                        </div>
                     </form>
                 </div>
 
