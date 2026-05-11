@@ -351,11 +351,15 @@ export const appShellHTML = `
                                         <div id="sub-suggestions" class="suggestions-panel hidden"></div>
                                     </div>
                                 </div>
-                                <div class="form-group" id="expense-qty-container" style="flex: 1; max-width: 120px; min-width: 80px;">
-                                    <label>Quantity</label>
-                                    <div style="position: relative;">
-                                        <input type="number" id="expense-qty" placeholder="Qty" min="0" step="any" style="width:100%; padding: 10px 30px 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
-                                        <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-qty')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
+                                <div class="form-group" id="expense-qty-container" style="flex: 1; max-width: 150px; min-width: 120px;">
+                                    <div style="position: relative; display: flex; align-items: center; background: #ffffff; border-radius: 8px; border: 2px solid #3b82f6; overflow: hidden; height: 42px; padding-left: 10px;">
+                                        <input type="number" id="expense-qty" placeholder="" min="0" step="any" style="flex: 1; padding: 0; background: transparent; color: #333; border: none; font-size: 14px; font-weight: 600; outline: none; width: 40px; box-shadow: none;">
+                                        <div class="unit-toggle" style="display: flex; background: #f3f4f6; border-radius: 20px; margin: 3px 4px 3px 4px; padding: 2px; position: relative; width: 70px; cursor: pointer; border: 1px solid #e5e7eb; user-select: none;" onclick="window.toggleExpenseUnit()">
+                                            <div id="unit-slider" style="position: absolute; top: 2px; left: 34px; width: 32px; height: 26px; background: #1e40af; border-radius: 14px; transition: 0.3s ease;"></div>
+                                            <span id="unit-kg-label" style="flex: 1; text-align: center; font-size: 11px; font-weight: bold; color: #9ca3af; z-index: 1; line-height: 26px; transition: 0.3s;">KG</span>
+                                            <span id="unit-qty-label" style="flex: 1; text-align: center; font-size: 11px; font-weight: bold; color: #ffffff; z-index: 1; line-height: 26px; transition: 0.3s;">QTY</span>
+                                        </div>
+                                        <input type="hidden" id="expense-unit" value="QTY">
                                     </div>
                                 </div>
                                 <!-- Floating Label Expense Fields -->

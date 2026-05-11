@@ -59,6 +59,12 @@ window.handleSearchableInput = function(inputId, panelId) {
         items = allMain.filter(i => i.toLowerCase().includes(query));
     } else {
         const mainValue = document.getElementById('expense-main-cat').value;
+        if (inputId === 'expense-main-cat') {
+            const isRaw = mainValue.toLowerCase().includes('raw material') || mainValue.toLowerCase().includes('kitchen');
+            if (typeof window.setExpenseUnit === 'function') {
+                window.setExpenseUnit(isRaw ? 'KG' : 'QTY');
+            }
+        }
         let allSub = [];
         if ((mainValue || '').trim().toUpperCase() === 'KITCHEN') {
             const historySubs = (window.expensesHistory || [])
@@ -183,6 +189,10 @@ function renderSuggestions(items, input, panel) {
                 if (priceContainer) {
                     priceContainer.style.display = (isRaw || isBuiltIn) ? 'none' : 'block';
                 }
+                if (typeof window.setExpenseUnit === 'function') {
+                    window.setExpenseUnit(isRaw ? 'KG' : 'QTY');
+                }
+                
                 const qtyContainer = document.getElementById('expense-qty-container');
                 if (qtyContainer) {
                     qtyContainer.style.display = isBuiltIn ? 'none' : 'block';
@@ -227,10 +237,12 @@ window.handleExpenseSubmit = async function(e) {
     const mainCat = document.getElementById('expense-main-cat').value;
     const subCat = document.getElementById('expense-sub-cat').value;
     const desc = document.getElementById('expense-desc').value;
+    const unitInput = document.getElementById('expense-unit');
 
     const qtyContainer = document.getElementById('expense-qty-container');
     const isQtyVisible = qtyContainer && qtyContainer.style.display !== 'none';
     const qty = parseFloat(document.getElementById('expense-qty').value) || 0;
+    const unit = unitInput ? unitInput.value : 'QTY';
     
     if (isQtyVisible && qty <= 0) {
         if (typeof window.showToast === 'function') {
@@ -270,6 +282,7 @@ window.handleExpenseSubmit = async function(e) {
             exp.udhar = udhar;
             exp.description = desc;
             exp.qty = qty;
+            exp.unit = unit;
             exp.selling_price = sellPrice;
             
             window.editingExpenseId = null;
@@ -297,6 +310,7 @@ window.handleExpenseSubmit = async function(e) {
             udhar: udhar,
             description: desc,
             qty: qty,
+            unit: unit,
             selling_price: sellPrice
         };
         window.expensesHistory.unshift(expenseRecord);
@@ -539,6 +553,10 @@ export function initExpensesLogic() {
         document.getElementById('expense-udhar').value = exp.udhar || '';
         document.getElementById('expense-sell-price').value = exp.selling_price || exp.sell_price || '';
         
+        if (exp.unit && typeof window.setExpenseUnit === 'function') {
+            window.setExpenseUnit(exp.unit);
+        }
+        
         // Description clean up
         let desc = exp.description || '';
         if (desc.startsWith('Qty:')) {
@@ -571,8 +589,37 @@ export function initExpensesLogic() {
     });
 
     window.updateExpenseStats = function() {
-        // Simple logic for summary cards (if any)
-        console.log('Stats updated');
+        console.log('Expenses logic initialized');
+    };
+
+    window.setExpenseUnit = function(unit) {
+        const hiddenInput = document.getElementById('expense-unit');
+        const slider = document.getElementById('unit-slider');
+        const labelKg = document.getElementById('unit-kg-label');
+        const labelQty = document.getElementById('unit-qty-label');
+        
+        if (!hiddenInput || !slider || !labelKg || !labelQty) return;
+        
+        hiddenInput.value = unit;
+        if (unit === 'KG') {
+            slider.style.left = '2px';
+            labelKg.style.color = '#ffffff';
+            labelQty.style.color = '#9ca3af';
+        } else {
+            slider.style.left = '34px';
+            labelKg.style.color = '#9ca3af';
+            labelQty.style.color = '#ffffff';
+        }
+    };
+
+    window.toggleExpenseUnit = function() {
+        const hiddenInput = document.getElementById('expense-unit');
+        if (!hiddenInput) return;
+        if (hiddenInput.value === 'QTY') {
+            window.setExpenseUnit('KG');
+        } else {
+            window.setExpenseUnit('QTY');
+        }
     };
 
     // Initial render
