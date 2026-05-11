@@ -675,10 +675,10 @@ export function initExpensesLogic() {
         if (type === '%') {
             slider.style.left = '2px';
             labelP.style.color = '#ffffff';
-            labelF.style.color = 'rgba(255,255,255,0.5)';
+            labelF.style.color = '#9ca3af';
         } else {
             slider.style.left = '36px';
-            labelP.style.color = 'rgba(255,255,255,0.5)';
+            labelP.style.color = '#9ca3af';
             labelF.style.color = '#ffffff';
         }
         window.calcExpenseNet('discount');
