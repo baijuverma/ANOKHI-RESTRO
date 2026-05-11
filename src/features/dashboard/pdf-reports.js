@@ -266,7 +266,7 @@ export function initPdfReports() {
         const billY = doc.lastAutoTable.finalY || 100;
 
         // --- Section 2: Item-wise Ranking Summary ---
-        let itemStartY = billY + 35;
+        let itemStartY = billY + 28;
         if (itemStartY > 240) {
             doc.addPage();
             itemStartY = 20;
@@ -565,7 +565,7 @@ function generateSalesReport(title, data) {
     doc.text(`Grand Total: Rs. ${total.toFixed(2)}`, pageWidth - margin - 60, finalY + 10);
 
     // --- Section 2: Item-wise Ranking Summary ---
-    let itemStartY = finalY + 35;
+    let itemStartY = finalY + 28;
     if (itemStartY > pageHeight - 40) {
         doc.addPage();
         itemStartY = 20;
