@@ -68,9 +68,9 @@ export const renderExpenseTable = (containerId, expenses) => {
             expensePagination = new window.LocalPagination(sorted, EXPENSE_PAGE_SIZE);
         } else {
             expensePagination.fullArray = sorted;
-            expensePagination.totalPages = Math.ceil(sorted.length / EXPENSE_PAGE_SIZE);
-            if (expensePagination.currentPage > expensePagination.totalPages) {
-                expensePagination.currentPage = Math.max(1, expensePagination.totalPages);
+            const maxPage = expensePagination.getTotalPages();
+            if (expensePagination.currentPage > maxPage) {
+                expensePagination.currentPage = Math.max(1, maxPage);
             }
         }
         
