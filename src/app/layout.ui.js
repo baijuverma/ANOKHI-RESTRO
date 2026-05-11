@@ -1,4 +1,11 @@
 export const appShellHTML = `
+    <style>
+        @keyframes pulse-white {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(255, 255, 255, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+    </style>
 <!-- Fixed Global Logout Button (Top Right of Screen) -->
     <div id="global-logout-container" class="global-header-actions" style="position: fixed; top: 10px; right: 15px; z-index: 99999; display: none;">
         <button class="modern-logout-btn" onclick="logout()" title="Logout & Lock System">
@@ -258,8 +265,10 @@ export const appShellHTML = `
                 <header class="flex-between">
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <h1 style="margin: 0; font-size: 24px;">Business Expenses</h1>
-                        <button onclick="window.forceSyncData()" class="btn-primary" style="background: #3b82f6; padding: 6px 12px; font-size: 12px; border-radius: 6px; display: flex; align-items: center; gap: 6px;">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> Sync to Cloud
+                        <button onclick="window.forceSyncData()" class="btn-primary" style="background: #10b981; padding: 6px 12px; font-size: 12px; border-radius: 6px; display: flex; align-items: center; gap: 6px; border: none; color: white; cursor: pointer; transition: all 0.2s;">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> 
+                            <span>Auto Sync</span>
+                            <div style="width: 6px; height: 6px; background: white; border-radius: 50%; box-shadow: 0 0 5px white; animation: pulse-white 2s infinite;"></div>
                         </button>
                     </div>
                     <p style="margin: 5px 0 0; color: var(--text-secondary); font-size: 13px;">Manage your daily business expenses and cash flow</p>
