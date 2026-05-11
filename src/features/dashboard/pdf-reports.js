@@ -384,28 +384,24 @@ export function initPdfReports() {
 
         const finalY = doc.lastAutoTable.finalY || 150;
         
-        // Order Type Summary (Left of Total)
-        doc.setFontSize(9);
-        doc.setFont(undefined, 'normal');
+        // Order Type Summary (Left of Total, Bold, No Header)
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'bold');
         const typeTotals = sales.reduce((acc, s) => {
             const type = (s.orderType || 'Counter').toUpperCase();
             acc[type] = (acc[type] || 0) + parseFloat(s.total || 0);
             return acc;
         }, {});
         
-        let summaryX = margin;
-        let summaryY = finalY + 8;
-        doc.text("Sales Breakdown by Type:", summaryX, summaryY);
-        
-        let currentX = summaryX;
+        let currentX = margin;
+        let summaryY = finalY + 12; 
         Object.entries(typeTotals).forEach(([type, val], idx) => {
             const text = `${type}: Rs. ${val.toFixed(2)}`;
-            doc.text(text, currentX, summaryY + 5);
+            doc.text(text, currentX, summaryY);
             currentX += doc.getTextWidth(text) + 8; // Horizontal gap
         });
 
         doc.setFontSize(12);
-        doc.setFont(undefined, 'bold');
         doc.text(`Total Period Revenue: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 80, finalY + 12);
 
         // --- Add Footers to All Pages at Once ---
@@ -548,28 +544,24 @@ function generateSalesReport(title, data) {
     const total = data.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
     const finalY = doc.lastAutoTable.finalY || 40;
     
-    // Order Type Summary (Left of Total)
-    doc.setFontSize(9);
-    doc.setFont(undefined, 'normal');
+    // Order Type Summary (Left of Total, Bold, No Header)
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'bold');
     const typeTotals = data.reduce((acc, s) => {
         const type = (s.orderType || 'Counter').toUpperCase();
         acc[type] = (acc[type] || 0) + parseFloat(s.total || 0);
         return acc;
     }, {});
     
-    let summaryX = margin;
-    let summaryY = finalY + 8;
-    doc.text("Sales Breakdown by Type:", summaryX, summaryY);
-    
-    let currentX = summaryX;
+    let currentX = margin;
+    let summaryY = finalY + 10;
     Object.entries(typeTotals).forEach(([type, val], idx) => {
         const text = `${type}: Rs. ${val.toFixed(2)}`;
-        doc.text(text, currentX, summaryY + 5);
+        doc.text(text, currentX, summaryY);
         currentX += doc.getTextWidth(text) + 8; // Horizontal gap
     });
 
     doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
     doc.text(`Grand Total: Rs. ${total.toFixed(2)}`, pageWidth - margin - 60, finalY + 10);
 
     // --- Section 2: Item-wise Ranking Summary ---
