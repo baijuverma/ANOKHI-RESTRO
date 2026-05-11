@@ -268,7 +268,7 @@ export const appShellHTML = `
                         font-weight: 600;
                     }
                     #expense-form-container input, #expense-form-container textarea {
-                        background: #FFFFFF !important;
+                        background: #E2E8F0 !important; /* Slightly Darker Input */
                         color: #1A202C !important;
                         border: 1px solid #CBD5E0 !important;
                     }
@@ -283,7 +283,7 @@ export const appShellHTML = `
                     }
                     #expense-form-container .input-group-floating input:focus + label,
                     #expense-form-container .input-group-floating input:not(:placeholder-shown) + label {
-                        background: #FFFFFF !important;
+                        background: #EDF2F7 !important;
                         color: #2D3748 !important;
                         padding: 0 4px !important;
                     }
