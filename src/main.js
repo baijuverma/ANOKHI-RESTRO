@@ -662,9 +662,11 @@ window.toggleCalendarChart = () => {
     }
 };
 
-window.renderPOSItems = (search = '') => {
+window.renderPOSItems = (search = null) => {
+    const searchInput = document.getElementById('pos-search');
+    const actualSearch = search !== null ? search : (searchInput ? searchInput.value : '');
     const gridContainer = document.getElementById('pos-item-grid');
-    if (gridContainer) renderPOSGrid(gridContainer, search, filterState.current);
+    if (gridContainer) renderPOSGrid(gridContainer, actualSearch, filterState.current);
 };
 
 window.toggleCartDetails = () => {
