@@ -351,7 +351,7 @@ export const appShellHTML = `
                                         <div id="sub-suggestions" class="suggestions-panel hidden"></div>
                                     </div>
                                 </div>
-                                <div class="form-group" id="expense-qty-container" style="flex: 1; max-width: 180px; min-width: 140px;">
+                                <div class="form-group" id="expense-qty-container" style="flex: 1; max-width: 180px; min-width: 140px; margin: 0;">
                                     <div style="position: relative; display: flex; align-items: center; background: #ffffff; border-radius: 8px; border: 2px solid #3b82f6; overflow: hidden; height: 42px; padding-left: 10px;">
                                         <input type="number" id="expense-qty" placeholder="" min="0" step="any" style="flex: 1; padding: 0; background: transparent; color: #333; border: none; font-size: 14px; font-weight: 600; outline: none; width: 40px; box-shadow: none;">
                                         <div class="unit-toggle" style="display: flex; background: #f3f4f6; border-radius: 20px; margin: 3px 4px 3px 4px; padding: 2px; position: relative; width: 80px; cursor: pointer; border: 1px solid #e5e7eb; user-select: none;" onclick="window.toggleExpenseUnit()">
@@ -362,7 +362,7 @@ export const appShellHTML = `
                                         <input type="hidden" id="expense-unit" value="QTY">
                                     </div>
                                 </div>
-                                <div class="form-group" id="expense-sell-price-container" style="flex: 1; max-width: 200px;">
+                                <div class="form-group" id="expense-sell-price-container" style="flex: 1; max-width: 200px; margin: 0;">
                                     <label>Selling Price (₹)</label>
                                     <div style="position: relative;">
                                         <input type="number" id="expense-sell-price" placeholder="For new/updated item" min="0" step="any" style="width:100%; padding: 10px 30px 10px 12px; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--panel-border); border-radius: 8px; font-size: 14px;">
@@ -373,12 +373,12 @@ export const appShellHTML = `
                             
                             <!-- Second Row (Billing) -->
                             <div style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;">
-                                <div class="input-group-floating" style="flex: 1; position: relative; min-width: 130px;">
+                                <div class="input-group-floating" style="flex: 1; position: relative; min-width: 130px; margin: 0;">
                                     <input type="number" id="expense-gross" placeholder=" " min="0" step="0.01" style="padding-right: 30px;" oninput="window.calcExpenseNet('gross')">
                                     <label for="expense-gross">Gross Amount ₹</label>
                                     <i class="fa-solid fa-circle-xmark clear-input-btn" onclick="window.clearInput('expense-gross'); window.calcExpenseNet('gross');" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.3)'"></i>
                                 </div>
-                                <div class="form-group" style="flex: 1; position: relative; min-width: 160px; max-width: 200px;">
+                                <div class="form-group" style="flex: 1; position: relative; min-width: 160px; max-width: 200px; margin: 0;">
                                     <label style="position: absolute; top: -8px; left: 10px; background: var(--panel-bg); padding: 0 4px; font-size: 12px; color: var(--text-secondary); z-index: 5;">Discount</label>
                                     <div style="position: relative; display: flex; align-items: center; background: #ffffff; border-radius: 8px; border: 2px solid #6d28d9; overflow: hidden; height: 48px; padding-left: 12px;">
                                         <input type="number" id="expense-disc-value" placeholder="0" min="0" step="any" style="flex: 1; padding: 0; background: transparent; color: #333; border: none; font-size: 15px; font-weight: 600; outline: none; width: 40px; box-shadow: none;" oninput="window.calcExpenseNet('discount')">
