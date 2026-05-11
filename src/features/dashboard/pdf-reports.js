@@ -640,11 +640,9 @@ function generateExpensesReport(title, data) {
 
     // Table Data
     const tableBody = data.map((e, i) => {
-        const paymentMode = (e.payment_mode || e.paymentMode || 'CASH').toUpperCase();
-        const amount = parseFloat(e.amount || 0);
-        const cashAmt = paymentMode === 'CASH' ? `Rs. ${amount.toFixed(2)}` : '-';
-        const upiAmt = paymentMode === 'UPI' ? `Rs. ${amount.toFixed(2)}` : '-';
-        const udharAmt = (paymentMode === 'UDHAR' || paymentMode === 'DUES') ? `Rs. ${amount.toFixed(2)}` : '-';
+        const cash = parseFloat(e.cash || 0);
+        const upi = parseFloat(e.upi || 0);
+        const udhar = parseFloat(e.udhar || 0);
 
         return [
             i + 1,
@@ -652,9 +650,9 @@ function generateExpensesReport(title, data) {
             e.main_category || e.category || 'General',
             e.sub_category || e.subCategory || '-',
             e.qty || '-',
-            cashAmt,
-            upiAmt,
-            udharAmt,
+            cash > 0 ? `Rs. ${cash.toFixed(2)}` : '-',
+            upi > 0 ? `Rs. ${upi.toFixed(2)}` : '-',
+            udhar > 0 ? `Rs. ${udhar.toFixed(2)}` : '-',
             e.description || e.reason || '-'
         ];
     });

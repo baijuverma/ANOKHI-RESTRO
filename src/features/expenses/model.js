@@ -248,21 +248,21 @@ window.handleExpenseSubmit = async function(e) {
         return;
     }
 
-    const modes = [{ n: 'Cash', v: cash }, { n: 'UPI', v: upi }, { n: 'Udhar', v: udhar }];
-    modes.forEach(m => {
-        if (m.v > 0) {
-            window.expensesHistory.unshift({
-                id: Date.now().toString() + Math.random(),
-                date: new Date().toISOString(),
-                main_category: mainCat,
-                sub_category: subCat,
-                amount: m.v,
-                payment_mode: m.n,
-                description: qty > 0 ? `Qty: ${qty} | ${desc}` : desc,
-                qty: qty
-            });
-        }
-    });
+    const expenseId = Date.now().toString() + Math.random();
+    const expenseRecord = {
+        id: expenseId,
+        date: new Date().toISOString(),
+        main_category: mainCat,
+        sub_category: subCat,
+        amount: cash + upi + udhar,
+        cash: cash,
+        upi: upi,
+        udhar: udhar,
+        description: qty > 0 ? `Qty: ${qty} | ${desc}` : desc,
+        qty: qty
+    };
+    window.expensesHistory.unshift(expenseRecord);
+
 
     // Auto-update or Auto-add Inventory Stock if not Kitchen/Raw Material
     const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
@@ -327,8 +327,10 @@ export function initExpensesLogic() {
                 <td>${window.getDDMMYYYY ? window.getDDMMYYYY(new Date(exp.date)) : exp.date}</td>
                 <td>${exp.main_category}</td>
                 <td>${exp.sub_category}</td>
-                <td>₹${exp.amount}</td>
-                <td><span class="status-badge">${exp.payment_mode}</span></td>
+                <td>${exp.qty || '-'}</td>
+                <td>₹${(exp.cash || 0).toFixed(2)}</td>
+                <td>₹${(exp.upi || 0).toFixed(2)}</td>
+                <td>₹${(exp.udhar || 0).toFixed(2)}</td>
                 <td title="${exp.description || ''}">${exp.description || '-'}</td>
                 <td><button class="btn-danger" onclick="deleteExpense('${exp.id}')"><i class="fa-solid fa-trash"></i></button></td>
             </tr>
@@ -337,6 +339,27 @@ export function initExpensesLogic() {
 
     window.deleteExpense = async function(id) {
         if(confirm('Delete this expense?')) {
+            const exp = (window.expensesHistory || []).find(e => e.id === id);
+            if (exp) {
+                // Revert inventory stock if applicable
+                const mainCat = exp.main_category || '';
+                const subCat = exp.sub_category || '';
+                const qty = parseFloat(exp.qty) || 0;
+                
+                const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
+                const isBuiltInExpenseCat = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(mainCat);
+                
+                if (!isRawMaterial && !isBuiltInExpenseCat && qty > 0 && window.inventory) {
+                    const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase());
+                    if (invItem) {
+                        invItem.quantity = Math.max(0, (parseFloat(invItem.quantity) || 0) - qty);
+                        localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
+                        if (typeof window.renderInventory === 'function') window.renderInventory();
+                        console.log(`Reverted inventory stock for ${invItem.name}: -${qty}`);
+                    }
+                }
+            }
+
             window.expensesHistory = window.expensesHistory.filter(e => e.id !== id);
             window.saveData();
             if (window.db) await window.db.from('expenses').delete().eq('id', id);
