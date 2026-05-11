@@ -504,38 +504,63 @@ window.handleExpenseSubmit = async function(e) {
         }
     }
 
-    // Handle Inventory Stock Sync
+    // Handle Inventory Stock Sync (Only for non-Raw/Kitchen/Built-in categories)
     const isRawMaterial = mainCat.toLowerCase().includes('raw material') || mainCat.toLowerCase().includes('kitchen');
     const isBuiltInExpenseCat = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(mainCat);
 
-    if (window.inventory && !isRawMaterial) {
-        // 1. REVERT OLD DATA (if updating)
-        if (window.editingExpenseOldData) {
+    if (window.inventory && !isRawMaterial && !isBuiltInExpenseCat) {
+        const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase());
+        
+        if (window.editingExpenseId && window.editingExpenseOldData) {
+            // UPDATE LOGIC: Calculate Difference
             const oldQty = parseFloat(window.editingExpenseOldData.qty) || 0;
             const oldSubCat = (window.editingExpenseOldData.subCat || '').trim().toLowerCase();
-            const oldMainCat = window.editingExpenseOldData.mainCat || '';
-            const oldIsRaw = oldMainCat.toLowerCase().includes('raw material') || oldMainCat.toLowerCase().includes('kitchen');
-            const oldIsBuiltIn = ['Staff & Payroll', 'Operations & Maintenance', 'Other Expenses'].includes(oldMainCat);
+            const currentSubCat = subCat.trim().toLowerCase();
 
-            if (oldQty > 0 && !oldIsRaw && !oldIsBuiltIn) {
+            if (currentSubCat === oldSubCat) {
+                // Case A: Same item, just check QTY difference
+                const deltaQty = qty - oldQty;
+                if (deltaQty !== 0 && invItem) {
+                    invItem.quantity = (parseFloat(invItem.quantity) || 0) + deltaQty;
+                    console.log(`Inventory Adjusted: ${invItem.name} ${deltaQty > 0 ? '+' : ''}${deltaQty}`);
+                }
+            } else {
+                // Case B: Item name changed! Revert old item stock, add new item stock
                 const oldInvItem = window.inventory.find(i => i.name.trim().toLowerCase() === oldSubCat);
-                if (oldInvItem) {
+                if (oldInvItem && oldQty > 0) {
                     oldInvItem.quantity = Math.max(0, (parseFloat(oldInvItem.quantity) || 0) - oldQty);
-                    console.log(`Reverted old inventory: ${oldInvItem.name} -${oldQty}`);
+                    console.log(`Reverted Old Item: ${oldInvItem.name} -${oldQty}`);
+                }
+                if (invItem) {
+                    invItem.quantity = (parseFloat(invItem.quantity) || 0) + qty;
+                    console.log(`Updated New Item: ${invItem.name} +${qty}`);
+                } else if (qty > 0) {
+                    // Auto-Add NEW item to Inventory if it doesn't exist
+                    const newInvItem = {
+                        id: Date.now().toString() + Math.floor(Math.random() * 1000),
+                        name: subCat.trim(),
+                        category: mainCat.trim(),
+                        type: 'Veg',
+                        price: sellPrice || 0,
+                        quantity: qty,
+                        low_stock_threshold: 5
+                    };
+                    window.inventory.unshift(newInvItem);
+                    console.log(`Auto-added NEW item to inventory: ${subCat} +${qty}`);
                 }
             }
-            window.editingExpenseOldData = null; // Clear after revert
-        }
-
-        // 2. APPLY NEW DATA
-        if ((qty > 0 || sellPrice > 0) && !isBuiltInExpenseCat) {
-            const invItem = window.inventory.find(i => i.name.trim().toLowerCase() === subCat.trim().toLowerCase());
-            
+            // Update Price and Category if provided
+            if (invItem) {
+                if (sellPrice > 0) invItem.price = sellPrice;
+                invItem.category = mainCat;
+            }
+            window.editingExpenseOldData = null; // Reset after sync
+        } else {
+            // NEW RECORD LOGIC
             if (invItem) {
                 if (qty > 0) invItem.quantity = (parseFloat(invItem.quantity) || 0) + qty;
                 if (sellPrice > 0) invItem.price = sellPrice;
-                if (invItem.category !== mainCat) invItem.category = mainCat;
-                console.log(`Updated inventory: ${invItem.name} +${qty} (Price: ${sellPrice})`);
+                invItem.category = mainCat;
             } else if (qty > 0) {
                 // Auto-Add NEW item to Inventory
                 const newItem = {
@@ -550,10 +575,10 @@ window.handleExpenseSubmit = async function(e) {
                 window.inventory.unshift(newItem);
                 console.log(`Auto-added NEW item to inventory: ${subCat} +${qty}`);
             }
-            
-            localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
-            if (typeof window.renderInventory === 'function') window.renderInventory();
         }
+        
+        localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
+        if (typeof window.renderInventory === 'function') window.renderInventory();
     }
 
     if (typeof window.saveData === 'function') window.saveData(); // Non-blocking so UI updates instantly
