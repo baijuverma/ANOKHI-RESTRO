@@ -265,11 +265,12 @@ window.handleExpenseSubmit = async function(e) {
     const upi = parseFloat(document.getElementById('expense-upi').value) || 0;
     const udhar = parseFloat(document.getElementById('expense-udhar').value) || 0;
 
-    if (net > 0 && (cash + upi + udhar) === 0) {
+    const totalPaid = cash + upi + udhar;
+    if (net > 0 && Math.abs(net - totalPaid) > 0.01) {
         if (typeof window.showToast === 'function') {
-            window.showToast('Please enter payment split matching the Net Amount.', 'error', null, 2500);
+            window.showToast('Payment split total must equal Net Amount.', 'error', null, 2500);
         } else {
-            alert('Please enter payment split matching the Net Amount.');
+            alert('Payment split total must equal Net Amount.');
         }
         setTimeout(() => document.getElementById('expense-cash').focus(), 10);
         return;
@@ -720,17 +721,39 @@ export function initExpensesLogic() {
         let net = gross - totalDisc;
         netEl.value = net > 0 ? net.toFixed(2) : '';
         
-        // Auto fill cash if no payment entered yet
+        if (typeof window.calcExpensePaymentSplit === 'function') {
+            window.calcExpensePaymentSplit('net');
+        }
+    };
+
+    window.calcExpensePaymentSplit = function(changedField) {
+        const netEl = document.getElementById('expense-net');
+        if (!netEl) return;
+        
+        let net = parseFloat(netEl.value) || 0;
+        
         const cashEl = document.getElementById('expense-cash');
         const upiEl = document.getElementById('expense-upi');
         const udharEl = document.getElementById('expense-udhar');
         
-        if (cashEl && upiEl && udharEl) {
-            if (!cashEl.value && !upiEl.value && !udharEl.value && net > 0) {
-                cashEl.value = net.toFixed(2);
-            } else if (cashEl.value || upiEl.value || udharEl.value) {
-                // Adjust cash if it equals the old net to the new net? Too complex, just let user adjust.
+        if (!cashEl || !upiEl || !udharEl) return;
+        
+        let currentCash = parseFloat(cashEl.value) || 0;
+        let currentUpi = parseFloat(upiEl.value) || 0;
+        let currentUdhar = parseFloat(udharEl.value) || 0;
+
+        if (changedField === 'net') {
+            if (currentUpi === 0 && currentUdhar === 0) {
+                cashEl.value = net > 0 ? net.toFixed(2) : '';
+                return;
             }
+        }
+
+        let remaining = net - (currentCash + currentUpi);
+        if (remaining > 0) {
+            udharEl.value = remaining.toFixed(2);
+        } else {
+            udharEl.value = '';
         }
     };
 
