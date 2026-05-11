@@ -396,8 +396,12 @@ export function initPdfReports() {
         let summaryX = margin;
         let summaryY = finalY + 8;
         doc.text("Sales Breakdown by Type:", summaryX, summaryY);
+        
+        let currentX = summaryX;
         Object.entries(typeTotals).forEach(([type, val], idx) => {
-            doc.text(`${type}: Rs. ${val.toFixed(2)}`, summaryX, summaryY + 5 + (idx * 4));
+            const text = `${type}: Rs. ${val.toFixed(2)}`;
+            doc.text(text, currentX, summaryY + 5);
+            currentX += doc.getTextWidth(text) + 8; // Horizontal gap
         });
 
         doc.setFontSize(12);
@@ -556,8 +560,12 @@ function generateSalesReport(title, data) {
     let summaryX = margin;
     let summaryY = finalY + 8;
     doc.text("Sales Breakdown by Type:", summaryX, summaryY);
+    
+    let currentX = summaryX;
     Object.entries(typeTotals).forEach(([type, val], idx) => {
-        doc.text(`${type}: Rs. ${val.toFixed(2)}`, summaryX, summaryY + 5 + (idx * 4));
+        const text = `${type}: Rs. ${val.toFixed(2)}`;
+        doc.text(text, currentX, summaryY + 5);
+        currentX += doc.getTextWidth(text) + 8; // Horizontal gap
     });
 
     doc.setFontSize(12);
