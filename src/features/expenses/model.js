@@ -1009,6 +1009,18 @@ export function initExpensesLogic() {
         }
 
         let totalDisc = (gross * (discP / 100)) + discF;
+        
+        // Validation: If Fixed Discount > Gross Amount
+        const discWarning = document.getElementById('discount-warning');
+        const discContainer = discValEl?.parentElement;
+        if (discType === '₹' && discF > gross && gross > 0) {
+            if (discWarning) discWarning.style.display = 'inline';
+            if (discContainer) discContainer.style.setProperty('border-color', '#ef4444', 'important');
+        } else {
+            if (discWarning) discWarning.style.display = 'none';
+            if (discContainer) discContainer.style.setProperty('border-color', '#6d28d9', 'important');
+        }
+
         if (totalDisc > gross) totalDisc = gross;
 
         let net = gross - totalDisc;
