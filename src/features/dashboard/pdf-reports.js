@@ -805,6 +805,12 @@ function generateExpensesReport(title, data) {
         .sort((a, b) => b[1] - a[1]) // Sort by amount descending
         .map(([cat, amt]) => [cat, `Rs. ${amt.toFixed(2)}`]);
 
+    // Add Total Row to Summary
+    summaryBody.push([
+        { content: 'TOTAL EXPENSE', styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalNet.toFixed(2)}`, styles: { fontStyle: 'bold' } }
+    ]);
+
     doc.autoTable({
         head: [['Main Category', 'Total Net Expense']],
         body: summaryBody,
