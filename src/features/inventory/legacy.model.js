@@ -202,7 +202,7 @@ function handleItemSubmit(e) {
         }
 
         const newItem = {
-            id: Date.now().toString(),
+            id: typeof window.generateUUIDv7 === 'function' ? window.generateUUIDv7() : Date.now().toString(),
             name, category, itemType, price, quantity, lowStockThreshold
         };
         window.inventory.push(newItem);

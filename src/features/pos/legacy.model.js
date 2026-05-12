@@ -333,7 +333,7 @@ window.holdOrder = async function() {
         }
 
         const newActiveOrder = {
-            id: `ACT-${Date.now()}`,
+            id: typeof window.generateUUIDv7 === 'function' ? window.generateUUIDv7() : `ACT-${Date.now()}`,
             orderType: window.selectedOrderType,
             items: JSON.parse(JSON.stringify(currentCart)),
             total: totals.total || 0,
@@ -538,7 +538,7 @@ async function finalizeSaleRecord(custName = null, custMobile = null) {
     const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
     const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
 
-    let finalSaleId = Date.now().toString() + Math.floor(100 + Math.random() * 900).toString();
+    let finalSaleId = typeof window.generateUUIDv7 === 'function' ? window.generateUUIDv7() : (Date.now().toString() + Math.random());
     let finalCustName = custName;
     let finalCustMobile = custMobile;
     let finalSaleDate = new Date().toISOString();

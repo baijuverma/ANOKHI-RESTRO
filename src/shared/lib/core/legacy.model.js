@@ -31,6 +31,16 @@ function formatCurrency(amount) {
 }
 window.formatCurrency = formatCurrency;
 
+// UUID v7 Generator — Time-ordered, 128-bit unique identifier
+function generateUUIDv7() {
+    const now = Date.now();
+    const ts = Math.floor(now).toString(16).padStart(12, '0');
+    const r1 = Math.floor(Math.random() * 0xfff).toString(16).padStart(3, '0');
+    const r2 = (Math.floor(Math.random() * 0x3fffffffffffffff)).toString(16).padStart(16, '0');
+    return `${ts.slice(0,8)}-${ts.slice(8,12)}-7${r1}-${(8 + Math.floor(Math.random() * 4)).toString(16)}${r2.slice(0,3)}-${r2.slice(3,15)}`;
+}
+window.generateUUIDv7 = generateUUIDv7;
+
 // Format Date to DD/MM/YYYY
 function getDDMMYYYY(dateObj) {
     const day = String(dateObj.getDate()).padStart(2, '0');

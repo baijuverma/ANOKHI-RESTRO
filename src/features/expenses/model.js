@@ -492,7 +492,7 @@ window.handleExpenseSubmit = async function(e) {
         }
     } else {
         // CREATE NEW RECORD
-        const expenseId = Date.now().toString() + Math.random();
+        const expenseId = typeof window.generateUUIDv7 === 'function' ? window.generateUUIDv7() : (Date.now().toString() + Math.random());
         const expenseRecord = {
             id: expenseId,
             date: new Date().toISOString(),
@@ -550,7 +550,7 @@ window.handleExpenseSubmit = async function(e) {
                 } else if (qty > 0) {
                     // Auto-Add NEW item to Inventory if it doesn't exist
                     const newInvItem = {
-                        id: Date.now().toString() + Math.floor(Math.random() * 1000),
+                        id: typeof window.generateUUIDv7 === 'function' ? window.generateUUIDv7() : (Date.now().toString() + Math.random()),
                         name: subCat.trim(),
                         category: mainCat.trim(),
                         type: 'Veg',
@@ -577,7 +577,7 @@ window.handleExpenseSubmit = async function(e) {
             } else if (qty > 0) {
                 // Auto-Add NEW item to Inventory
                 const newItem = {
-                    id: Date.now().toString() + Math.floor(Math.random() * 1000),
+                    id: typeof window.generateUUIDv7 === 'function' ? window.generateUUIDv7() : (Date.now().toString() + Math.random()),
                     name: subCat.trim(),
                     category: mainCat.trim(),
                     type: 'Veg',
