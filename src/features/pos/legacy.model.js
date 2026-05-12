@@ -219,12 +219,19 @@ window.calculateDues = function() {
     
     const cashInput = document.getElementById('pay-cash-amount');
     const upiInput = document.getElementById('pay-upi-amount');
+    const prevCashIn = document.getElementById('cart-prev-paid-cash');
+    const prevUpiIn = document.getElementById('cart-prev-paid-upi');
     
     let cashPaid = parseFloat(cashInput.value) || 0;
     let upiPaid = parseFloat(upiInput.value) || 0;
     
+    // Read from editable prev paid fields if they exist
+    let prevCash = prevCashIn ? (parseFloat(prevCashIn.value.replace(/[^0-9.]/g, '')) || 0) : 0;
+    let prevUpi = prevUpiIn ? (parseFloat(prevUpiIn.value.replace(/[^0-9.]/g, '')) || 0) : 0;
+    let totalPrevPaid = prevCash + prevUpi;
+    
     // Total Paid = Previous + Current
-    let totalPaid = previousPaidAmount + cashPaid + upiPaid;
+    let totalPaid = totalPrevPaid + cashPaid + upiPaid;
     
     let dues = Math.max(0, finalTotal - totalPaid);
     
@@ -544,6 +551,9 @@ async function finalizeSaleRecord(custName = null, custMobile = null) {
     // Get current payment values
     const payCash = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
     const payUpi = parseFloat(document.getElementById('pay-upi-amount').value) || 0;
+    
+    const prevCashIn = document.getElementById('cart-prev-paid-cash');
+    const prevUpiIn = document.getElementById('cart-prev-paid-upi');
 
     let finalSaleId = typeof window.generateUUIDv7 === 'function' ? window.generateUUIDv7() : (Date.now().toString() + Math.random());
     let finalCustName = custName;
@@ -552,7 +562,6 @@ async function finalizeSaleRecord(custName = null, custMobile = null) {
     
     let prevCash = 0;
     let prevUpi = 0;
-    let prevTotalPaid = 0;
 
     if (window.editingSaleId) {
         const oldSale = (window.salesHistory || []).find(s => s.id == window.editingSaleId);
@@ -571,22 +580,16 @@ async function finalizeSaleRecord(custName = null, custMobile = null) {
             if (!finalCustMobile) finalCustMobile = oldSale.customerMobile;
             window.salesHistory = window.salesHistory.filter(s => s.id != window.editingSaleId);
             
-            prevCash = (window.previousSplitAmounts && window.previousSplitAmounts.cash) ? parseFloat(window.previousSplitAmounts.cash) : 0;
-            prevUpi = (window.previousSplitAmounts && window.previousSplitAmounts.upi) ? parseFloat(window.previousSplitAmounts.upi) : 0;
-            prevTotalPaid = window.previousPaidAmount || 0;
-            
-            // Fallback if split amounts weren't tracked but amount was paid
-            if (prevTotalPaid > 0 && prevCash === 0 && prevUpi === 0) {
-                if (oldSale.paymentMode === 'UPI') prevUpi = prevTotalPaid;
-                else prevCash = prevTotalPaid;
-            }
+            // Read potentially EDITED previous values from UI
+            prevCash = prevCashIn ? (parseFloat(prevCashIn.value.replace(/[^0-9.]/g, '')) || 0) : 0;
+            prevUpi = prevUpiIn ? (parseFloat(prevUpiIn.value.replace(/[^0-9.]/g, '')) || 0) : 0;
         }
     }
 
     const finalCash = prevCash + payCash;
     const finalUpi = prevUpi + payUpi;
     const finalSplitAmounts = { cash: finalCash, upi: finalUpi };
-    const totalPaidCombined = prevTotalPaid + payCash + payUpi;
+    const totalPaidFinal = finalCash + finalUpi;
 
     // Deduct Inventory
     (window.cart || []).forEach(cartItem => {
@@ -621,7 +624,7 @@ async function finalizeSaleRecord(custName = null, custMobile = null) {
         advancePaid: totals.advance,
         customerName: finalCustName,
         customerMobile: finalCustMobile,
-        dues: Math.max(0, total - totalPaidCombined)
+        dues: Math.max(0, total - totalPaidFinal)
     };
     
     // Clear held table if applicable
