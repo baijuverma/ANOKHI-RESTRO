@@ -769,8 +769,8 @@ window.editSale = function(id) {
 
     if (prevPaidRow) {
         prevPaidRow.style.display = 'flex';
-        if (prevPaidCashEl) prevPaidCashEl.value = window.formatCurrency ? window.formatCurrency(cashPaid) : `₹${cashPaid}`;
-        if (prevPaidUpiEl) prevPaidUpiEl.value = window.formatCurrency ? window.formatCurrency(upiPaid) : `₹${upiPaid}`;
+        if (prevPaidCashEl) prevPaidCashEl.value = cashPaid;
+        if (prevPaidUpiEl) prevPaidUpiEl.value = upiPaid;
     }
     
     // Clear search so items are visible

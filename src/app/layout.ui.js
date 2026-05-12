@@ -621,9 +621,9 @@ export const appShellHTML = `
                                      <span style="flex: 1;">Prev. Paid</span>
                                      <div style="display: flex; gap: 4px; align-items: center;">
                                          <div class="input-group-floating compact" style="position: relative; width: 100px; height: 26px;">
-                                             <input type="text" id="cart-prev-paid-cash" oninput="window.calculateDues()" value="₹0" placeholder=" " style="height: 26px; padding: 0 24px 0 8px; font-size: 11px; border-radius: 6px; border: 1.5px solid rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.05) !important;">
+                                             <input type="number" id="cart-prev-paid-cash" oninput="window.calculateDues()" value="0" placeholder=" " style="height: 26px; padding: 0 24px 0 8px; font-size: 11px; border-radius: 6px; border: 1.5px solid rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.05) !important;">
                                              <label for="cart-prev-paid-cash" style="left: 8px; font-size: 10px; color: rgba(16, 185, 129, 0.8); background: transparent; padding: 0; pointer-events: none; top: 6px; position: absolute; transition: 0.2s ease all;">Cash</label>
-                                             <i class="fa-solid fa-xmark clear-input-btn" onclick="document.getElementById('cart-prev-paid-cash').value='₹0'; window.calculateDues();" style="right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; color: rgba(16, 185, 129, 0.5); opacity: 0.7; cursor: pointer;"></i>
+                                             <i class="fa-solid fa-xmark clear-input-btn" onclick="window.clearInput('cart-prev-paid-cash')" style="right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; color: rgba(16, 185, 129, 0.5); opacity: 0.7; cursor: pointer;"></i>
                                              <style>
                                                  .input-group-floating.compact input:focus ~ label, 
                                                  .input-group-floating.compact input:not(:placeholder-shown) ~ label { 
@@ -638,9 +638,9 @@ export const appShellHTML = `
                                              </style>
                                          </div>
                                          <div class="input-group-floating compact" style="position: relative; width: 100px; height: 26px;">
-                                             <input type="text" id="cart-prev-paid-upi" oninput="window.calculateDues()" value="₹0" placeholder=" " style="height: 26px; padding: 0 24px 0 8px; font-size: 11px; border-radius: 6px; border: 1.5px solid rgba(129, 140, 248, 0.4); background: rgba(129, 140, 248, 0.05) !important;">
+                                             <input type="number" id="cart-prev-paid-upi" oninput="window.calculateDues()" value="0" placeholder=" " style="height: 26px; padding: 0 24px 0 8px; font-size: 11px; border-radius: 6px; border: 1.5px solid rgba(129, 140, 248, 0.4); background: rgba(129, 140, 248, 0.05) !important;">
                                              <label for="cart-prev-paid-upi" style="left: 8px; font-size: 10px; color: rgba(129, 140, 248, 0.8); background: transparent; padding: 0; pointer-events: none; top: 6px; position: absolute; transition: 0.2s ease all;">UPI</label>
-                                             <i class="fa-solid fa-xmark clear-input-btn" onclick="document.getElementById('cart-prev-paid-upi').value='₹0'; window.calculateDues();" style="right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; color: rgba(129, 140, 248, 0.5); opacity: 0.7; cursor: pointer;"></i>
+                                             <i class="fa-solid fa-xmark clear-input-btn" onclick="window.clearInput('cart-prev-paid-upi')" style="right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; color: rgba(129, 140, 248, 0.5); opacity: 0.7; cursor: pointer;"></i>
                                              <style>
                                                  .input-group-floating.compact:nth-child(2) input:focus ~ label, 
                                                  .input-group-floating.compact:nth-child(2) input:not(:placeholder-shown) ~ label { 
