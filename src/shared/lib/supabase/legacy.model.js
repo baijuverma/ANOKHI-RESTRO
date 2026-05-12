@@ -383,7 +383,10 @@ export function initSupabaseLogic() {
                     customer_mobile: s.customerMobile,
                     dues: s.dues || 0
                 });
-                const { error } = await db.from('sales_history').upsert(window.salesHistory.map(mapSale));
+                // OPTIMIZATION: Only upsert the most recent 50 sales to keep payload small. 
+                // Full sync is done on initial load. Recent 50 covers current work and recent edits.
+                const recentSales = window.salesHistory.slice(0, 50);
+                const { error } = await db.from('sales_history').upsert(recentSales.map(mapSale));
                 if (error) throw error;
             }
 
@@ -406,8 +409,9 @@ export function initSupabaseLogic() {
                     discount_fixed: e.discount_fixed || 0,
                     net_amount: e.net_amount || 0
                 });
-
-                const { error } = await db.from('expenses').upsert(window.expensesHistory.map(mapExpense));
+                // OPTIMIZATION: Only upsert the most recent 50 expenses.
+                const recentExpenses = window.expensesHistory.slice(0, 50);
+                const { error } = await db.from('expenses').upsert(recentExpenses.map(mapExpense));
                 if (error) throw error;
             }
 

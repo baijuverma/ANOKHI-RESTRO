@@ -629,14 +629,14 @@ async function finalizeSaleRecord(custName = null, custMobile = null) {
     if (!window.salesHistory) window.salesHistory = [];
     window.salesHistory.unshift(sale);
     
-    if (typeof window.saveData === 'function') {
-        try {
-            await window.saveData();
-        } catch (e) {
-            console.error("Failed to save data:", e);
-        }
-    }
+    // --- IMMEDIATE PERSISTENCE (Fast Path) ---
+    // Save to LocalStorage first so data isn't lost even if browser closes before sync
+    localStorage.setItem('anokhi_inventory', JSON.stringify(window.inventory));
+    localStorage.setItem('anokhi_sales', JSON.stringify(window.salesHistory));
+    localStorage.setItem('anokhi_tables', JSON.stringify(window.tables));
+    localStorage.setItem('anokhi_active_orders', JSON.stringify(window.activeOrders || []));
 
+    // Reset UI and show success IMMEDIATELY
     if (processBtn) {
         processBtn.disabled = false;
         processBtn.innerHTML = originalBtnHtml;
@@ -649,10 +649,10 @@ async function finalizeSaleRecord(custName = null, custMobile = null) {
     const prevPaidRow = document.getElementById('prev-paid-row');
     if(prevPaidRow) prevPaidRow.style.display = 'none';
 
-    // Show Receipt Modal
+    // Show Receipt Modal instantly
     if (typeof window.showReceipt === 'function') window.showReceipt(sale);
 
-    // Reset UI
+    // Reset POS components
     window.currentSelectedTable = null;
     const tableNameDisplay = document.getElementById('current-table-name');
     if (tableNameDisplay) tableNameDisplay.innerText = 'No Table Selected';
@@ -661,13 +661,23 @@ async function finalizeSaleRecord(custName = null, custMobile = null) {
     if (advanceInfo) advanceInfo.style.display = 'none';
     
     window.clearCart();
-    if (typeof window.renderInventory === 'function') window.renderInventory();
-    if (typeof window.renderPOSItems === 'function') window.renderPOSItems();
-    if (typeof window.updateDashboard === 'function') window.updateDashboard();
-    if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
-    if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
-    if (typeof window.renderHistory === 'function') window.renderHistory();
+    
+    // Background Cloud Sync (Non-blocking)
+    if (typeof window.saveData === 'function') {
+        window.saveData().catch(e => console.warn("Cloud sync failed in background:", e));
+    }
+
+    // Refresh other UI components in background
+    setTimeout(() => {
+        if (typeof window.renderInventory === 'function') window.renderInventory();
+        if (typeof window.renderPOSItems === 'function') window.renderPOSItems();
+        if (typeof window.updateDashboard === 'function') window.updateDashboard();
+        if (typeof window.renderTableGrid === 'function') window.renderTableGrid();
+        if (typeof window.renderHistoryCards === 'function') window.renderHistoryCards();
+        if (typeof window.renderHistory === 'function') window.renderHistory();
+    }, 10);
 }
+
 
 
 window.editSale = function(id) {
