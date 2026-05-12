@@ -695,46 +695,60 @@ function generateSalesReport(title, data) {
 
 function generateExpensesReport(title, data) {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4');
-    const margin = 8.5;
+    // Switch to Landscape to fit more columns beautifully
+    const doc = new jsPDF('l', 'mm', 'a4');
+    const margin = 10;
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    // Title
-    doc.setFontSize(18);
-    doc.setTextColor(40);
+    // --- Header ---
+    doc.setFontSize(22);
+    doc.setTextColor(239, 68, 68); // Red theme for Expenses
+    doc.setFont(undefined, 'bold');
     doc.text(title, margin, margin + 10);
     
     doc.setFontSize(10);
-    doc.text(`Generated on: ${new Date().toLocaleString()}`, margin, margin + 18);
+    doc.setTextColor(100);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Generated on: ${new Date().toLocaleString()} | Total Records: ${data.length}`, margin, margin + 18);
 
-    // Table Data
+    // --- Table Data Calculation ---
+    let totalGross = 0, totalDisc = 0, totalNet = 0;
+    let totalCash = 0, totalUPI = 0, totalUdhar = 0;
+    
+    const categoryTotals = {}; // For category-wise summary
+
     const tableBody = data.map((e, i) => {
-        const legacyAmount = [e.amount, e.net_amount, e.total_amount, e.gross_amount, e.net, e.total]
-            .map(v => parseFloat(v))
-            .find(v => !isNaN(v) && v > 0) || 0;
+        const gross = parseFloat(e.gross_amount || 0);
+        const net = parseFloat(e.net_amount || e.amount || 0);
+        const disc = gross > 0 ? (gross - net) : 0;
+        
+        const cash = parseFloat(e.cash || 0);
+        const upi = parseFloat(e.upi || 0);
+        const udhar = parseFloat(e.udhar || 0);
+        const sellPrice = parseFloat(e.selling_price || 0);
 
-        let cash = parseFloat(e.cash);
-        let upi = parseFloat(e.upi);
-        let udhar = parseFloat(e.udhar);
+        totalGross += gross;
+        totalDisc += disc;
+        totalNet += net;
+        totalCash += cash;
+        totalUPI += upi;
+        totalUdhar += udhar;
 
-        if (isNaN(cash)) cash = 0;
-        if (isNaN(upi)) upi = 0;
-        if (isNaN(udhar)) udhar = 0;
-
-        const pMode = (e.payment_mode || e.paymentMode || 'CASH').toUpperCase();
-        if ((cash + upi + udhar) < 0.01 && legacyAmount > 0) {
-            if (pMode === 'UPI') { upi = legacyAmount; }
-            else if (pMode === 'UDHAR' || pMode === 'DUES' || pMode === 'UDHAAR') { udhar = legacyAmount; }
-            else { cash = legacyAmount; }
-        }
+        // Track Category Totals
+        const mainCat = e.main_category || e.category || 'General';
+        categoryTotals[mainCat] = (categoryTotals[mainCat] || 0) + net;
 
         return [
             i + 1,
             new Date(e.date).toLocaleDateString('en-GB'),
-            e.main_category || e.category || 'General',
+            mainCat,
             e.sub_category || e.subCategory || '-',
-            e.qty ? e.qty + ' ' + (e.unit || ((e.main_category || e.category || '').toLowerCase().includes('kitchen') || (e.main_category || e.category || '').toLowerCase().includes('raw') ? 'KG' : 'QTY')) : '-',
+            e.qty ? `${e.qty} ${e.unit || ''}` : '-',
+            gross > 0 ? `Rs. ${gross.toFixed(2)}` : '-',
+            disc > 0 ? `Rs. ${disc.toFixed(2)}` : '-',
+            `Rs. ${net.toFixed(2)}`,
+            sellPrice > 0 ? `Rs. ${sellPrice.toFixed(2)}` : '-',
             cash > 0 ? `Rs. ${cash.toFixed(2)}` : '-',
             upi > 0 ? `Rs. ${upi.toFixed(2)}` : '-',
             udhar > 0 ? `Rs. ${udhar.toFixed(2)}` : '-',
@@ -742,23 +756,66 @@ function generateExpensesReport(title, data) {
         ];
     });
 
+    // Add Totals Row
+    tableBody.push([
+        '', '', '', '', 
+        { content: 'GRAND TOTAL', styles: { fontStyle: 'bold', halign: 'right' } },
+        { content: `Rs. ${totalGross.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalDisc.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalNet.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        '',
+        { content: `Rs. ${totalCash.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalUPI.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalUdhar.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        ''
+    ]);
+
     doc.autoTable({
-        head: [['Sr.', 'Date', 'Category', 'Sub-Category', 'KG/QTY', 'Cash', 'UPI', 'Udhar', 'Reason']],
+        head: [['Sr.', 'Date', 'Category', 'Sub-Category', 'Qty', 'Gross', 'Disc.', 'Net Amt', 'Sell Price', 'Cash', 'UPI', 'Udhar', 'Reason']],
         body: tableBody,
         startY: margin + 25,
-        margin: { left: margin, right: margin, top: margin, bottom: margin + 10 },
-        styles: { fontSize: 7 }, // Reduced font size to fit more columns
-        headStyles: { fillStyle: 'f', fillColor: [239, 68, 68] },
+        margin: { left: margin, right: margin, top: margin, bottom: 20 },
+        styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
+        headStyles: { fillColor: [239, 68, 68], textColor: 255, fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [255, 245, 245] },
+        columnStyles: {
+            0: { cellWidth: 10 },
+            1: { cellWidth: 20 },
+            7: { fontStyle: 'bold', textColor: [220, 38, 38] }, // Net Amt in Red-ish
+            12: { cellWidth: 35 } // Reason
+        },
         didDrawPage: (data) => addFooter(doc, data.pageNumber)
     });
 
-    const total = data.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
-    const finalY = doc.lastAutoTable.finalY || 40;
+    // --- Category-wise Summary ---
+    let finalY = doc.lastAutoTable.finalY + 15;
     
-    doc.setFontSize(12);
-    doc.setTextColor(34, 197, 94); // Green
-    doc.text(`Total Expenses: Rs. ${total.toFixed(2)}`, pageWidth - margin - 60, finalY + 10);
-    doc.setTextColor(0);
+    // Check if we need a new page for summary
+    if (finalY + 50 > pageHeight) {
+        doc.addPage();
+        finalY = 20;
+    }
+
+    doc.setFontSize(14);
+    doc.setTextColor(40);
+    doc.setFont(undefined, 'bold');
+    doc.text("Category-wise Summary", margin, finalY);
+
+    const summaryBody = Object.entries(categoryTotals)
+        .sort((a, b) => b[1] - a[1]) // Sort by amount descending
+        .map(([cat, amt]) => [cat, `Rs. ${amt.toFixed(2)}`]);
+
+    doc.autoTable({
+        head: [['Main Category', 'Total Net Expense']],
+        body: summaryBody,
+        startY: finalY + 5,
+        margin: { left: margin, right: margin },
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [75, 85, 99] }, // Grey header for summary
+        columnStyles: {
+            1: { halign: 'right', fontStyle: 'bold' }
+        }
+    });
 
     if (typeof doc.putTotalPages === 'function') doc.putTotalPages('{totalPages}');
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
