@@ -620,13 +620,21 @@ export const appShellHTML = `
                                  <div id="prev-paid-row" class="summary-row" style="display: none; margin-top: -8px; font-size: 14px; font-weight: 600; color: var(--success-color); align-items: center; gap: 8px;">
                                      <span style="flex: 1;">Prev. Paid</span>
                                      <div style="display: flex; gap: 4px; align-items: center;">
-                                         <div style="position: relative; width: 90px;">
-                                             <span style="position: absolute; left: 6px; top: 50%; transform: translateY(-50%); font-size: 8px; color: rgba(16, 185, 129, 0.7); font-weight: 900; letter-spacing: 0.5px;">CASH</span>
-                                             <input type="text" id="cart-prev-paid-cash" oninput="window.calculateDues()" value="₹0" style="width: 100%; height: 26px; padding: 0 4px 0 34px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 4px; color: #10b981; font-size: 11px; font-weight: 800; text-align: right; cursor: text;">
+                                         <div class="input-group-floating" style="position: relative; width: 100px; height: 26px;">
+                                             <input type="text" id="cart-prev-paid-cash" oninput="window.calculateDues()" value="₹0" placeholder=" " style="height: 26px; padding: 0 24px 0 8px; font-size: 11px; border-radius: 6px; border: 1.5px solid rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.05) !important;">
+                                             <label for="cart-prev-paid-cash" style="top: 50%; transform: translateY(-50%); left: 8px; font-size: 10px; color: rgba(16, 185, 129, 0.8); background: transparent; padding: 0; pointer-events: none;">Cash</label>
+                                             <i class="fa-solid fa-xmark clear-input-btn" onclick="document.getElementById('cart-prev-paid-cash').value='₹0'; window.calculateDues();" style="right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; color: rgba(16, 185, 129, 0.5); opacity: 0.7; cursor: pointer;"></i>
+                                             <style>
+                                                 #cart-prev-paid-cash:focus ~ label, #cart-prev-paid-cash:not(:placeholder-shown) ~ label { top: -8px; left: 6px; font-size: 8px; background: #16213e; padding: 0 4px; color: #10b981; }
+                                             </style>
                                          </div>
-                                         <div style="position: relative; width: 90px;">
-                                             <span style="position: absolute; left: 6px; top: 50%; transform: translateY(-50%); font-size: 8px; color: rgba(129, 140, 248, 0.7); font-weight: 900; letter-spacing: 0.5px;">UPI</span>
-                                             <input type="text" id="cart-prev-paid-upi" oninput="window.calculateDues()" value="₹0" style="width: 100%; height: 26px; padding: 0 4px 0 30px; background: rgba(129, 140, 248, 0.1); border: 1px solid rgba(129, 140, 248, 0.3); border-radius: 4px; color: #818cf8; font-size: 11px; font-weight: 800; text-align: right; cursor: text;">
+                                         <div class="input-group-floating" style="position: relative; width: 100px; height: 26px;">
+                                             <input type="text" id="cart-prev-paid-upi" oninput="window.calculateDues()" value="₹0" placeholder=" " style="height: 26px; padding: 0 24px 0 8px; font-size: 11px; border-radius: 6px; border: 1.5px solid rgba(129, 140, 248, 0.4); background: rgba(129, 140, 248, 0.05) !important;">
+                                             <label for="cart-prev-paid-upi" style="top: 50%; transform: translateY(-50%); left: 8px; font-size: 10px; color: rgba(129, 140, 248, 0.8); background: transparent; padding: 0; pointer-events: none;">UPI</label>
+                                             <i class="fa-solid fa-xmark clear-input-btn" onclick="document.getElementById('cart-prev-paid-upi').value='₹0'; window.calculateDues();" style="right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; color: rgba(129, 140, 248, 0.5); opacity: 0.7; cursor: pointer;"></i>
+                                             <style>
+                                                 #cart-prev-paid-upi:focus ~ label, #cart-prev-paid-upi:not(:placeholder-shown) ~ label { top: -8px; left: 6px; font-size: 8px; background: #16213e; padding: 0 4px; color: #818cf8; }
+                                             </style>
                                          </div>
                                      </div>
                                  </div>
