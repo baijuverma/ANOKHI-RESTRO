@@ -617,9 +617,18 @@ export const appShellHTML = `
                                  </div>
                                  
                                  <!-- Previously Paid (For Edits) -->
-                                 <div id="prev-paid-row" class="summary-row" style="display: none; margin-top: -8px; font-size: 14px; font-weight: 600; color: var(--success-color);">
-                                     <span>Previously Paid</span>
-                                     <span id="cart-prev-paid">₹0.00</span>
+                                 <div id="prev-paid-row" class="summary-row" style="display: none; margin-top: -8px; font-size: 14px; font-weight: 600; color: var(--success-color); align-items: center; gap: 8px;">
+                                     <span style="flex: 1;">Prev. Paid</span>
+                                     <div style="display: flex; gap: 4px; align-items: center;">
+                                         <div style="position: relative; width: 90px;">
+                                             <span style="position: absolute; left: 6px; top: 50%; transform: translateY(-50%); font-size: 8px; color: rgba(16, 185, 129, 0.7); font-weight: 900; letter-spacing: 0.5px;">CASH</span>
+                                             <input type="text" id="cart-prev-paid-cash" readonly value="₹0" style="width: 100%; height: 26px; padding: 0 4px 0 34px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 4px; color: #10b981; font-size: 11px; font-weight: 800; text-align: right; pointer-events: none;">
+                                         </div>
+                                         <div style="position: relative; width: 90px;">
+                                             <span style="position: absolute; left: 6px; top: 50%; transform: translateY(-50%); font-size: 8px; color: rgba(129, 140, 248, 0.7); font-weight: 900; letter-spacing: 0.5px;">UPI</span>
+                                             <input type="text" id="cart-prev-paid-upi" readonly value="₹0" style="width: 100%; height: 26px; padding: 0 4px 0 30px; background: rgba(129, 140, 248, 0.1); border: 1px solid rgba(129, 140, 248, 0.3); border-radius: 4px; color: #818cf8; font-size: 11px; font-weight: 800; text-align: right; pointer-events: none;">
+                                         </div>
+                                     </div>
                                  </div>
                             </div>
 

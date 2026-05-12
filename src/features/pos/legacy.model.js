@@ -167,8 +167,15 @@ window.clearCart = function() {
     // Reset editing state
     window.editingSaleId = null;
     window.previousPaidAmount = 0;
+    window.previousSplitAmounts = null;
     const prevPaidRow = document.getElementById('prev-paid-row');
     if(prevPaidRow) prevPaidRow.style.display = 'none';
+    
+    // Clear the split prev paid fields
+    const prevPaidCashEl = document.getElementById('cart-prev-paid-cash');
+    const prevPaidUpiEl = document.getElementById('cart-prev-paid-upi');
+    if(prevPaidCashEl) prevPaidCashEl.value = '₹0';
+    if(prevPaidUpiEl) prevPaidUpiEl.value = '₹0';
     
     if (typeof renderCart === 'function') window.renderCart();
 }
@@ -736,12 +743,31 @@ window.editSale = function(id) {
     const deleteBtn = document.getElementById('btn-delete-sale');
     if (deleteBtn) deleteBtn.style.display = 'block';
     
-    // Show previous paid in UI
+    // Show previous paid in UI (Split by Cash and UPI)
     const prevPaidRow = document.getElementById('prev-paid-row');
-    const prevPaidEl = document.getElementById('cart-prev-paid');
-    if (prevPaidRow && prevPaidEl) {
+    const prevPaidCashEl = document.getElementById('cart-prev-paid-cash');
+    const prevPaidUpiEl = document.getElementById('cart-prev-paid-upi');
+    
+    const split = sale.splitAmounts || sale.split_amounts || {};
+    const pMode = (sale.paymentMode || sale.payment_mode || 'CASH').toUpperCase();
+    
+    let cashPaid = 0, upiPaid = 0;
+    if (pMode === 'UPI') {
+        upiPaid = window.previousPaidAmount;
+    } else if (pMode === 'BOTH' || pMode === 'SPLIT') {
+        cashPaid = parseFloat(split.cash || 0);
+        upiPaid = parseFloat(split.upi || 0);
+    } else {
+        cashPaid = window.previousPaidAmount;
+    }
+
+    // Store for sync/calculation logic
+    window.previousSplitAmounts = { cash: cashPaid, upi: upiPaid };
+
+    if (prevPaidRow) {
         prevPaidRow.style.display = 'flex';
-        prevPaidEl.innerText = window.formatCurrency ? window.formatCurrency(window.previousPaidAmount) : `₹${window.previousPaidAmount}`;
+        if (prevPaidCashEl) prevPaidCashEl.value = window.formatCurrency ? window.formatCurrency(cashPaid) : `₹${cashPaid}`;
+        if (prevPaidUpiEl) prevPaidUpiEl.value = window.formatCurrency ? window.formatCurrency(upiPaid) : `₹${upiPaid}`;
     }
     
     // Clear search so items are visible
