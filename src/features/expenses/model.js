@@ -972,6 +972,22 @@ export function initExpensesLogic() {
         }
     };
 
+    window.calcExpenseGross = function() {
+        const qtyEl = document.getElementById('expense-qty');
+        const priceEl = document.getElementById('expense-sell-price');
+        const grossEl = document.getElementById('expense-gross');
+        
+        if (!qtyEl || !priceEl || !grossEl) return;
+        
+        const qty = parseFloat(qtyEl.value) || 0;
+        const price = parseFloat(priceEl.value) || 0;
+        
+        if (qty > 0 && price > 0) {
+            grossEl.value = (qty * price).toFixed(2);
+            window.calcExpenseNet('gross');
+        }
+    };
+
     // Initial render
     window.calcExpenseNet = function(changedField) {
         const grossEl = document.getElementById('expense-gross');
