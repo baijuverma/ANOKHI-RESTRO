@@ -464,9 +464,9 @@ window.renderHistory = () => {
 window.renderExpenses = () => {
     if (window.expensesHistory) {
         let filtered = [...window.expensesHistory];
-        const searchVal = document.getElementById('expense-search-history')?.value?.toLowerCase() || '';
-        const startDateStr = document.getElementById('expense-from-date')?.value;
-        const endDateStr = document.getElementById('expense-to-date')?.value;
+        const searchVal = document.getElementById('expenses-search')?.value?.toLowerCase() || '';
+        const startDateStr = document.getElementById('expenses-start-date')?.value;
+        const endDateStr = document.getElementById('expenses-end-date')?.value;
 
         if (searchVal || startDateStr || endDateStr) {
             filtered = filtered.filter(exp => {
