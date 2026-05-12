@@ -807,8 +807,8 @@ function generateExpensesReport(title, data) {
 
     // Add Total Row to Summary
     summaryBody.push([
-        { content: 'TOTAL EXPENSE', styles: { fontStyle: 'bold' } },
-        { content: `Rs. ${totalNet.toFixed(2)}`, styles: { fontStyle: 'bold' } }
+        { content: 'TOTAL EXPENSE', styles: { fontStyle: 'bold', textColor: [239, 68, 68] } },
+        { content: `Rs. ${totalNet.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [239, 68, 68] } }
     ]);
 
     doc.autoTable({
