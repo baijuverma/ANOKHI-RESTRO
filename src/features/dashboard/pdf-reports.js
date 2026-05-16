@@ -457,8 +457,27 @@ export function initPdfReports() {
             { content: `Rs. ${(totalCatRev - totalCatExp).toFixed(2)}`, styles: { fontStyle: 'bold' } }
         ]);
 
+        // Add Discount Row
+        catReportBody.push([
+            '',
+            { content: 'Less: Discount', styles: { fontStyle: 'italic', textColor: [239, 68, 68] } },
+            { content: `- Rs. ${totalDiscount.toFixed(2)}`, styles: { fontStyle: 'italic', textColor: [239, 68, 68] } },
+            '',
+            ''
+        ]);
+
+        // Add Net Profit/Loss Row
+        const finalPL = (totalCatRev - totalCatExp) - totalDiscount;
+        catReportBody.push([
+            '',
+            { content: 'Net Profit / Loss', styles: { fontStyle: 'bold' } },
+            '',
+            '',
+            { content: `Rs. ${finalPL.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: finalPL >= 0 ? [34, 197, 94] : [239, 68, 68] } }
+        ]);
+
         doc.autoTable({
-            head: [['Sr.', 'Category', 'Revenue', 'Expenses', 'Profit / Loss']],
+            head: [['Sr.', 'Category', 'Selling Price', 'Expenses', 'Profit / Loss']],
             body: catReportBody,
             startY: catSummaryY,
             margin: { left: margin, right: margin },
