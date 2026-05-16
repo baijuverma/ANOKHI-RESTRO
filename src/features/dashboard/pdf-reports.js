@@ -267,7 +267,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
     // --- Section 1: Bill-wise Transactions ---
     doc.setFontSize(14);
     doc.setFont(undefined, 'bold');
-    const section1Title = isFiltered ? "Bill-wise Transactions" : "1. Bill-wise Transactions";
+    const section1Title = "1. Bill-wise Transactions";
     doc.text(section1Title, margin, margin + 28);
     }
     
@@ -347,8 +347,6 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
     }
 
     const billY = (!hideTransactions && doc.lastAutoTable) ? (doc.lastAutoTable.finalY || 100) : (margin + 25);
-
-    if (!isFiltered) {
     // --- Section 2: Order Type Summary & Grand Total ---
     doc.setFontSize(10);
     doc.setFont(undefined, 'bold');
@@ -380,7 +378,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
 
     doc.setFontSize(14);
     doc.setFont(undefined, 'bold');
-    const section2Title = hideTransactions ? "Item-wise Sales Ranking" : "2. Item-wise Sales Ranking";
+    const section2Title = "2. Item-wise Sales Ranking";
     doc.text(section2Title, margin, itemStartY - 5);
 
     const categoryMap = {};
@@ -536,7 +534,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
 
     doc.setFontSize(14);
     doc.setFont(undefined, 'bold');
-    const section3Title = hideTransactions ? "Category-wise Profit/Loss" : "3. Category-wise Profit/Loss";
+    const section3Title = "3. Category-wise Profit/Loss";
     doc.text(section3Title, margin, catSummaryY - 5);
 
     const categoryRevMap = {};
@@ -613,7 +611,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
 
     doc.setFontSize(14);
     doc.setFont(undefined, 'bold');
-    const section4Title = hideTransactions ? "Final Period Summary" : "4. Final Period Summary";
+    const section4Title = "4. Final Period Summary";
     doc.text(section4Title, margin, summaryPeriodY);
 
     const grossSale = totalRevenue + totalDiscount;
@@ -636,9 +634,9 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
             1: { halign: 'right' }
         }
     });
-    } // End if (!isFiltered)
 
     const totalPagesCount = doc.internal.getNumberOfPages();
+
     for (let i = 1; i <= totalPagesCount; i++) {
         doc.setPage(i);
         addFooter(doc, i);
