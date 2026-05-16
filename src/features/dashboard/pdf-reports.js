@@ -160,12 +160,12 @@ export function initPdfReports() {
         generateProfitReport(`Monthly Profit & Loss Statement (${monthName} ${year})`, sales, expenses);
     };
 
-    window.generateGrossReport = (title, sales, expenses) => {
-        generateDetailedReport(title, sales, expenses);
+window.generateGrossReport = (title, sales, expenses, isFiltered = false) => {
+        generateDetailedReport(title, sales, expenses, isFiltered);
     };
 }
 
-function generateDetailedReport(title, sales, expenses) {
+function generateDetailedReport(title, sales, expenses, isFiltered = false) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
     const margin = 8.5;
@@ -194,7 +194,8 @@ function generateDetailedReport(title, sales, expenses) {
     // --- Section 1: Bill-wise Transactions ---
     doc.setFontSize(14);
     doc.setFont(undefined, 'bold');
-    doc.text("1. Bill-wise Transactions", margin, margin + 28);
+    const section1Title = isFiltered ? "Bill-wise Transactions" : "1. Bill-wise Transactions";
+    doc.text(section1Title, margin, margin + 28);
     
     let totalRevenue = 0, totalCash = 0, totalUPI = 0, totalDues = 0;
     const billTableBody = (sales || []).map((s, i) => {
@@ -271,6 +272,7 @@ function generateDetailedReport(title, sales, expenses) {
 
     const billY = doc.lastAutoTable.finalY || 100;
 
+    if (!isFiltered) {
     // --- Section 2: Order Type Summary & Grand Total ---
     doc.setFontSize(10);
     doc.setFont(undefined, 'bold');
@@ -507,6 +509,7 @@ function generateDetailedReport(title, sales, expenses) {
             1: { halign: 'right' }
         }
     });
+    } // End if (!isFiltered)
 
     const totalPagesCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= totalPagesCount; i++) {
@@ -516,7 +519,6 @@ function generateDetailedReport(title, sales, expenses) {
     
     if (typeof doc.putTotalPages === 'function') doc.putTotalPages('{totalPages}');
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
-}
 }
 
 function generateProfitReport(title, sales, expenses) {

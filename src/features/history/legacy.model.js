@@ -183,9 +183,13 @@ window.downloadGrossReport = function() {
     let sales = [...(window.salesHistory || [])];
     const startDateStr = document.getElementById('history-start-date')?.value;
     const endDateStr = document.getElementById('history-end-date')?.value;
+    const searchInput = document.getElementById('history-search');
+    const searchText = searchInput ? searchInput.value.trim() : "";
+    
+    const isFiltered = searchText !== "" || window.showOnlyDues || (window.historyPaymentFilter && window.historyPaymentFilter !== 'ALL');
 
-    // Filter by date range and payment filter
-    if (startDateStr || endDateStr || window.historyPaymentFilter || window.showOnlyDues) {
+    // Filter by date range, payment filter, and search text
+    if (startDateStr || endDateStr || window.historyPaymentFilter || window.showOnlyDues || searchText !== "") {
         sales = sales.filter(sale => {
             const saleDate = new Date(sale.date);
             saleDate.setHours(0,0,0,0);
@@ -223,6 +227,14 @@ window.downloadGrossReport = function() {
                 if (window.historyPaymentFilter === 'CASH' && sCash <= 0) return false;
                 if (window.historyPaymentFilter === 'UPI' && sUpi <= 0) return false;
                 if (window.historyPaymentFilter === 'DUES' && sDues <= 0) return false;
+            }
+
+            // Apply Search Text filter
+            if (searchText !== "") {
+                const cName = (sale.customerName || sale.customer_name || '').toLowerCase();
+                const sId = String(sale.id || '').toLowerCase();
+                const sSearch = searchText.toLowerCase();
+                if (!cName.includes(sSearch) && !sId.includes(sSearch)) return false;
             }
 
             return true;
@@ -266,7 +278,7 @@ window.downloadGrossReport = function() {
                 return true;
             });
         }
-        window.generateGrossReport(title, sales, expenses);
+        window.generateGrossReport(title, sales, expenses, isFiltered);
         if (typeof window.showToast === 'function') {
             window.showToast("Gross Report PDF generated successfully", "success");
         }
