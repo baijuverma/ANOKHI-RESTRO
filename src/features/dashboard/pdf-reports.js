@@ -544,14 +544,17 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
     const section4Title = hideTransactions ? "Final Period Summary" : "4. Final Period Summary";
     doc.text(section4Title, margin, summaryPeriodY);
 
+    const grossSale = totalRevenue + totalDiscount;
     const totalExp = (expenses || []).reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
     const profitLoss = totalRevenue - totalExp;
 
     doc.autoTable({
         body: [
-            ['Total Sale Value', `Rs. ${totalRevenue.toFixed(2)}`],
-            ['Total Expenses', `Rs. ${totalExp.toFixed(2)}`],
-            [{ content: 'Total Profit / Loss', styles: { fontStyle: 'bold' } }, { content: `Rs. ${profitLoss.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: profitLoss >= 0 ? [34, 197, 94] : [239, 68, 68] } }]
+            ['Total Sale Value (Gross)', `Rs. ${grossSale.toFixed(2)}`],
+            [{ content: 'Less: Total Discount', styles: { textColor: [239, 68, 68] } }, { content: `- Rs. ${totalDiscount.toFixed(2)}`, styles: { textColor: [239, 68, 68] } }],
+            [{ content: 'Net Sale Value', styles: { fontStyle: 'bold' } }, { content: `Rs. ${totalRevenue.toFixed(2)}`, styles: { fontStyle: 'bold' } }],
+            ['Total Expenses', { content: `Rs. ${totalExp.toFixed(2)}`, styles: { textColor: [239, 68, 68] } }],
+            [{ content: 'Net Profit / Loss', styles: { fontStyle: 'bold' } }, { content: `Rs. ${profitLoss.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: profitLoss >= 0 ? [34, 197, 94] : [239, 68, 68] } }]
         ],
         startY: summaryPeriodY + 5,
         margin: { left: margin, right: margin },
