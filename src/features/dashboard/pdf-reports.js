@@ -161,7 +161,8 @@ export function initPdfReports() {
     };
 
 window.generateGrossReport = (title, sales, expenses, isFiltered = false) => {
-        generateDetailedReport(title, sales, expenses, isFiltered, false);
+    generateDetailedReport(title, sales, expenses, isFiltered, false);
+};
     window.openRangeModal = (type) => {
         const title = type === 'SALES' ? 'Sales Report Range' : (type === 'EXPENSE' ? 'Expenses Report Range' : 'Profit & Loss Report Range');
         const titleEl = document.getElementById('range-modal-title');
