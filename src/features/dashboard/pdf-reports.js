@@ -404,9 +404,71 @@ export function initPdfReports() {
             styles: { fontSize: 9 }
         });
 
-        // --- Section 4: Period Summary (Sale, Expense, Profit/Loss) ---
-        const finalY = doc.lastAutoTable.finalY || 200;
-        let summaryPeriodY = finalY + 15;
+        // --- Section 3: Category-wise Profit/Loss ---
+        const finalYRank = doc.lastAutoTable.finalY || 200;
+        let catSummaryY = finalYRank + 15;
+
+        if (catSummaryY > 240) {
+            doc.addPage();
+            catSummaryY = 20;
+        }
+
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.text("3. Category-wise Profit/Loss", margin, catSummaryY - 5);
+
+        // Aggregate Revenue per Category
+        const categoryRevMap = {};
+        Object.keys(categoryMap).forEach(cat => {
+            categoryRevMap[cat] = Object.values(categoryMap[cat]).reduce((sum, item) => sum + item.revenue, 0);
+        });
+
+        // Aggregate Expenses per Category
+        const categoryExpMap = {};
+        (expenses || []).forEach(exp => {
+            const cat = exp.main_category || exp.category || 'General';
+            categoryExpMap[cat] = (categoryExpMap[cat] || 0) + parseFloat(exp.amount || 0);
+        });
+
+        // Combine categories
+        const allCats = Array.from(new Set([...Object.keys(categoryRevMap), ...Object.keys(categoryExpMap)])).sort();
+        
+        let totalCatRev = 0, totalCatExp = 0;
+        const catReportBody = allCats.map((cat, i) => {
+            const rev = categoryRevMap[cat] || 0;
+            const exp = categoryExpMap[cat] || 0;
+            const pl = rev - exp;
+            totalCatRev += rev;
+            totalCatExp += exp;
+            return [
+                i + 1,
+                cat,
+                `Rs. ${rev.toFixed(2)}`,
+                `Rs. ${exp.toFixed(2)}`,
+                { content: `Rs. ${pl.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: pl >= 0 ? [34, 197, 94] : [239, 68, 68] } }
+            ];
+        });
+
+        catReportBody.push([
+            '',
+            { content: 'TOTAL', styles: { fontStyle: 'bold' } },
+            { content: `Rs. ${totalCatRev.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+            { content: `Rs. ${totalCatExp.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+            { content: `Rs. ${(totalCatRev - totalCatExp).toFixed(2)}`, styles: { fontStyle: 'bold' } }
+        ]);
+
+        doc.autoTable({
+            head: [['Sr.', 'Category', 'Revenue', 'Expenses', 'Profit / Loss']],
+            body: catReportBody,
+            startY: catSummaryY,
+            margin: { left: margin, right: margin },
+            headStyles: { fillColor: [99, 102, 241] },
+            styles: { fontSize: 9 }
+        });
+
+        // --- Section 4: Final Period Summary (Sale, Expense, Profit/Loss) ---
+        const finalYCat = doc.lastAutoTable.finalY || 200;
+        let summaryPeriodY = finalYCat + 15;
 
         // Ensure we have enough space or add a page
         if (summaryPeriodY + 40 > 280) {
@@ -416,7 +478,7 @@ export function initPdfReports() {
 
         doc.setFontSize(14);
         doc.setFont(undefined, 'bold');
-        doc.text("3. Period Summary", margin, summaryPeriodY);
+        doc.text("4. Final Period Summary", margin, summaryPeriodY);
 
         const totalExp = (expenses || []).reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
         const profitLoss = totalRevenue - totalExp;
