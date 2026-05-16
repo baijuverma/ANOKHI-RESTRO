@@ -161,404 +161,366 @@ export function initPdfReports() {
     };
 
     window.generateGrossReport = (title, sales, expenses) => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-        const margin = 8.5;
-        const pageWidth = doc.internal.pageSize.getWidth();
-
-        doc.setFontSize(18);
-        doc.setTextColor(40);
-        doc.text(title, margin, margin + 10);
-        
-        const formatDate = (dateStr) => {
-            const d = new Date(dateStr);
-            const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            return `${String(d.getDate()).padStart(2, '0')} ${String(d.getMonth() + 1).padStart(2, '0')} ${d.getFullYear()}`;
-        };
-
-        const formatDateTime = (dateStr) => {
-            const d = new Date(dateStr);
-            const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            return `${formatDate(d)} ${time}`;
-        };
-
-        doc.setFontSize(10);
-        doc.text(`Generated on: ${formatDateTime(new Date())}`, margin, margin + 18);
-
-        // --- Section 1: Bill-wise Transactions ---
-        doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
-        doc.text("1. Bill-wise Transactions", margin, margin + 28);
-        
-        let totalRevenue = 0, totalCash = 0, totalUPI = 0, totalDues = 0;
-        const billTableBody = sales.map((s, i) => {
-            const total = parseFloat(s.total || 0);
-            const sDues = parseFloat(s.dues || 0);
-            const totalPaid = total - sDues;
-            const split = s.split_amounts || s.splitAmounts;
-            const pMode = (s.payment_mode || s.paymentMode || 'CASH').toUpperCase();
-            let sCash = 0, sUpi = 0;
-
-            if (pMode === 'UPI') {
-                sUpi = totalPaid;
-            } else if ((pMode === 'BOTH' || pMode === 'SPLIT') && split) {
-                sCash = parseFloat(split.cash || 0);
-                sUpi = parseFloat(split.upi || 0);
-            } else {
-                sCash = totalPaid;
-            }
-
-            const d = new Date(s.date);
-            const dateStr = formatDate(d);
-            const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const itemsStr = (s.items || []).map(item => `${item.name} (x${item.cartQty || item.qty || 0})`).join(', ');
-
-            totalRevenue += total;
-            totalCash += sCash;
-            totalUPI += sUpi;
-            totalDues += sDues;
-
-            return [
-                i + 1,
-                s.id.toString().slice(-6),
-                `${dateStr}\n${timeStr}`,
-                s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
-                itemsStr,
-                (s.orderType || 'Counter').toUpperCase(),
-                sCash > 0 ? `Rs. ${sCash.toFixed(2)}` : '-',
-                sUpi > 0 ? `Rs. ${sUpi.toFixed(2)}` : '-',
-                sDues > 0 ? `Rs. ${sDues.toFixed(2)}` : '-',
-                `Rs. ${total.toFixed(2)}`
-            ];
-        });
-
-        billTableBody.push([
-            '',
-            '',
-            '',
-            '',
-            '',
-            { content: 'TOTAL', styles: { fontStyle: 'bold' } },
-            { content: `Rs. ${totalCash.toFixed(2)}`, styles: { fontStyle: 'bold' } },
-            { content: `Rs. ${totalUPI.toFixed(2)}`, styles: { fontStyle: 'bold' } },
-            { content: `Rs. ${totalDues.toFixed(2)}`, styles: { fontStyle: 'bold' } },
-            { content: `Rs. ${totalRevenue.toFixed(2)}`, styles: { fontStyle: 'bold' } }
-        ]);
-
-        doc.autoTable({
-            head: [['Sr.', 'Bill ID', 'Date & Time', 'Customer', 'Items Details', 'Type', 'Cash', 'UPI', 'Dues', 'Amount']],
-            body: billTableBody,
-            startY: margin + 32,
-            margin: { left: margin, right: margin },
-            headStyles: { fillColor: [99, 102, 241] }, // Indigo for bills
-            styles: { fontSize: 7, cellPadding: 2 },
-            columnStyles: {
-                0: { cellWidth: 10 }, // Sr. No.
-                2: { cellWidth: 22 }, // Date/Time
-                3: { cellWidth: 25 }, // Customer
-                4: { cellWidth: 45 }, // Items
-                5: { cellWidth: 22 }, // Type
-                8: { cellWidth: 15 }, // Dues
-                9: { fontStyle: 'bold' } // Amount
-            }
-        });
-
-        const billY = doc.lastAutoTable.finalY || 100;
-
-        // --- Section 2: Order Type Summary & Grand Total (Moved before Rankings) ---
-        doc.setFontSize(10);
-        doc.setFont(undefined, 'bold');
-        const typeTotals = sales.reduce((acc, s) => {
-            const type = (s.orderType || 'Counter').toUpperCase();
-            acc[type] = (acc[type] || 0) + parseFloat(s.total || 0);
-            return acc;
-        }, {});
-        
-        let currentX = margin;
-        let summaryY = billY + 12; 
-        Object.entries(typeTotals).forEach(([type, val], idx) => {
-            const text = `${type}: Rs. ${val.toFixed(2)}`;
-            doc.text(text, currentX, summaryY);
-            currentX += doc.getTextWidth(text) + 8; // Horizontal gap
-        });
-
-        doc.setFontSize(12);
-        doc.setTextColor(34, 197, 94); // Green
-        doc.text(`Grand Total: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 60, summaryY);
-        doc.setTextColor(0); // Reset to black
-
-        // --- Section 3: Item-wise Ranking Summary ---
-        let itemStartY = billY + 28; // Reduced gap per previous request
-        if (itemStartY > 240) {
-            doc.addPage();
-            itemStartY = 20;
-        }
-
-        doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
-        doc.text("2. Item-wise Sales Ranking", margin, itemStartY - 5);
-
-        // (Aggregate items logic follows...)
-        const categoryMap = {};
-        let totalDiscount = 0;
-        sales.forEach(sale => {
-            totalDiscount += parseFloat(sale.discount || 0);
-            (sale.items || []).forEach(item => {
-                let cat = item.category || "General";
-                const name = item.name || "Unknown";
-                
-                // Lookup current category from inventory if available
-                if (window.inventory && window.inventory.length > 0) {
-                    const invItem = window.inventory.find(i => String(i.id) === String(item.id) || i.name.toLowerCase() === name.toLowerCase());
-                    if (invItem && invItem.category) {
-                        cat = invItem.category;
-                    }
-                }
-                
-                const qty = parseFloat(item.cartQty || item.qty || 0);
-                const revenue = parseFloat(item.price || 0) * qty;
-                
-                if (!categoryMap[cat]) categoryMap[cat] = {};
-                if (!categoryMap[cat][name]) {
-                    categoryMap[cat][name] = { name, quantity: 0, revenue: 0 };
-                }
-                categoryMap[cat][name].quantity += qty;
-                categoryMap[cat][name].revenue += revenue;
-            });
-        });
-
-        const itemTableBody = [];
-        let totalItemQty = 0;
-        let totalItemRev = 0;
-
-        // Calculate total quantity per category for sorting categories by performance
-        const categoryPerformance = {};
-        Object.keys(categoryMap).forEach(cat => {
-            categoryPerformance[cat] = Object.values(categoryMap[cat]).reduce((sum, item) => sum + item.quantity, 0);
-        });
-
-        // Sort categories by total quantity (descending)
-        const sortedCategories = Object.keys(categoryMap).sort((a, b) => categoryPerformance[b] - categoryPerformance[a]);
-
-        sortedCategories.forEach((catName, catIdx) => {
-            // Add Category Header Row with Serial Number
-            itemTableBody.push([
-                { content: `${catIdx + 1}. Category: ${catName}`, colSpan: 4, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }
-            ]);
-
-            let catQty = 0;
-            let catRev = 0;
-            const categoryItems = Object.values(categoryMap[catName]).sort((a, b) => b.quantity - a.quantity);
-            categoryItems.forEach((item, i) => {
-                totalItemQty += item.quantity;
-                totalItemRev += item.revenue;
-                catQty += item.quantity;
-                catRev += item.revenue;
-                itemTableBody.push([
-                    i + 1,
-                    item.name,
-                    item.quantity,
-                    `Rs. ${item.revenue.toFixed(2)}`
-                ]);
-            });
-
-            // Subtotal for Category
-            itemTableBody.push([
-                '',
-                { content: `${catName} Total`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
-                { content: catQty.toString(), styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
-                { content: `Rs. ${catRev.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } }
-            ]);
-        });
-
-        const netTotal = totalItemRev - totalDiscount;
-
-        // Row 1: Gross Total
-        itemTableBody.push([
-            '',
-            { content: 'Gross Total', styles: { fontStyle: 'bold' } },
-            { content: totalItemQty.toString(), styles: { fontStyle: 'bold' } },
-            { content: `Rs. ${totalItemRev.toFixed(2)}`, styles: { fontStyle: 'bold' } }
-        ]);
-        // Row 2: Less Discount
-        itemTableBody.push([
-            '',
-            { content: 'Less: Discount', styles: { fontStyle: 'italic', textColor: [239, 68, 68] } },
-            '',
-            { content: `- Rs. ${totalDiscount.toFixed(2)}`, styles: { fontStyle: 'italic', textColor: [239, 68, 68] } }
-        ]);
-        // Row 3: Net Total
-        itemTableBody.push([
-            '',
-            { content: 'Net Total (= Bill Total)', styles: { fontStyle: 'bold', textColor: [34, 197, 94] } },
-            '',
-            { content: `Rs. ${netTotal.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [34, 197, 94] } }
-        ]);
-
-        doc.autoTable({
-            head: [['Rank', 'Item Name', 'Qty Sold', 'Revenue']],
-            body: itemTableBody,
-            startY: itemStartY,
-            margin: { left: margin, right: margin },
-            headStyles: { fillColor: [34, 197, 94] }, // Green for rankings
-            styles: { fontSize: 9 }
-        });
-
-        // --- Section 3: Category-wise Profit/Loss ---
-        const finalYRank = doc.lastAutoTable.finalY || 200;
-        let catSummaryY = finalYRank + 15;
-
-        if (catSummaryY > 240) {
-            doc.addPage();
-            catSummaryY = 20;
-        }
-
-        doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
-        doc.text("3. Category-wise Profit/Loss", margin, catSummaryY - 5);
-
-        // Aggregate Revenue per Category
-        const categoryRevMap = {};
-        Object.keys(categoryMap).forEach(cat => {
-            categoryRevMap[cat] = Object.values(categoryMap[cat]).reduce((sum, item) => sum + item.revenue, 0);
-        });
-
-        // Aggregate Expenses per Category
-        const categoryExpMap = {};
-        (expenses || []).forEach(exp => {
-            const cat = exp.main_category || exp.category || 'General';
-            categoryExpMap[cat] = (categoryExpMap[cat] || 0) + parseFloat(exp.amount || 0);
-        });
-
-        // Combine categories
-        const allCats = Array.from(new Set([...Object.keys(categoryRevMap), ...Object.keys(categoryExpMap)])).sort();
-        
-        let totalCatRev = 0, totalCatExp = 0;
-        const catReportBody = allCats.map((cat, i) => {
-            const rev = categoryRevMap[cat] || 0;
-            const exp = categoryExpMap[cat] || 0;
-            const pl = rev - exp;
-            totalCatRev += rev;
-            totalCatExp += exp;
-            return [
-                i + 1,
-                cat,
-                `Rs. ${rev.toFixed(2)}`,
-                `Rs. ${exp.toFixed(2)}`,
-                { content: `Rs. ${pl.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: pl >= 0 ? [34, 197, 94] : [239, 68, 68] } }
-            ];
-        });
-
-        catReportBody.push([
-            '',
-            { content: 'TOTAL', styles: { fontStyle: 'bold' } },
-            { content: `Rs. ${totalCatRev.toFixed(2)}`, styles: { fontStyle: 'bold' } },
-            { content: `Rs. ${totalCatExp.toFixed(2)}`, styles: { fontStyle: 'bold' } },
-            { content: `Rs. ${(totalCatRev - totalCatExp).toFixed(2)}`, styles: { fontStyle: 'bold' } }
-        ]);
-
-        // Add Discount Row
-        catReportBody.push([
-            '',
-            { content: 'Less: Discount', styles: { fontStyle: 'italic', textColor: [239, 68, 68] } },
-            { content: `- Rs. ${totalDiscount.toFixed(2)}`, styles: { fontStyle: 'italic', textColor: [239, 68, 68] } },
-            '',
-            ''
-        ]);
-
-        // Add Net Profit/Loss Row
-        const finalPL = (totalCatRev - totalCatExp) - totalDiscount;
-        catReportBody.push([
-            '',
-            { content: 'Net Profit / Loss', styles: { fontStyle: 'bold' } },
-            '',
-            '',
-            { content: `Rs. ${finalPL.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: finalPL >= 0 ? [34, 197, 94] : [239, 68, 68] } }
-        ]);
-
-        doc.autoTable({
-            head: [['Sr.', 'Category', 'Selling Price', 'Expenses', 'Profit / Loss']],
-            body: catReportBody,
-            startY: catSummaryY,
-            margin: { left: margin, right: margin },
-            headStyles: { fillColor: [99, 102, 241] },
-            styles: { fontSize: 9 }
-        });
-
-        // --- Section 4: Final Period Summary (Sale, Expense, Profit/Loss) ---
-        const finalYCat = doc.lastAutoTable.finalY || 200;
-        let summaryPeriodY = finalYCat + 15;
-
-        // Ensure we have enough space or add a page
-        if (summaryPeriodY + 40 > 280) {
-            doc.addPage();
-            summaryPeriodY = 20;
-        }
-
-        doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
-        doc.text("4. Final Period Summary", margin, summaryPeriodY);
-
-        const totalExp = (expenses || []).reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
-        const profitLoss = totalRevenue - totalExp;
-
-        doc.autoTable({
-            body: [
-                ['Total Sale Value', `Rs. ${totalRevenue.toFixed(2)}`],
-                ['Total Expenses', `Rs. ${totalExp.toFixed(2)}`],
-                [{ content: 'Total Profit / Loss', styles: { fontStyle: 'bold' } }, { content: `Rs. ${profitLoss.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: profitLoss >= 0 ? [34, 197, 94] : [239, 68, 68] } }]
-            ],
-            startY: summaryPeriodY + 5,
-            margin: { left: margin, right: margin },
-            styles: { fontSize: 11, cellPadding: 3 },
-            columnStyles: {
-                0: { cellWidth: 100 },
-                1: { halign: 'right' }
-            }
-        });
-
-        // --- Add Footers to All Pages at Once ---
-        const totalPagesCount = doc.internal.getNumberOfPages();
-        for (let i = 1; i <= totalPagesCount; i++) {
-            doc.setPage(i);
-            addFooter(doc, i);
-        }
-        
-        if (typeof doc.putTotalPages === 'function') {
-            doc.putTotalPages('{totalPages}');
-        }
-        doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
+        generateDetailedReport(title, sales, expenses);
     };
 }
 
-function generateProfitReport(title, sales, expenses) {
+function generateDetailedReport(title, sales, expenses) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
     const margin = 8.5;
     const pageWidth = doc.internal.pageSize.getWidth();
 
     doc.setFontSize(18);
+    doc.setTextColor(40);
     doc.text(title, margin, margin + 10);
     
-    const totalSales = sales.reduce((sum, s) => sum + parseFloat(s.total || 0), 0);
-    const totalExp = expenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
-    const profit = totalSales - totalExp;
+    const formatDate = (dateStr) => {
+        if (!dateStr) return "-";
+        const d = new Date(dateStr);
+        return `${String(d.getDate()).padStart(2, '0')} ${String(d.getMonth() + 1).padStart(2, '0')} ${d.getFullYear()}`;
+    };
 
-    doc.autoTable({
-        head: [['Type', 'Description', 'Amount']],
-        body: [
-            ['Income', 'Total Sales Revenue', `Rs. ${totalSales.toFixed(2)}`],
-            ['Expense', 'Total Operational Expenses', `Rs. ${totalExp.toFixed(2)}`],
-            [{ content: 'Net Profit / Loss', styles: { fontStyle: 'bold' } }, '', { content: `Rs. ${profit.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: profit >= 0 ? [34, 197, 94] : [239, 68, 68] } }]
-        ],
-        startY: margin + 25,
-        margin: { left: margin, right: margin },
-        headStyles: { fillColor: [99, 102, 241] }
+    const formatDateTime = (dateStr) => {
+        if (!dateStr) return "-";
+        const d = new Date(dateStr);
+        const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return `${formatDate(d)} ${time}`;
+    };
+
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${formatDateTime(new Date())}`, margin, margin + 18);
+
+    // --- Section 1: Bill-wise Transactions ---
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.text("1. Bill-wise Transactions", margin, margin + 28);
+    
+    let totalRevenue = 0, totalCash = 0, totalUPI = 0, totalDues = 0;
+    const billTableBody = (sales || []).map((s, i) => {
+        const total = parseFloat(s.total || 0);
+        const sDues = parseFloat(s.dues || 0);
+        const totalPaid = total - sDues;
+        const split = s.split_amounts || s.splitAmounts;
+        const pMode = (s.payment_mode || s.paymentMode || 'CASH').toUpperCase();
+        let sCash = 0, sUpi = 0;
+
+        if (pMode === 'UPI') {
+            sUpi = totalPaid;
+        } else if ((pMode === 'BOTH' || pMode === 'SPLIT') && split) {
+            sCash = parseFloat(split.cash || 0);
+            sUpi = parseFloat(split.upi || 0);
+        } else {
+            sCash = totalPaid;
+        }
+
+        const d = new Date(s.date);
+        const dateStr = formatDate(d);
+        const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const itemsStr = (s.items || []).map(item => `${item.name} (x${item.cartQty || item.qty || 0})`).join(', ');
+
+        totalRevenue += total;
+        totalCash += sCash;
+        totalUPI += sUpi;
+        totalDues += sDues;
+
+        return [
+            i + 1,
+            s.id ? s.id.toString().slice(-6) : '-',
+            `${dateStr}\n${timeStr}`,
+            s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
+            itemsStr,
+            (s.orderType || 'Counter').toUpperCase(),
+            sCash > 0 ? `Rs. ${sCash.toFixed(2)}` : '-',
+            sUpi > 0 ? `Rs. ${sUpi.toFixed(2)}` : '-',
+            sDues > 0 ? `Rs. ${sDues.toFixed(2)}` : '-',
+            `Rs. ${total.toFixed(2)}`
+        ];
     });
 
-    addFooter(doc, 1);
+    billTableBody.push([
+        '',
+        '',
+        '',
+        '',
+        '',
+        { content: 'TOTAL', styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalCash.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalUPI.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalDues.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalRevenue.toFixed(2)}`, styles: { fontStyle: 'bold' } }
+    ]);
+
+    doc.autoTable({
+        head: [['Sr.', 'Bill ID', 'Date & Time', 'Customer', 'Items Details', 'Type', 'Cash', 'UPI', 'Dues', 'Amount']],
+        body: billTableBody,
+        startY: margin + 32,
+        margin: { left: margin, right: margin },
+        headStyles: { fillColor: [99, 102, 241] }, // Indigo for bills
+        styles: { fontSize: 7, cellPadding: 2 },
+        columnStyles: {
+            0: { cellWidth: 10 }, // Sr. No.
+            2: { cellWidth: 22 }, // Date/Time
+            3: { cellWidth: 25 }, // Customer
+            4: { cellWidth: 45 }, // Items
+            5: { cellWidth: 22 }, // Type
+            8: { cellWidth: 15 }, // Dues
+            9: { fontStyle: 'bold' } // Amount
+        }
+    });
+
+    const billY = doc.lastAutoTable.finalY || 100;
+
+    // --- Section 2: Order Type Summary & Grand Total ---
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'bold');
+    const typeTotals = (sales || []).reduce((acc, s) => {
+        const type = (s.orderType || 'Counter').toUpperCase();
+        acc[type] = (acc[type] || 0) + parseFloat(s.total || 0);
+        return acc;
+    }, {});
+    
+    let currentX = margin;
+    let summaryY = billY + 12; 
+    Object.entries(typeTotals).forEach(([type, val], idx) => {
+        const text = `${type}: Rs. ${val.toFixed(2)}`;
+        doc.text(text, currentX, summaryY);
+        currentX += doc.getTextWidth(text) + 8; // Horizontal gap
+    });
+
+    doc.setFontSize(12);
+    doc.setTextColor(34, 197, 94); // Green
+    doc.text(`Grand Total: Rs. ${totalRevenue.toFixed(2)}`, pageWidth - margin - 60, summaryY);
+    doc.setTextColor(0); // Reset to black
+
+    // --- Section 3: Item-wise Ranking Summary ---
+    let itemStartY = billY + 28;
+    if (itemStartY > 240) {
+        doc.addPage();
+        itemStartY = 20;
+    }
+
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.text("2. Item-wise Sales Ranking", margin, itemStartY - 5);
+
+    const categoryMap = {};
+    let totalDiscount = 0;
+    (sales || []).forEach(sale => {
+        totalDiscount += parseFloat(sale.discount || 0);
+        (sale.items || []).forEach(item => {
+            let cat = item.category || "General";
+            const name = item.name || "Unknown";
+            
+            if (window.inventory && window.inventory.length > 0) {
+                const invItem = window.inventory.find(i => String(i.id) === String(item.id) || i.name.toLowerCase() === name.toLowerCase());
+                if (invItem && invItem.category) {
+                    cat = invItem.category;
+                }
+            }
+            
+            const qty = parseFloat(item.cartQty || item.qty || 0);
+            const revenue = parseFloat(item.price || 0) * qty;
+            
+            if (!categoryMap[cat]) categoryMap[cat] = {};
+            if (!categoryMap[cat][name]) {
+                categoryMap[cat][name] = { name, quantity: 0, revenue: 0 };
+            }
+            categoryMap[cat][name].quantity += qty;
+            categoryMap[cat][name].revenue += revenue;
+        });
+    });
+
+    const itemTableBody = [];
+    let totalItemQty = 0;
+    let totalItemRev = 0;
+
+    const categoryPerformance = {};
+    Object.keys(categoryMap).forEach(cat => {
+        categoryPerformance[cat] = Object.values(categoryMap[cat]).reduce((sum, item) => sum + item.quantity, 0);
+    });
+
+    const sortedCategories = Object.keys(categoryMap).sort((a, b) => categoryPerformance[b] - categoryPerformance[a]);
+
+    sortedCategories.forEach((catName, catIdx) => {
+        itemTableBody.push([
+            { content: `${catIdx + 1}. Category: ${catName}`, colSpan: 4, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }
+        ]);
+
+        let catQty = 0;
+        let catRev = 0;
+        const categoryItems = Object.values(categoryMap[catName]).sort((a, b) => b.quantity - a.quantity);
+        categoryItems.forEach((item, i) => {
+            totalItemQty += item.quantity;
+            totalItemRev += item.revenue;
+            catQty += item.quantity;
+            catRev += item.revenue;
+            itemTableBody.push([
+                i + 1,
+                item.name,
+                item.quantity,
+                `Rs. ${item.revenue.toFixed(2)}`
+            ]);
+        });
+
+        itemTableBody.push([
+            '',
+            { content: `${catName} Total`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
+            { content: catQty.toString(), styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
+            { content: `Rs. ${catRev.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } }
+        ]);
+    });
+
+    const netTotal = totalItemRev - totalDiscount;
+
+    itemTableBody.push([
+        '',
+        { content: 'Gross Total', styles: { fontStyle: 'bold' } },
+        { content: totalItemQty.toString(), styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalItemRev.toFixed(2)}`, styles: { fontStyle: 'bold' } }
+    ]);
+    itemTableBody.push([
+        '',
+        { content: 'Less: Discount', styles: { fontStyle: 'italic', textColor: [239, 68, 68] } },
+        '',
+        { content: `- Rs. ${totalDiscount.toFixed(2)}`, styles: { fontStyle: 'italic', textColor: [239, 68, 68] } }
+    ]);
+    itemTableBody.push([
+        '',
+        { content: 'Net Total (= Bill Total)', styles: { fontStyle: 'bold', textColor: [34, 197, 94] } },
+        '',
+        { content: `Rs. ${netTotal.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [34, 197, 94] } }
+    ]);
+
+    doc.autoTable({
+        head: [['Rank', 'Item Name', 'Qty Sold', 'Revenue']],
+        body: itemTableBody,
+        startY: itemStartY,
+        margin: { left: margin, right: margin },
+        headStyles: { fillColor: [34, 197, 94] }, 
+        styles: { fontSize: 9 }
+    });
+
+    // --- Section 3: Category-wise Profit/Loss ---
+    const finalYRank = doc.lastAutoTable.finalY || 200;
+    let catSummaryY = finalYRank + 15;
+
+    if (catSummaryY > 240) {
+        doc.addPage();
+        catSummaryY = 20;
+    }
+
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.text("3. Category-wise Profit/Loss", margin, catSummaryY - 5);
+
+    const categoryRevMap = {};
+    Object.keys(categoryMap).forEach(cat => {
+        categoryRevMap[cat] = Object.values(categoryMap[cat]).reduce((sum, item) => sum + item.revenue, 0);
+    });
+
+    const categoryExpMap = {};
+    (expenses || []).forEach(exp => {
+        const cat = exp.main_category || exp.category || 'General';
+        categoryExpMap[cat] = (categoryExpMap[cat] || 0) + parseFloat(exp.amount || 0);
+    });
+
+    const allCats = Array.from(new Set([...Object.keys(categoryRevMap), ...Object.keys(categoryExpMap)])).sort();
+    
+    let totalCatRev = 0, totalCatExp = 0;
+    const catReportBody = allCats.map((cat, i) => {
+        const rev = categoryRevMap[cat] || 0;
+        const exp = categoryExpMap[cat] || 0;
+        const pl = rev - exp;
+        totalCatRev += rev;
+        totalCatExp += exp;
+        return [
+            i + 1,
+            cat,
+            `Rs. ${rev.toFixed(2)}`,
+            `Rs. ${exp.toFixed(2)}`,
+            { content: `Rs. ${pl.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: pl >= 0 ? [34, 197, 94] : [239, 68, 68] } }
+        ];
+    });
+
+    catReportBody.push([
+        '',
+        { content: 'TOTAL', styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalCatRev.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalCatExp.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${(totalCatRev - totalCatExp).toFixed(2)}`, styles: { fontStyle: 'bold' } }
+    ]);
+
+    catReportBody.push([
+        '',
+        { content: 'Less: Discount', styles: { fontStyle: 'italic', textColor: [239, 68, 68] } },
+        { content: `- Rs. ${totalDiscount.toFixed(2)}`, styles: { fontStyle: 'italic', textColor: [239, 68, 68] } },
+        '',
+        ''
+    ]);
+
+    const finalPL = (totalCatRev - totalCatExp) - totalDiscount;
+    catReportBody.push([
+        '',
+        { content: 'Net Profit / Loss', styles: { fontStyle: 'bold' } },
+        '',
+        '',
+        { content: `Rs. ${finalPL.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: finalPL >= 0 ? [34, 197, 94] : [239, 68, 68] } }
+    ]);
+
+    doc.autoTable({
+        head: [['Sr.', 'Category', 'Selling Price', 'Expenses', 'Profit / Loss']],
+        body: catReportBody,
+        startY: catSummaryY,
+        margin: { left: margin, right: margin },
+        headStyles: { fillColor: [99, 102, 241] },
+        styles: { fontSize: 9 }
+    });
+
+    // --- Section 4: Final Period Summary ---
+    const finalYCat = doc.lastAutoTable.finalY || 200;
+    let summaryPeriodY = finalYCat + 15;
+
+    if (summaryPeriodY + 40 > 280) {
+        doc.addPage();
+        summaryPeriodY = 20;
+    }
+
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.text("4. Final Period Summary", margin, summaryPeriodY);
+
+    const totalExp = (expenses || []).reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+    const profitLoss = totalRevenue - totalExp;
+
+    doc.autoTable({
+        body: [
+            ['Total Sale Value', `Rs. ${totalRevenue.toFixed(2)}`],
+            ['Total Expenses', `Rs. ${totalExp.toFixed(2)}`],
+            [{ content: 'Total Profit / Loss', styles: { fontStyle: 'bold' } }, { content: `Rs. ${profitLoss.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: profitLoss >= 0 ? [34, 197, 94] : [239, 68, 68] } }]
+        ],
+        startY: summaryPeriodY + 5,
+        margin: { left: margin, right: margin },
+        styles: { fontSize: 11, cellPadding: 3 },
+        columnStyles: {
+            0: { cellWidth: 100 },
+            1: { halign: 'right' }
+        }
+    });
+
+    const totalPagesCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPagesCount; i++) {
+        doc.setPage(i);
+        addFooter(doc, i);
+    }
+    
     if (typeof doc.putTotalPages === 'function') doc.putTotalPages('{totalPages}');
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
+}
+}
+
+function generateProfitReport(title, sales, expenses) {
+    generateDetailedReport(title, sales, expenses);
 }
 
 function generateSalesReport(title, data) {
