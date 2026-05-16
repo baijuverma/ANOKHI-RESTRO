@@ -387,7 +387,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
                 item.name,
                 item.quantity,
                 `Rs. ${item.revenue.toFixed(2)}`,
-                `Rs. ${item.expense.toFixed(2)}`,
+                { content: `Rs. ${item.expense.toFixed(2)}`, styles: { textColor: [239, 68, 68] } },
                 { content: `Rs. ${itemPL.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: itemPL >= 0 ? [34, 197, 94] : [239, 68, 68] } }
             ]);
         });
@@ -398,7 +398,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
             { content: `${catName} Total`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
             { content: catQty.toString(), styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
             { content: `Rs. ${catRev.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
-            { content: `Rs. ${catExp.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
+            { content: `Rs. ${catExp.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [239, 68, 68] } },
             { content: `Rs. ${catPL.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } }
         ]);
     });
@@ -412,7 +412,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
         { content: 'Gross Total', styles: { fontStyle: 'bold' } },
         { content: totalItemQty.toString(), styles: { fontStyle: 'bold' } },
         { content: `Rs. ${totalItemRev.toFixed(2)}`, styles: { fontStyle: 'bold' } },
-        { content: `Rs. ${totalItemExp.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalItemExp.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [239, 68, 68] } },
         { content: `Rs. ${grossPL.toFixed(2)}`, styles: { fontStyle: 'bold' } }
     ]);
     itemTableBody.push([
@@ -486,7 +486,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
             i + 1,
             cat,
             `Rs. ${rev.toFixed(2)}`,
-            `Rs. ${exp.toFixed(2)}`,
+            { content: `Rs. ${exp.toFixed(2)}`, styles: { textColor: [239, 68, 68] } },
             { content: `Rs. ${pl.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: pl >= 0 ? [34, 197, 94] : [239, 68, 68] } }
         ];
     });
@@ -495,7 +495,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
         '',
         { content: 'TOTAL', styles: { fontStyle: 'bold' } },
         { content: `Rs. ${totalCatRev.toFixed(2)}`, styles: { fontStyle: 'bold' } },
-        { content: `Rs. ${totalCatExp.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalCatExp.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [239, 68, 68] } },
         { content: `Rs. ${(totalCatRev - totalCatExp).toFixed(2)}`, styles: { fontStyle: 'bold' } }
     ]);
 
