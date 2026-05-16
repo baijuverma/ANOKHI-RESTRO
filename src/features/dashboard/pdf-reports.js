@@ -330,6 +330,8 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
                 }
             }
 
+            if (cat.toUpperCase() === 'KITCHEN') return; 
+
             // Smart Lookup: If no buying price in inventory, check latest purchase in Expenses History
             if (buyingPrice === 0 && window.expensesHistory && window.expensesHistory.length > 0) {
                 const latestExp = window.expensesHistory.find(e => 
