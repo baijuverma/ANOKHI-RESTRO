@@ -330,7 +330,6 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
                 }
             }
 
-            if (cat.toUpperCase() === 'KITCHEN') return; 
 
             // Smart Lookup: If no buying price in inventory, check latest purchase in Expenses History
             if (buyingPrice === 0 && window.expensesHistory && window.expensesHistory.length > 0) {
@@ -367,7 +366,9 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
         categoryPerformance[cat] = Object.values(categoryMap[cat]).reduce((sum, item) => sum + item.quantity, 0);
     });
 
-    const sortedCategories = Object.keys(categoryMap).sort((a, b) => categoryPerformance[b] - categoryPerformance[a]);
+    const sortedCategories = Object.keys(categoryMap)
+        .filter(cat => cat.toUpperCase() !== 'KITCHEN') // Skip KITCHEN in Ranking Table Rendering
+        .sort((a, b) => categoryPerformance[b] - categoryPerformance[a]);
 
     sortedCategories.forEach((catName, catIdx) => {
         itemTableBody.push([
