@@ -319,28 +319,33 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
             let cat = item.category || "General";
             const name = item.name || "Unknown";
             
+            let buyingPrice = 0;
             if (window.inventory && window.inventory.length > 0) {
                 const invItem = window.inventory.find(i => String(i.id) === String(item.id) || i.name.toLowerCase() === name.toLowerCase());
-                if (invItem && invItem.category) {
-                    cat = invItem.category;
+                if (invItem) {
+                    if (invItem.category) cat = invItem.category;
+                    buyingPrice = parseFloat(invItem.buyingPrice || 0);
                 }
             }
             
             const qty = parseFloat(item.cartQty || item.qty || 0);
             const revenue = parseFloat(item.price || 0) * qty;
+            const expense = buyingPrice * qty;
             
             if (!categoryMap[cat]) categoryMap[cat] = {};
             if (!categoryMap[cat][name]) {
-                categoryMap[cat][name] = { name, quantity: 0, revenue: 0 };
+                categoryMap[cat][name] = { name, quantity: 0, revenue: 0, expense: 0 };
             }
             categoryMap[cat][name].quantity += qty;
             categoryMap[cat][name].revenue += revenue;
+            categoryMap[cat][name].expense += expense;
         });
     });
 
     const itemTableBody = [];
     let totalItemQty = 0;
     let totalItemRev = 0;
+    let totalItemExp = 0;
 
     const categoryPerformance = {};
     Object.keys(categoryMap).forEach(cat => {
@@ -351,44 +356,59 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
 
     sortedCategories.forEach((catName, catIdx) => {
         itemTableBody.push([
-            { content: `${catIdx + 1}. Category: ${catName}`, colSpan: 4, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }
+            { content: `${catIdx + 1}. Category: ${catName}`, colSpan: 6, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }
         ]);
 
         let catQty = 0;
         let catRev = 0;
+        let catExp = 0;
         const categoryItems = Object.values(categoryMap[catName]).sort((a, b) => b.quantity - a.quantity);
         categoryItems.forEach((item, i) => {
             totalItemQty += item.quantity;
             totalItemRev += item.revenue;
+            totalItemExp += item.expense;
             catQty += item.quantity;
             catRev += item.revenue;
+            catExp += item.expense;
+            const itemPL = item.revenue - item.expense;
             itemTableBody.push([
                 i + 1,
                 item.name,
                 item.quantity,
-                `Rs. ${item.revenue.toFixed(2)}`
+                `Rs. ${item.revenue.toFixed(2)}`,
+                `Rs. ${item.expense.toFixed(2)}`,
+                { content: `Rs. ${itemPL.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: itemPL >= 0 ? [34, 197, 94] : [239, 68, 68] } }
             ]);
         });
 
+        const catPL = catRev - catExp;
         itemTableBody.push([
             '',
             { content: `${catName} Total`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
             { content: catQty.toString(), styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
-            { content: `Rs. ${catRev.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } }
+            { content: `Rs. ${catRev.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
+            { content: `Rs. ${catExp.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } },
+            { content: `Rs. ${catPL.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [99, 102, 241] } }
         ]);
     });
 
     const netTotal = totalItemRev - totalDiscount;
+    const grossPL = totalItemRev - totalItemExp;
+    const netPL = netTotal - totalItemExp;
 
     itemTableBody.push([
         '',
         { content: 'Gross Total', styles: { fontStyle: 'bold' } },
         { content: totalItemQty.toString(), styles: { fontStyle: 'bold' } },
-        { content: `Rs. ${totalItemRev.toFixed(2)}`, styles: { fontStyle: 'bold' } }
+        { content: `Rs. ${totalItemRev.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${totalItemExp.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `Rs. ${grossPL.toFixed(2)}`, styles: { fontStyle: 'bold' } }
     ]);
     itemTableBody.push([
         '',
         { content: 'Less: Discount', styles: { fontStyle: 'italic', textColor: [239, 68, 68] } },
+        '',
+        { content: `- Rs. ${totalDiscount.toFixed(2)}`, styles: { fontStyle: 'italic', textColor: [239, 68, 68] } },
         '',
         { content: `- Rs. ${totalDiscount.toFixed(2)}`, styles: { fontStyle: 'italic', textColor: [239, 68, 68] } }
     ]);
@@ -396,16 +416,25 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
         '',
         { content: 'Net Total (= Bill Total)', styles: { fontStyle: 'bold', textColor: [34, 197, 94] } },
         '',
-        { content: `Rs. ${netTotal.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [34, 197, 94] } }
+        { content: `Rs. ${netTotal.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [34, 197, 94] } },
+        '',
+        { content: `Rs. ${netPL.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: [34, 197, 94] } }
     ]);
 
     doc.autoTable({
-        head: [['Rank', 'Item Name', 'Qty Sold', 'Revenue']],
+        head: [['Rank', 'Item Name', 'Qty Sold', 'Revenue', 'Expenses', 'Profit/Loss']],
         body: itemTableBody,
         startY: itemStartY,
         margin: { left: margin, right: margin },
         headStyles: { fillColor: [34, 197, 94] }, 
-        styles: { fontSize: 9 }
+        styles: { fontSize: 8 },
+        columnStyles: {
+            0: { cellWidth: 10 },
+            2: { cellWidth: 15 },
+            3: { cellWidth: 25 },
+            4: { cellWidth: 25 },
+            5: { cellWidth: 25 }
+        }
     });
 
     // --- Section 3: Category-wise Profit/Loss ---

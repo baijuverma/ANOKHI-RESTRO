@@ -900,8 +900,13 @@ export const appShellHTML = `
                 </div>
                 <div class="form-row" style="grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px;">
                     <div class="input-group-floating">
+                        <input type="number" id="item-buying-price" required min="0" step="0.01" placeholder=" ">
+                        <label for="item-buying-price">Buying Price (₹)</label>
+                        <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('item-buying-price')" style="right: 12px; top: 50%; transform: translateY(-50%);"></i>
+                    </div>
+                    <div class="input-group-floating">
                         <input type="number" id="item-price" required min="0" step="0.01" placeholder=" ">
-                        <label for="item-price">Price (₹)</label>
+                        <label for="item-price">Selling Price (₹)</label>
                         <i class="fa-solid fa-xmark clear-input-btn" onclick="clearInput('item-price')" style="right: 12px; top: 50%; transform: translateY(-50%);"></i>
                     </div>
                     <div class="input-group-floating">

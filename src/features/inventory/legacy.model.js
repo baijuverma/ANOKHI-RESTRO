@@ -158,6 +158,7 @@ function handleItemSubmit(e) {
     const name = document.getElementById('item-name').value ? document.getElementById('item-name').value.trim() : '';
     const category = document.getElementById('item-category').value;
     const itemType = document.querySelector('input[name="item-type"]:checked')?.value || 'Veg';
+    const buyingPrice = parseFloat(document.getElementById('item-buying-price').value) || 0;
     const price = parseFloat(document.getElementById('item-price').value) || 0;
     const quantity = parseInt(document.getElementById('item-quantity').value) || 0;
     const lowStockThreshold = parseInt(document.getElementById('item-low-stock').value) || 5;
@@ -181,7 +182,7 @@ function handleItemSubmit(e) {
 
             window.inventory[index] = { 
                 ...window.inventory[index], 
-                name, category, itemType, price, quantity, lowStockThreshold 
+                name, category, itemType, buyingPrice, price, quantity, lowStockThreshold 
             };
         }
     } else {
@@ -203,7 +204,7 @@ function handleItemSubmit(e) {
 
         const newItem = {
             id: typeof window.generateUUIDv7 === 'function' ? window.generateUUIDv7() : Date.now().toString(),
-            name, category, itemType, price, quantity, lowStockThreshold
+            name, category, itemType, buyingPrice, price, quantity, lowStockThreshold
         };
         window.inventory.push(newItem);
     }
@@ -271,6 +272,7 @@ window.editItem = function(id) {
         const isNonVeg = (item.itemType || '').toLowerCase().replace(/[- ]/g, '') === 'nonveg';
         const typeRadio = document.getElementById(isNonVeg ? 'type-nonveg' : 'type-veg');
         if (typeRadio) typeRadio.checked = true;
+        document.getElementById('item-buying-price').value = item.buyingPrice || 0;
         document.getElementById('item-price').value = item.price;
         document.getElementById('item-quantity').value = item.quantity;
         document.getElementById('item-low-stock').value = item.lowStockThreshold || 5;
