@@ -220,27 +220,12 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
         const d = new Date(s.date);
         const dateStr = formatDate(d);
         const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const nonKitchenItems = (s.items || []).filter(item => {
-            let itemCat = item.category || "General";
-            if (window.inventory) {
-                const invItem = window.inventory.find(i => String(i.id) === String(item.id) || i.name.toLowerCase() === (item.name || '').toLowerCase());
-                if (invItem && invItem.category) itemCat = invItem.category;
-            }
-            return itemCat.toUpperCase() !== 'KITCHEN';
-        });
-
-        const nonKitchenTotal = nonKitchenItems.reduce((sum, item) => sum + (parseFloat(item.price || 0) * parseFloat(item.cartQty || item.qty || 0)), 0);
-        const itemsStr = nonKitchenItems.map(item => `${item.name} (x${item.cartQty || item.qty || 0})`).join(', ');
-        
-        const ratio = total > 0 ? (nonKitchenTotal / total) : 0;
-        const nkCash = sCash * ratio;
-        const nkUpi = sUpi * ratio;
-        const nkDues = sDues * ratio;
-
-        totalRevenue += nonKitchenTotal;
-        totalCash += nkCash;
-        totalUPI += nkUpi;
-        totalDues += nkDues;
+        const itemsStr = (s.items || []).map(item => `${item.name} (x${item.cartQty || item.qty || 0})`).join(', ');
+ 
+        totalRevenue += total;
+        totalCash += sCash;
+        totalUPI += sUpi;
+        totalDues += sDues;
 
         return [
             i + 1,
@@ -249,10 +234,10 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
             s.customer_name || s.customerName || s.customerPhone || 'Walk-in',
             itemsStr,
             (s.orderType || 'Counter').toUpperCase(),
-            nkCash > 0 ? `Rs. ${nkCash.toFixed(2)}` : '-',
-            nkUpi > 0 ? `Rs. ${nkUpi.toFixed(2)}` : '-',
-            nkDues > 0 ? `Rs. ${nkDues.toFixed(2)}` : '-',
-            `Rs. ${nonKitchenTotal.toFixed(2)}`
+            sCash > 0 ? `Rs. ${sCash.toFixed(2)}` : '-',
+            sUpi > 0 ? `Rs. ${sUpi.toFixed(2)}` : '-',
+            sDues > 0 ? `Rs. ${sDues.toFixed(2)}` : '-',
+            `Rs. ${total.toFixed(2)}`
         ];
     });
 
@@ -333,7 +318,6 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
         (sale.items || []).forEach(item => {
             let cat = item.category || "General";
             const name = item.name || "Unknown";
-            if (cat.toUpperCase() === 'KITCHEN') return; 
             
             let buyingPrice = 0;
             if (window.inventory && window.inventory.length > 0) {
@@ -342,7 +326,6 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
                     if (invItem.category) {
                         cat = invItem.category;
                     }
-                    if (cat.toUpperCase() === 'KITCHEN') return; // Final check
                     buyingPrice = parseFloat(invItem.buyingPrice || 0);
                 }
             }
@@ -489,7 +472,6 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
     const categoryExpMap = {};
     (expenses || []).forEach(exp => {
         const cat = exp.main_category || exp.category || 'General';
-        if (cat.toUpperCase() === 'KITCHEN') return; // REMOVE KITCHEN CATEGORY
         categoryExpMap[cat] = (categoryExpMap[cat] || 0) + parseFloat(exp.amount || 0);
     });
 
