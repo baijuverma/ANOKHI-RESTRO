@@ -161,11 +161,11 @@ export function initPdfReports() {
     };
 
 window.generateGrossReport = (title, sales, expenses, isFiltered = false) => {
-        generateDetailedReport(title, sales, expenses, isFiltered);
+        generateDetailedReport(title, sales, expenses, isFiltered, false);
     };
 }
 
-function generateDetailedReport(title, sales, expenses, isFiltered = false) {
+function generateDetailedReport(title, sales, expenses, isFiltered = false, hideTransactions = false) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
     const margin = 8.5;
@@ -191,11 +191,13 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false) {
     doc.setFontSize(10);
     doc.text(`Generated on: ${formatDateTime(new Date())}`, margin, margin + 18);
 
+    if (!hideTransactions) {
     // --- Section 1: Bill-wise Transactions ---
     doc.setFontSize(14);
     doc.setFont(undefined, 'bold');
     const section1Title = isFiltered ? "Bill-wise Transactions" : "1. Bill-wise Transactions";
     doc.text(section1Title, margin, margin + 28);
+    }
     
     let totalRevenue = 0, totalCash = 0, totalUPI = 0, totalDues = 0;
     const billTableBody = (sales || []).map((s, i) => {
@@ -252,6 +254,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false) {
         { content: `Rs. ${totalRevenue.toFixed(2)}`, styles: { fontStyle: 'bold' } }
     ]);
 
+    if (!hideTransactions) {
     doc.autoTable({
         head: [['Sr.', 'Bill ID', 'Date & Time', 'Customer', 'Items Details', 'Type', 'Cash', 'UPI', 'Dues', 'Amount']],
         body: billTableBody,
@@ -269,8 +272,9 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false) {
             9: { fontStyle: 'bold' } // Amount
         }
     });
+    }
 
-    const billY = doc.lastAutoTable.finalY || 100;
+    const billY = (!hideTransactions && doc.lastAutoTable) ? (doc.lastAutoTable.finalY || 100) : (margin + 25);
 
     if (!isFiltered) {
     // --- Section 2: Order Type Summary & Grand Total ---
@@ -304,7 +308,8 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false) {
 
     doc.setFontSize(14);
     doc.setFont(undefined, 'bold');
-    doc.text("2. Item-wise Sales Ranking", margin, itemStartY - 5);
+    const section2Title = hideTransactions ? "Item-wise Sales Ranking" : "2. Item-wise Sales Ranking";
+    doc.text(section2Title, margin, itemStartY - 5);
 
     const categoryMap = {};
     let totalDiscount = 0;
@@ -414,7 +419,8 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false) {
 
     doc.setFontSize(14);
     doc.setFont(undefined, 'bold');
-    doc.text("3. Category-wise Profit/Loss", margin, catSummaryY - 5);
+    const section3Title = hideTransactions ? "Category-wise Profit/Loss" : "3. Category-wise Profit/Loss";
+    doc.text(section3Title, margin, catSummaryY - 5);
 
     const categoryRevMap = {};
     Object.keys(categoryMap).forEach(cat => {
@@ -490,7 +496,8 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false) {
 
     doc.setFontSize(14);
     doc.setFont(undefined, 'bold');
-    doc.text("4. Final Period Summary", margin, summaryPeriodY);
+    const section4Title = hideTransactions ? "Final Period Summary" : "4. Final Period Summary";
+    doc.text(section4Title, margin, summaryPeriodY);
 
     const totalExp = (expenses || []).reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
     const profitLoss = totalRevenue - totalExp;
@@ -522,7 +529,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false) {
 }
 
 function generateProfitReport(title, sales, expenses) {
-    generateDetailedReport(title, sales, expenses);
+    generateDetailedReport(title, sales, expenses, false, true);
 }
 
 function generateSalesReport(title, data) {
