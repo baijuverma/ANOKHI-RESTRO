@@ -160,7 +160,7 @@ export function initPdfReports() {
         generateProfitReport(`Monthly Profit & Loss Statement (${monthName} ${year})`, sales, expenses);
     };
 
-    window.generateGrossReport = (title, sales) => {
+    window.generateGrossReport = (title, sales, expenses) => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'mm', 'a4');
         const margin = 8.5;
@@ -402,6 +402,38 @@ export function initPdfReports() {
             margin: { left: margin, right: margin },
             headStyles: { fillColor: [34, 197, 94] }, // Green for rankings
             styles: { fontSize: 9 }
+        });
+
+        // --- Section 4: Period Summary (Sale, Expense, Profit/Loss) ---
+        const finalY = doc.lastAutoTable.finalY || 200;
+        let summaryPeriodY = finalY + 15;
+
+        // Ensure we have enough space or add a page
+        if (summaryPeriodY + 40 > 280) {
+            doc.addPage();
+            summaryPeriodY = 20;
+        }
+
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.text("3. Period Summary", margin, summaryPeriodY);
+
+        const totalExp = (expenses || []).reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+        const profitLoss = totalRevenue - totalExp;
+
+        doc.autoTable({
+            body: [
+                ['Total Sale Value', `Rs. ${totalRevenue.toFixed(2)}`],
+                ['Total Expenses', `Rs. ${totalExp.toFixed(2)}`],
+                [{ content: 'Total Profit / Loss', styles: { fontStyle: 'bold' } }, { content: `Rs. ${profitLoss.toFixed(2)}`, styles: { fontStyle: 'bold', textColor: profitLoss >= 0 ? [34, 197, 94] : [239, 68, 68] } }]
+            ],
+            startY: summaryPeriodY + 5,
+            margin: { left: margin, right: margin },
+            styles: { fontSize: 11, cellPadding: 3 },
+            columnStyles: {
+                0: { cellWidth: 100 },
+                1: { halign: 'right' }
+            }
         });
 
         // --- Add Footers to All Pages at Once ---

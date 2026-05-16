@@ -248,7 +248,25 @@ window.downloadGrossReport = function() {
     const title = `Gross Item Sales Report (${dateRangeStr || "All Time"})`;
     
     if (typeof window.generateGrossReport === 'function') {
-        window.generateGrossReport(title, sales);
+        let expenses = [...(window.expensesHistory || [])];
+        if (startDateStr || endDateStr) {
+            expenses = expenses.filter(exp => {
+                const expDate = new Date(exp.date);
+                expDate.setHours(0,0,0,0);
+                if (startDateStr) {
+                    const s = new Date(startDateStr);
+                    s.setHours(0,0,0,0);
+                    if (expDate < s) return false;
+                }
+                if (endDateStr) {
+                    const e = new Date(endDateStr);
+                    e.setHours(23,59,59,999);
+                    if (expDate > e) return false;
+                }
+                return true;
+            });
+        }
+        window.generateGrossReport(title, sales, expenses);
         if (typeof window.showToast === 'function') {
             window.showToast("Gross Report PDF generated successfully", "success");
         }
