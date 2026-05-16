@@ -7,12 +7,17 @@ export function initPdfReports() {
         const today = new Date();
         const todayStr = window.getDDMMYYYY ? window.getDDMMYYYY(today) : today.toDateString();
         
-        const data = (window.salesHistory || []).filter(s => {
+        const sales = (window.salesHistory || []).filter(s => {
             const dVal = s.date || s.timestamp || s.created_at;
             return dVal && window.getDDMMYYYY && window.getDDMMYYYY(new Date(dVal)) === todayStr;
         });
 
-        generateSalesReport(`Today's Sales Report (${todayStr})`, data);
+        const expenses = (window.expensesHistory || []).filter(e => {
+            const dVal = e.date || e.timestamp || e.created_at;
+            return dVal && window.getDDMMYYYY && window.getDDMMYYYY(new Date(dVal)) === todayStr;
+        });
+
+        generateProfitReport(`Today's Full Report (${todayStr})`, sales, expenses);
     };
 
     window.downloadTodayDuesReport = () => {
@@ -72,14 +77,21 @@ export function initPdfReports() {
         const year = now.getFullYear();
         const currentMonth = now.getMonth();
 
-        const data = (window.salesHistory || []).filter(s => {
+        const sales = (window.salesHistory || []).filter(s => {
             const dVal = s.date || s.timestamp || s.created_at;
             if (!dVal) return false;
             const d = new Date(dVal);
             return d.getMonth() === currentMonth && d.getFullYear() === year;
         });
 
-        generateSalesReport(`Monthly Sales Report (${monthName} ${year})`, data);
+        const expenses = (window.expensesHistory || []).filter(e => {
+            const dVal = e.date || e.timestamp || e.created_at;
+            if (!dVal) return false;
+            const d = new Date(dVal);
+            return d.getMonth() === currentMonth && d.getFullYear() === year;
+        });
+
+        generateProfitReport(`Monthly Full Report (${monthName} ${year})`, sales, expenses);
     };
 
     window.downloadMonthExpensesReport = () => {
@@ -160,6 +172,13 @@ export function initPdfReports() {
         generateProfitReport(`Monthly Profit & Loss Statement (${monthName} ${year})`, sales, expenses);
     };
 
+    const generateProfitReport = (title, sales, expenses) => {
+        generateDetailedReport(title, sales, expenses, false, false);
+    };
+
+    window.generateProfitReport = generateProfitReport; // Export if needed elsewhere
+
+
 window.generateGrossReport = (title, sales, expenses, isFiltered = false) => {
     generateDetailedReport(title, sales, expenses, isFiltered, false);
 };
@@ -206,8 +225,8 @@ window.generateGrossReport = (title, sales, expenses, isFiltered = false) => {
             return d >= startDate && d <= endDate;
         });
 
-        if (type === 'SALES') {
-            generateSalesReport(title, filteredSales);
+        if (type === 'SALES' || type === 'PROFIT') {
+            generateDetailedReport(title, filteredSales, filteredExpenses, true, false);
         } else if (type === 'EXPENSE') {
             generateExpensesReport(title, filteredExpenses);
         } else {
