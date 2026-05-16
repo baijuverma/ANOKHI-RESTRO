@@ -122,8 +122,13 @@ export const appShellHTML = `
 
                     <!-- Today Sale Card -->
                     <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #6366f1; background: rgba(99, 102, 241, 0.05); cursor: pointer; position: relative;" onclick="if(window.downloadTodaySalesReport) window.downloadTodaySalesReport()">
-                        <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                            <i class="fa-solid fa-file-pdf"></i>
+                        <div style="position: absolute; top: 12px; right: 15px; display: flex; gap: 8px;">
+                            <div style="width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Today Sales PDF" onclick="event.stopPropagation(); if(window.downloadTodaySalesReport) window.downloadTodaySalesReport()">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </div>
+                            <div style="width: 32px; height: 32px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #818cf8; font-size: 18px; border: 1px solid rgba(99, 102, 241, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Sales Range PDF" onclick="event.stopPropagation(); window.openRangeModal('SALES')">
+                                <i class="fa-solid fa-calendar-days"></i>
+                            </div>
                         </div>
                         <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #818cf8; margin-bottom: 4px;">Today Sales</h3>
                         <p id="today-revenue-card" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
@@ -135,8 +140,13 @@ export const appShellHTML = `
 
                     <!-- Today Profit/Loss Card -->
                     <div class="glass-panel" id="profit-card-wrapper" style="padding: 12px 20px; border-left: 4px solid #22c55e; background: rgba(34, 197, 94, 0.05); cursor: pointer; position: relative;" onclick="if(window.downloadProfitReport) window.downloadProfitReport()">
-                        <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                            <i class="fa-solid fa-file-pdf"></i>
+                        <div style="position: absolute; top: 12px; right: 15px; display: flex; gap: 8px;">
+                            <div style="width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Today Profit PDF" onclick="event.stopPropagation(); if(window.downloadProfitReport) window.downloadProfitReport()">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </div>
+                            <div style="width: 32px; height: 32px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #818cf8; font-size: 18px; border: 1px solid rgba(99, 102, 241, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Profit Range PDF" onclick="event.stopPropagation(); window.openRangeModal('PROFIT')">
+                                <i class="fa-solid fa-calendar-days"></i>
+                            </div>
                         </div>
                         <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #22c55e; margin-bottom: 4px;">Today Profit & Loss</h3>
                         <p id="today-profit-card" style="font-size: 28px; font-weight: 800; color: #22c55e; margin: 0;">₹0</p>
@@ -145,8 +155,13 @@ export const appShellHTML = `
 
                     <!-- Today Expense Card -->
                     <div class="glass-panel" style="padding: 12px 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); cursor: pointer; position: relative;" onclick="if(window.downloadTodayExpensesReport) window.downloadTodayExpensesReport()">
-                        <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                            <i class="fa-solid fa-file-pdf"></i>
+                        <div style="position: absolute; top: 12px; right: 15px; display: flex; gap: 8px;">
+                            <div style="width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Today Expense PDF" onclick="event.stopPropagation(); if(window.downloadTodayExpensesReport) window.downloadTodayExpensesReport()">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </div>
+                            <div style="width: 32px; height: 32px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #818cf8; font-size: 18px; border: 1px solid rgba(99, 102, 241, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Expense Range PDF" onclick="event.stopPropagation(); window.openRangeModal('EXPENSE')">
+                                <i class="fa-solid fa-calendar-days"></i>
+                            </div>
                         </div>
                         <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: #ef4444; margin-bottom: 4px;">Today Expenses</h3>
                         <p id="today-expense-card" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
@@ -1088,6 +1103,33 @@ export const appShellHTML = `
                 <button class="btn-primary" style="flex: 1; background: var(--text-secondary);" onclick="closeModal('adminVerifyModal')">Cancel</button>
                 <button class="btn-success" style="flex: 2;" onclick="window.confirmAdminVerification()">Confirm Action</button>
             </div>
+        </div>
+    </div>
+    <!-- Report Range Modal -->
+    <div id="reportRangeModal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 400px;">
+            <span class="close-btn" onclick="closeModal('reportRangeModal')">&times;</span>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 60px; height: 60px; background: rgba(99, 102, 241, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                    <i class="fa-solid fa-calendar-range" style="font-size: 24px; color: var(--accent-color);"></i>
+                </div>
+                <h2 id="range-modal-title">Select Report Range</h2>
+                <p id="range-modal-desc" style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;">Choose dates for your PDF report.</p>
+            </div>
+            
+            <input type="hidden" id="range-report-type">
+            <div class="form-group">
+                <label>From Date</label>
+                <input type="date" id="range-start-date">
+            </div>
+            <div class="form-group">
+                <label>To Date</label>
+                <input type="date" id="range-end-date">
+            </div>
+            
+            <button class="btn-primary full-width mt-4" onclick="window.generateRangeReportFromModal()" style="padding: 12px; font-weight: 700;">
+                <i class="fa-solid fa-file-arrow-down"></i> Download PDF
+            </button>
         </div>
     </div>
 `;

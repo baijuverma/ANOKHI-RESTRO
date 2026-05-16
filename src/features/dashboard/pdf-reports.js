@@ -162,6 +162,58 @@ export function initPdfReports() {
 
 window.generateGrossReport = (title, sales, expenses, isFiltered = false) => {
         generateDetailedReport(title, sales, expenses, isFiltered, false);
+    window.openRangeModal = (type) => {
+        const title = type === 'SALES' ? 'Sales Report Range' : (type === 'EXPENSE' ? 'Expenses Report Range' : 'Profit & Loss Report Range');
+        const titleEl = document.getElementById('range-modal-title');
+        const typeEl = document.getElementById('range-report-type');
+        if (titleEl) titleEl.innerText = title;
+        if (typeEl) typeEl.value = type;
+        
+        const today = new Date().toISOString().split('T')[0];
+        const startEl = document.getElementById('range-start-date');
+        const endEl = document.getElementById('range-end-date');
+        if (startEl) startEl.value = today;
+        if (endEl) endEl.value = today;
+        
+        if (window.openModal) window.openModal('reportRangeModal');
+    };
+
+    window.generateRangeReportFromModal = () => {
+        const type = document.getElementById('range-report-type')?.value;
+        const start = document.getElementById('range-start-date')?.value;
+        const end = document.getElementById('range-end-date')?.value;
+        
+        if (!start || !end) {
+            if (window.showToast) window.showToast("Please select both dates", "error");
+            return;
+        }
+
+        const startDate = new Date(start);
+        startDate.setHours(0,0,0,0);
+        const endDate = new Date(end);
+        endDate.setHours(23,59,59,999);
+        
+        const title = `${type === 'SALES' ? 'Sales' : (type === 'EXPENSE' ? 'Expenses' : 'P&L')} Report (${start} to ${end})`;
+
+        const filteredSales = (window.salesHistory || []).filter(s => {
+            const d = new Date(s.date || s.timestamp || s.created_at);
+            return d >= startDate && d <= endDate;
+        });
+
+        const filteredExpenses = (window.expensesHistory || []).filter(e => {
+            const d = new Date(e.date || e.timestamp || e.created_at);
+            return d >= startDate && d <= endDate;
+        });
+
+        if (type === 'SALES') {
+            generateSalesReport(title, filteredSales);
+        } else if (type === 'EXPENSE') {
+            generateExpensesReport(title, filteredExpenses);
+        } else {
+            generateDetailedReport(title, filteredSales, filteredExpenses, true, false);
+        }
+        
+        if (window.closeModal) window.closeModal('reportRangeModal');
     };
 }
 
