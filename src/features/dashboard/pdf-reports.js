@@ -577,7 +577,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
 }
 
 function generateProfitReport(title, sales, expenses) {
-    generateDetailedReport(title, sales, expenses, false, true);
+    generateDetailedReport(title, sales, expenses, false, false);
 }
 
 function generateSalesReport(title, data) {
