@@ -433,7 +433,7 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
     ]);
 
     doc.autoTable({
-        head: [['Rank', 'Item Name', 'Qty Sold', 'Revenue', 'Expenses', 'Profit/Loss']],
+        head: [['Rank', 'Item Name', 'Qty Sold', 'Selling Price', 'Expenses', 'Profit/Loss']],
         body: itemTableBody,
         startY: itemStartY,
         margin: { left: margin, right: margin },
