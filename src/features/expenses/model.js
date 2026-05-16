@@ -562,16 +562,20 @@ window.handleExpenseSubmit = async function(e) {
                     console.log(`Auto-added NEW item to inventory: ${subCat} +${qty}`);
                 }
             }
-            // Update Price and Category if provided
+            // Update Price, Buying Price and Category if provided
             if (invItem) {
                 if (sellPrice > 0) invItem.price = sellPrice;
+                if (qty > 0) invItem.buyingPrice = net / qty;
                 invItem.category = mainCat;
             }
             window.editingExpenseOldData = null; // Reset after sync
         } else {
             // NEW RECORD LOGIC
             if (invItem) {
-                if (qty > 0) invItem.quantity = (parseFloat(invItem.quantity) || 0) + qty;
+                if (qty > 0) {
+                    invItem.quantity = (parseFloat(invItem.quantity) || 0) + qty;
+                    invItem.buyingPrice = net / qty;
+                }
                 if (sellPrice > 0) invItem.price = sellPrice;
                 invItem.category = mainCat;
             } else if (qty > 0) {
@@ -581,6 +585,7 @@ window.handleExpenseSubmit = async function(e) {
                     name: subCat.trim(),
                     category: mainCat.trim(),
                     type: 'Veg',
+                    buyingPrice: qty > 0 ? (net / qty) : 0,
                     price: sellPrice,
                     quantity: qty,
                     low_stock_threshold: 5

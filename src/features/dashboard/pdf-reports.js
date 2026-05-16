@@ -327,6 +327,17 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
                     buyingPrice = parseFloat(invItem.buyingPrice || 0);
                 }
             }
+
+            // Smart Lookup: If no buying price in inventory, check latest purchase in Expenses History
+            if (buyingPrice === 0 && window.expensesHistory && window.expensesHistory.length > 0) {
+                const latestExp = window.expensesHistory.find(e => 
+                    (e.sub_category || e.subCategory || '').trim().toLowerCase() === name.trim().toLowerCase() && 
+                    (parseFloat(e.qty) > 0)
+                );
+                if (latestExp) {
+                    buyingPrice = (parseFloat(latestExp.amount || 0) / parseFloat(latestExp.qty || 1));
+                }
+            }
             
             const qty = parseFloat(item.cartQty || item.qty || 0);
             const revenue = parseFloat(item.price || 0) * qty;
