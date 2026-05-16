@@ -180,7 +180,8 @@ export function initPdfReports() {
 
 
 window.generateGrossReport = (title, sales, expenses, isFiltered = false) => {
-    generateDetailedReport(title, sales, expenses, isFiltered, false);
+    // If it's a search/dues filter (isFiltered = true), hide ranking/analysis
+    generateDetailedReport(title, sales, expenses, isFiltered, false, isFiltered);
 };
     window.openRangeModal = (type) => {
         const title = type === 'SALES' ? 'Sales Report Range' : (type === 'EXPENSE' ? 'Expenses Report Range' : 'Profit & Loss Report Range');
@@ -237,7 +238,7 @@ window.generateGrossReport = (title, sales, expenses, isFiltered = false) => {
     };
 }
 
-function generateDetailedReport(title, sales, expenses, isFiltered = false, hideTransactions = false) {
+function generateDetailedReport(title, sales, expenses, isFiltered = false, hideTransactions = false, hideAnalysis = false) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
     const margin = 8.5;
@@ -347,6 +348,8 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
     }
 
     const billY = (!hideTransactions && doc.lastAutoTable) ? (doc.lastAutoTable.finalY || 100) : (margin + 25);
+    
+    if (!hideAnalysis) {
     // --- Section 2: Order Type Summary & Grand Total ---
     doc.setFontSize(10);
     doc.setFont(undefined, 'bold');
@@ -635,7 +638,9 @@ function generateDetailedReport(title, sales, expenses, isFiltered = false, hide
         }
     });
 
+    } 
     const totalPagesCount = doc.internal.getNumberOfPages();
+
 
     for (let i = 1; i <= totalPagesCount; i++) {
         doc.setPage(i);
