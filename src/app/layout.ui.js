@@ -772,8 +772,13 @@ export const appShellHTML = `
                         
                         <!-- Monthly Sale Card -->
                         <div class="glass-panel" onclick="if(window.downloadMonthSalesReport) window.downloadMonthSalesReport()" style="padding: 12px 20px; border-left: 4px solid var(--accent-color); cursor: pointer; transition: transform 0.2s; position: relative;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                            <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                                <i class="fa-solid fa-file-pdf"></i>
+                            <div style="position: absolute; top: 12px; right: 15px; display: flex; gap: 8px;">
+                                <div style="width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Download Monthly Sales Report" onclick="event.stopPropagation(); if(window.downloadMonthSalesReport) window.downloadMonthSalesReport()">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                </div>
+                                <div style="width: 32px; height: 32px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #818cf8; font-size: 18px; border: 1px solid rgba(99, 102, 241, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Sales Range PDF" onclick="event.stopPropagation(); window.openRangeModal('SALES')">
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                </div>
                             </div>
                             <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Sales</h3>
                             <p id="monthly-sale-total" style="font-size: 28px; font-weight: 800; color: white; margin: 0;">₹0</p>
@@ -785,8 +790,13 @@ export const appShellHTML = `
 
                         <!-- Monthly Expenses Card -->
                         <div class="glass-panel" onclick="if(window.downloadMonthExpensesReport) window.downloadMonthExpensesReport()" style="padding: 12px 20px; border-left: 4px solid #f87171; cursor: pointer; transition: transform 0.2s; position: relative;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                            <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                                <i class="fa-solid fa-file-pdf"></i>
+                            <div style="position: absolute; top: 12px; right: 15px; display: flex; gap: 8px;">
+                                <div style="width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Download Monthly Expenses Report" onclick="event.stopPropagation(); if(window.downloadMonthExpensesReport) window.downloadMonthExpensesReport()">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                </div>
+                                <div style="width: 32px; height: 32px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #818cf8; font-size: 18px; border: 1px solid rgba(99, 102, 241, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Expense Range PDF" onclick="event.stopPropagation(); window.openRangeModal('EXPENSE')">
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                </div>
                             </div>
                             <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Expenses</h3>
                             <p id="monthly-expense-total" style="font-size: 28px; font-weight: 800; color: #f87171; margin: 0;">₹0</p>
@@ -795,8 +805,13 @@ export const appShellHTML = `
 
                         <!-- Monthly Profit Card -->
                         <div class="glass-panel" id="monthly-profit-card" onclick="if(window.downloadMonthProfitReport) window.downloadMonthProfitReport()" style="padding: 12px 20px; border-left: 4px solid #22c55e; cursor: pointer; transition: transform 0.2s; position: relative;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                            <div style="position: absolute; top: 12px; right: 15px; width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                                <i class="fa-solid fa-file-pdf"></i>
+                            <div style="position: absolute; top: 12px; right: 15px; display: flex; gap: 8px;">
+                                <div style="width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 18px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Download Monthly Profit Report" onclick="event.stopPropagation(); if(window.downloadMonthProfitReport) window.downloadMonthProfitReport()">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                </div>
+                                <div style="width: 32px; height: 32px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #818cf8; font-size: 18px; border: 1px solid rgba(99, 102, 241, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" title="Profit Range PDF" onclick="event.stopPropagation(); window.openRangeModal('PROFIT')">
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                </div>
                             </div>
                             <h3 style="font-size: 13px; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Month Profit / Loss</h3>
                             <p id="monthly-profit-total" style="font-size: 28px; font-weight: 900; color: #22c55e; margin: 0;">₹0</p>
